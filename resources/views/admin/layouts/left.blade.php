@@ -61,7 +61,7 @@
     <!-- Sidebar contact starts -->
     <div class="sidebar-contact">
         <p class="fw-light mb-1 text-nowrap text-truncate">Emergency Contact</p>
-        <h5 class="m-0 lh-1 text-nowrap text-truncate">0987654321</h5>
+        <h5 class="m-0 lh-1 text-nowrap text-truncate">09426424556</h5>
         <i class="ri-phone-line"></i>
     </div>
     <!-- Sidebar contact ends -->

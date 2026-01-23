@@ -12,14 +12,14 @@
     <!-- Toggle buttons ends -->
 
     <!-- App brand starts -->
-    <div class="app-brand ms-3">
+    {{--<div class="app-brand ms-3">
         <a href="index.html" class="d-lg-block d-none">
             <img src="{{ url('assets/images/logo.svg') }}" class="logo" alt="Medicare Admin Template">
         </a>
         <a href="index.html" class="d-lg-none d-md-block">
             <img src="{{ url('assets/images/logo-sm.svg') }}" class="logo" alt="Medicare Admin Template">
         </a>
-    </div>
+    </div>--}}
     <!-- App brand ends -->
 
     <!-- App header actions starts -->

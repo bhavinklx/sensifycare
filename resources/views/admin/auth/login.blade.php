@@ -26,9 +26,9 @@
             <form id="loginFrm" role="form" method="post" action="{{ route('login') }}">
                 {{ csrf_field() }}
                 <div class="auth-box">
-                    <a href="index.html" class="auth-logo mb-4">
+                    {{--<a href="index.html" class="auth-logo mb-4">
                         <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="Bootstrap Gallery">
-                    </a>
+                    </a>--}}
                     <h4 class="mb-4">Login</h4>
                     <div class="mb-3">
                         <label class="form-label" for="email">Your email <span class="text-danger">*</span></label>

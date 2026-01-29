@@ -44,7 +44,7 @@
                                     <th>Action</th>
                                 </tr>
                                 </thead>
-                                <tbody id="nestable" />
+                                <tbody id="tablecontents" />
                             </table>
                         </div>
                         <!-- Table ends -->

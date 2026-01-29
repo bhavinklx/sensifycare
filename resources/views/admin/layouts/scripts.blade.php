@@ -8,6 +8,10 @@
 <!-- Dropzone JS -->
 <script src="{{ url('assets/vendor/dropzone/dropzone.min.js') }}"></script>
 
+<!-- Quill Editor JS -->
+<script src="{{ url('assets/vendor/quill/quill.min.js') }}"></script>
+<script src="{{ url('assets/vendor/quill/custom.js') }}"></script>
+
 <!-- Data Tables -->
 <script src="{{ url('assets/vendor/datatables/dataTables.min.js') }}"></script>
 <script src="{{ url('assets/vendor/datatables/dataTables.bootstrap.min.js') }}"></script>

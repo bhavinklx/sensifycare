@@ -54,6 +54,27 @@
                     </ul>
                 </li>
             @endif
+
+            {{--@if(auth()->user()->hasPermissionTo('user-list', 'web') || auth()->user()->hasPermissionTo('role-list', 'web'))--}}
+                <li class="treeview {{ ($fileName == 'pages-list' || $fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active current-page' : '' }}">
+                    <a href="#!">
+                        <i class="ri-nurse-line"></i>
+                        <span class="menu-text">Pages</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        {{--@can('role-list')--}}
+                            <li>
+                                <a href="{{ route("pages-list") }}" class="{{ ($fileName == 'pages-list') ? 'active-sub' : '' }}">Page List</a>
+                            </li>
+                        {{--@endcan
+                        @can('role-add')--}}
+                            <li>
+                                <a href="{{ route("pages-add") }}" class="{{ ($fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active-sub' : '' }}">Add Page</a>
+                            </li>
+                        {{--@endcan--}}
+                    </ul>
+                </li>
+            {{--@endif--}}
         </ul>
     </div>
     <!-- Sidebar menu ends -->

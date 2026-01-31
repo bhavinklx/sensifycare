@@ -223,18 +223,23 @@ class PagesController extends Controller
     private function saveUpdateData(Pages $pages, Request $request, $isUpdate = false)
     {
         if ($request->hasFile('page_image')) {
-            if ($isUpdate) {
+            if ($isUpdate && $pages->page_image) {
                 $this->deleteFile($pages->page_image);
             }
-            $pages->page_image          = $this->uploadFile($request->file('page_image'));
+            $pages->page_image = $this->uploadImage($request->file('page_image'));
         }
 
+        // ✅ Dropzone async upload (MOST LIKELY YOUR CASE)
+        if ($request->page_image) {
+            $pages->page_image = $request->page_image; // filename string
+        }
+   
         if ($isUpdate) {
-            $pages->updated_at          = date('Y-m-d H:i:s');
+            $pages->updated_at = now();
         } else {
-            $lastOrder                  = Pages::orderBy("page_order", "DESC")->first();
-            $pages->page_order          = (!empty($lastOrder)) ? $lastOrder->page_order + 1 : 1;
-            $pages->created_at          = date('Y-m-d H:i:s');
+            $lastOrder = Pages::orderBy("page_order", "DESC")->first();
+            $pages->page_order = $lastOrder ? $lastOrder->page_order + 1 : 1;
+            $pages->created_at = now();
         }
         
         $pages->fill([
@@ -254,7 +259,24 @@ class PagesController extends Controller
         $pages->save();
     }
 
-    private function uploadFile($file)
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        // 👇 Call protected method
+        $filename = $this->storeImage($request->file('file'));
+
+        return response()->json([
+            'filename' => $filename
+        ]);
+    }
+
+    /* =========================
+       PROTECTED UPLOAD LOGIC
+       ========================= */
+    protected function storeImage($file)
     {
         $filename = 'IMG-' . time() . '.' . $file->getClientOriginalExtension();
         $file->move(public_path('uploads/pages'), $filename);

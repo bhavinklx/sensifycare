@@ -81,6 +81,20 @@
 
 @section('page-js')
     <script type="text/javascript">
+        $(document).ready(function(){
+            $("#checkall").click(function(){
+                if(this.checked){
+                    $(".check_class").attr("checked",true);
+                    $(".check_class").parent().addClass("checked");
+                }else{
+                    $(".check_class").attr("checked",false);
+                    $(".check_class").parent().removeClass("checked");
+                }
+            });
+            $("#status_msg").hide();
+            $("#alert_msg").hide();
+        });
+
         $('#roleFrm').submit(function(e) {
             e.preventDefault();
 

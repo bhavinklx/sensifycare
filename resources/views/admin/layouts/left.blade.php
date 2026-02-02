@@ -26,7 +26,7 @@
 
             @if(auth()->user()->hasPermissionTo('user-list', 'web') || auth()->user()->hasPermissionTo('role-list', 'web'))
                 <li class="treeview {{ ($fileName == 'user-list' || $fileName == 'user-add' || $fileName == 'user-edit' || $fileName == 'role-list' || $fileName == 'role-add' || $fileName == 'role-edit') ? 'active current-page' : '' }}">
-                    <a href="#!">
+                    <a href="javascript: void (0)">
                         <i class="ri-nurse-line"></i>
                         <span class="menu-text">Administrators</span>
                     </a>
@@ -55,26 +55,26 @@
                 </li>
             @endif
 
-            {{--@if(auth()->user()->hasPermissionTo('user-list', 'web') || auth()->user()->hasPermissionTo('role-list', 'web'))--}}
+            @if(auth()->user()->can('pages-list') || auth()->user()->can('pages-add'))
                 <li class="treeview {{ ($fileName == 'pages-list' || $fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active current-page' : '' }}">
-                    <a href="#!">
+                    <a href="javascript: void (0)">
                         <i class="ri-nurse-line"></i>
                         <span class="menu-text">Pages</span>
                     </a>
                     <ul class="treeview-menu">
-                        {{--@can('role-list')--}}
+                        @can('role-list')
                             <li>
                                 <a href="{{ route("pages-list") }}" class="{{ ($fileName == 'pages-list') ? 'active-sub' : '' }}">Page List</a>
                             </li>
-                        {{--@endcan
-                        @can('role-add')--}}
+                        @endcan
+                        @can('role-add')
                             <li>
                                 <a href="{{ route("pages-add") }}" class="{{ ($fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active-sub' : '' }}">Add Page</a>
                             </li>
-                        {{--@endcan--}}
+                        @endcan
                     </ul>
                 </li>
-            {{--@endif--}}
+            @endif
         </ul>
     </div>
     <!-- Sidebar menu ends -->

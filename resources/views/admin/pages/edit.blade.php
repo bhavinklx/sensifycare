@@ -103,7 +103,7 @@
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label class="form-label">Page Image</label>
-                                        <div class="dropzone dz-clickable" id="demo-upload">
+                                        <div class="dropzone dz-clickable" id="image-upload">
                                             <div class="dz-message">
                                                 <button type="button" class="dz-button">
                                                     Click here to upload your photo
@@ -149,16 +149,9 @@
                             </div>
 
                             <div class="col-sm-12 mb-3">
-                                {{-- <div class="col-xxl-6 col-lg-6 col-sm-6">
-
-                                </div>
-                                <label class="form-label">Description</label>
-                                <div id="fullEditor">
-                                </div> --}}
                                 <div class="mb-3">
                                     <label class="form-label" for="page_desc">Description</label>
-                                    <input type="text" class="form-control" id="page_desc" name="page_desc"
-                                        placeholder="Enter Meta Title" value="{{ $pagesDetail->page_desc }}">
+                                    <input type="text" class="form-control" id="page_desc" name="page_desc" placeholder="Enter Meta Title" value="{{ $pagesDetail->page_desc }}">
                                     <div class="invalid-feedback" id="msg_page_meta_title"></div>
                                 </div>
                             </div>
@@ -283,9 +276,8 @@
         });
 
         Dropzone.autoDiscover = false;
-
         let existingImage = "{{ $pagesDetail->page_image ?? '' }}";
-        let dz = new Dropzone("#demo-upload", {
+        let dz = new Dropzone("#image-upload", {
             url: "{{ route('pages-image-upload') }}",
             maxFiles: 1,
             acceptedFiles: ".jpg,.jpeg,.png,.webp",
@@ -296,7 +288,7 @@
             init: function() {
                 let myDropzone = this;
 
-                // 🔥 PRELOAD EXISTING IMAGE
+                //PRELOAD EXISTING IMAGE
                 if (existingImage) {
                     let mockFile = {
                         name: existingImage,

@@ -24,8 +24,8 @@
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
                         <h5 class="card-title">Page List</h5>
-                        @if (auth()->user()->can('user-add'))
-                            <a href="{{ route("user-add") }}" class="btn btn-primary ms-auto">Add Page</a>
+                        @if (auth()->user()->can('pages-add'))
+                            <a href="{{ route("pages-add") }}" class="btn btn-primary ms-auto">Add Page</a>
                         @endif
                     </div>
                     <div class="card-body">

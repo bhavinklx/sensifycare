@@ -72,21 +72,21 @@ Route::group(['middleware' => ['auth']], function () {
 
     //For Pages
     Route::controller(PagesController::class)->group(function (){
-        /*Route::middleware('can:pages-add')->group(function () {*/
+        Route::middleware('can:pages-add')->group(function () {
             Route::get("/admin/pages-add", "create")->name("pages-add");
             Route::post("/admin/pages-insert", "insert")->name("pages-insert");
-        /*});
-        Route::middleware('can:pages-edit')->group(function () {*/
+        });
+        Route::middleware('can:pages-edit')->group(function () {
             Route::get("/admin/pages-edit/{id}", "edit")->name("pages-edit");
             Route::post("/admin/pages-update", "update")->name("pages-update");
-        /*});
-        Route::middleware('can:pages-list')->group(function () {*/
+        });
+        Route::middleware('can:pages-list')->group(function () {
             Route::get("/admin/pages-list", "view")->name("pages-list");
             Route::get("/admin/pages-load-table", "load_table")->name("pages-load-table");
-        /*});
-        Route::middleware('can:pages-delete')->group(function () {*/
+        });
+        Route::middleware('can:pages-delete')->group(function () {
             Route::post("/admin/pages-delete", "delete")->name("pages-delete");
-        /*});*/
+        });
         Route::get("/admin/pages-create-slug", "createSlug")->name("pages-create-slug");
         Route::post("/admin/pages-change-status", "change_status")->name("pages-change-status");
         Route::post("/admin/pages-change-header-status", "change_header_status")->name("pages-change-header-status");

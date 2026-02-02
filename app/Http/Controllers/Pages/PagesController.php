@@ -226,20 +226,20 @@ class PagesController extends Controller
             if ($isUpdate && $pages->page_image) {
                 $this->deleteFile($pages->page_image);
             }
-            $pages->page_image = $this->uploadImage($request->file('page_image'));
+            $pages->page_image          = $this->uploadImage($request->file('page_image'));
         }
 
-        // ✅ Dropzone async upload (MOST LIKELY YOUR CASE)
+        //Dropzone async upload
         if ($request->page_image) {
-            $pages->page_image = $request->page_image; // filename string
+            $pages->page_image          = $request->page_image; // filename string
         }
    
         if ($isUpdate) {
-            $pages->updated_at = now();
+            $pages->updated_at          = now();
         } else {
             $lastOrder = Pages::orderBy("page_order", "DESC")->first();
-            $pages->page_order = $lastOrder ? $lastOrder->page_order + 1 : 1;
-            $pages->created_at = now();
+            $pages->page_order          = $lastOrder ? $lastOrder->page_order + 1 : 1;
+            $pages->created_at          = now();
         }
         
         $pages->fill([
@@ -265,7 +265,7 @@ class PagesController extends Controller
             'file' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // 👇 Call protected method
+        //Call protected method
         $filename = $this->storeImage($request->file('file'));
 
         return response()->json([
@@ -273,9 +273,6 @@ class PagesController extends Controller
         ]);
     }
 
-    /* =========================
-       PROTECTED UPLOAD LOGIC
-       ========================= */
     protected function storeImage($file)
     {
         $filename = 'IMG-' . time() . '.' . $file->getClientOriginalExtension();

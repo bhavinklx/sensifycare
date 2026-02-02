@@ -69,25 +69,11 @@
 
                             <div class="row g-3">
                                 <!-- Page Image -->
-                                {{-- <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Page Image</label>
-                                        <div class="dropzone dz-clickable" id="demo-upload">
-                                            <div class="dz-message">
-                                                <button type="button" class="dz-button">
-                                                    Click here to upload your photo
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
                                 <div class="col-lg-6">
-                                    <form class="dropzone" id="demo-upload" method="POST"
-                                        action="{{ route('pages-image-upload') }}" enctype="multipart/form-data">
+                                    <form class="dropzone" id="image-upload" method="POST" action="{{ route('pages-image-upload') }}" enctype="multipart/form-data">
                                         @csrf
                                         <label class="form-label">Page Image</label>
-                                        <div class="dropzone dz-clickable" id="demo-upload">
+                                        <div class="dropzone dz-clickable" id="image-upload">
                                             <div class="dz-message">
                                                 <button type="button" class="dz-button">
                                                     Click here to upload your photo
@@ -242,8 +228,7 @@
 
         // Dropzone image upload
         Dropzone.autoDiscover = false;
-
-        let dz = new Dropzone("#demo-upload", {
+        let dz = new Dropzone("#image-upload", {
             url: "{{ route('pages-image-upload') }}",
             maxFiles: 1,
             acceptedFiles: ".jpg,.jpeg,.png,.webp",

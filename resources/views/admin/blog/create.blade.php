@@ -9,7 +9,7 @@
                 <a href="{{ route('dashboard') }}">Home</a>
             </li>
             <li class="breadcrumb-item text-primary" aria-current="page">
-                Add Page
+                Add Blog
             </li>
         </ol>
         <!-- Breadcrumb ends -->
@@ -17,7 +17,7 @@
     <!-- App Hero header ends -->
 
     <!-- App body starts -->
-    <form id="pagesFrm" method="post" action="{{ route('pages-insert') }}">
+    <form id="blogFrm" method="post" action="{{ route('blog-insert') }}">
         {{ csrf_field() }}
         <div class="app-body">
             <!-- Row starts -->
@@ -25,41 +25,42 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Add Page</h5>
+                            <h5 class="card-title">Add Blog</h5>
                         </div>
                         <div class="card-body">
                             <!-- Row starts -->
                             <div class="row gx-3">
                                 <div class="col-xxl-3 col-lg-4 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="roles">Page Parent</label>
-                                        <select class="form-select" id="page_parent" name="page_parent">
+                                        <label class="form-label" for="roles">Category</label>
+                                        <select class="form-select" id="bcategory_id" name="bcategory_id">
                                             <option value="0">Select as Parent</option>
-                                            @foreach ($parentPages as $pages)
-                                                <option value="{{ $pages->page_id }}">{{ $pages->page_title }}</option>
+                                            @foreach($bcategoryDetail as $bcategory)
+                                                <option value="{{ $bcategory->bcategory_id }}">{{ $bcategory->bcategory_title }}</option>
                                             @endforeach
                                         </select>
+                                        <div class="invalid-feedback" id="msg_bcategory_id"></div>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-lg-6 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="page_link">Page Link</label>
-                                        <input type="text" class="form-control" id="page_link" name="page_link" placeholder="Enter Page Link">
-                                        <div class="invalid-feedback" id="msg_page_link"></div>
+                                        <label class="form-label" for="blog_date">Blog Date</label>
+                                        <input type="text" class="form-control" id="blog_date" name="blog_date" placeholder="Select Blog Date">
+                                        <div class="invalid-feedback" id="msg_blog_date"></div>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-lg-4 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="page_title">Page Title</label>
-                                        <input type="text" class="form-control" id="page_title" name="page_title" placeholder="Enter Page Title">
-                                        <div class="invalid-feedback" id="msg_page_title"></div>
+                                        <label class="form-label" for="blog_title">Blog Title</label>
+                                        <input type="text" class="form-control" id="blog_title" name="blog_title" placeholder="Enter Blog Title">
+                                        <div class="invalid-feedback" id="msg_blog_title"></div>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-lg-4 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="page_slug">Page Slug</label>
-                                        <input type="text" class="form-control" id="page_slug" name="page_slug" placeholder="Enter Page Slug">
-                                        <div class="invalid-feedback" id="msg_page_slug"></div>
+                                        <label class="form-label" for="blog_slug">Blog Slug</label>
+                                        <input type="text" class="form-control" id="blog_slug" name="blog_slug" placeholder="Enter Blog Slug">
+                                        <div class="invalid-feedback" id="msg_blog_slug"></div>
                                     </div>
                                 </div>
                             </div>
@@ -67,9 +68,9 @@
                             <div class="row g-3">
                                 <!-- Page Image -->
                                 <div class="col-lg-6">
-                                    <form class="dropzone" id="image-upload" method="POST" action="{{ route('pages-image-upload') }}" enctype="multipart/form-data">
+                                    <form class="dropzone" id="image-upload" method="POST" action="{{ route('blog-image-upload') }}" enctype="multipart/form-data">
                                         @csrf
-                                        <label class="form-label">Page Image</label>
+                                        <label class="form-label">Blog Image</label>
                                         <div class="dropzone dz-clickable" id="image-upload">
                                             <div class="dz-message">
                                                 <button type="button" class="dz-button">
@@ -78,8 +79,7 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <input type="hidden" name="page_image" id="page_image">
-
+                                    <input type="hidden" name="blog_image" id="blog_image">
                                 </div>
 
                                 <!-- Page Fields -->
@@ -87,25 +87,25 @@
                                     <div class="row g-3">
                                         <div class="col-xxl-6 col-lg-6 col-sm-6">
                                             <div class="mb-3">
-                                                <label class="form-label" for="page_meta_title">Meta Title</label>
-                                                <input type="text" class="form-control" id="page_meta_title" name="page_meta_title" placeholder="Enter Meta Title">
-                                                <div class="invalid-feedback" id="msg_page_meta_title"></div>
+                                                <label class="form-label" for="blog_meta_title">Meta Title</label>
+                                                <input type="text" class="form-control" id="blog_meta_title" name="blog_meta_title" placeholder="Enter Meta Title">
+                                                <div class="invalid-feedback" id="msg_blog_meta_title"></div>
                                             </div>
                                         </div>
 
                                         <div class="col-xxl-6 col-lg-6 col-sm-6">
                                             <div class="mb-3">
-                                                <label class="form-label" for="page_meta_keyword">Meta Keyword</label>
-                                                <input type="text" class="form-control" id="page_meta_keyword" name="page_meta_keyword" placeholder="Meta Keyword">
-                                                <div class="invalid-feedback" id="msg_page_meta_keyword"></div>
+                                                <label class="form-label" for="blog_meta_keyword">Meta Keyword</label>
+                                                <input type="text" class="form-control" id="blog_meta_keyword" name="blog_meta_keyword" placeholder="Meta Keyword">
+                                                <div class="invalid-feedback" id="msg_blog_meta_keyword"></div>
                                             </div>
                                         </div>
 
                                         <div class="col-xxl-12 col-lg-6 col-sm-6 mt-sm-2">
                                             <div class="mb-3">
-                                                <label class="form-label" for="page_meta_desc">Meta Description</label>
-                                                <textarea type="text" class="form-control" id="page_meta_desc" name="page_meta_desc" rows="2"></textarea>
-                                                <div class="invalid-feedback" id="msg_page_meta_desc"></div>
+                                                <label class="form-label" for="blog_meta_desc">Meta Description</label>
+                                                <textarea type="text" class="form-control" id="blog_meta_desc" name="blog_meta_desc" rows="2"></textarea>
+                                                <div class="invalid-feedback" id="msg_blog_meta_desc"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -119,45 +119,9 @@
                             </div>
 
                             <div class="row g-3">
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="page_status">Status</label>
-                                        <select class="form-select" id="page_status" name="page_status">
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="page_header_status">Header Status</label>
-                                        <select class="form-select" id="page_header_status" name="page_header_status">
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="page_footer_status">Footer Status</label>
-                                        <select class="form-select" id="page_footer_status" name="page_footer_status">
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="page_app_status">App Status</label>
-                                        <select class="form-select" id="page_app_status" name="page_app_status">
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="col-sm-12">
                                     <div class="d-flex gap-2 justify-content-end">
-                                        <a href="{{ route('pages-list') }}" class="btn btn-outline-secondary">
+                                        <a href="{{ route('blog-list') }}" class="btn btn-outline-secondary">
                                             Cancel
                                         </a>
                                         <button type="submit" name="submit" class="btn btn-primary">
@@ -177,20 +141,20 @@
 @endsection
 @section('page-js')
     <script type="text/javascript">
-        $('#page_title').keyup(function(e) {
+        $('#blog_title').keyup(function(e) {
             $.ajax({
-                url: "{{ route('pages-create-slug') }}",
+                url: "{{ route('blog-create-slug') }}",
                 type: "GET",
                 data: {
-                    'page_title': $(this).val()
+                    'blog_title': $(this).val()
                 },
                 success: function(response) {
-                    $('#page_slug').val(response.slug);
+                    $('#blog_slug').val(response.slug);
                 }
             });
         });
 
-        $('#pagesFrm').submit(function(e) {
+        $('#blogFrm').submit(function(e) {
             e.preventDefault();
 
             $('#loading-wrapper').fadeIn(200);
@@ -224,7 +188,7 @@
         // Dropzone image upload
         Dropzone.autoDiscover = false;
         let dz = new Dropzone("#image-upload", {
-            url: "{{ route('pages-image-upload') }}",
+            url: "{{ route('blog-image-upload') }}",
             maxFiles: 1,
             acceptedFiles: ".jpg,.jpeg,.png,.webp",
             addRemoveLinks: true,
@@ -234,7 +198,7 @@
         });
 
         dz.on("success", function(file, response) {
-            document.getElementById('page_image').value = response.filename;
+            document.getElementById('blog_image').value = response.filename;
         });
     </script>
 @endsection

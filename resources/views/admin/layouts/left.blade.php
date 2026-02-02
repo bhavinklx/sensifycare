@@ -75,6 +75,37 @@
                     </ul>
                 </li>
             @endif
+
+            @if(auth()->user()->can('bcategory-list', 'web') || auth()->user()->can('blog-list', 'web'))
+                <li class="treeview {{ ($fileName == 'bcategory-list' || $fileName == 'bcategory-add' || $fileName == 'bcategory-edit' || $fileName == 'blog-list' || $fileName == 'blog-add' || $fileName == 'blog-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-nurse-line"></i>
+                        <span class="menu-text">Blogs</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('bcategory-list')
+                            <li>
+                                <a href="{{ route("bcategory-list") }}" class="{{ ($fileName == 'bcategory-list') ? 'active-sub' : '' }}">Category List</a>
+                            </li>
+                        @endcan
+                        @can('bcategory-add')
+                            <li>
+                                <a href="{{ route("bcategory-add") }}" class="{{ ($fileName == 'bcategory-add' || $fileName == 'bcategory-edit') ? 'active-sub' : '' }}">Add Category</a>
+                            </li>
+                        @endcan
+                        @can('blog-list')
+                            <li>
+                                <a href="{{ route("blog-list") }}" class="{{ ($fileName == 'blog-list') ? 'active-sub' : '' }}">Blog List</a>
+                            </li>
+                        @endcan
+                        @can('blog-add')
+                            <li>
+                                <a href="{{ route("blog-add") }}" class="{{ ($fileName == 'blog-add' || $fileName == 'blog-edit') ? 'active-sub' : '' }}">Add Blog</a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endif
         </ul>
     </div>
     <!-- Sidebar menu ends -->

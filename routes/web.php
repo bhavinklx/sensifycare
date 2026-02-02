@@ -7,6 +7,8 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Pages\PagesController;
+use App\Http\Controllers\Bcategory\BcategoryController;
+use App\Http\Controllers\Blog\BlogController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -82,7 +84,6 @@ Route::group(['middleware' => ['auth']], function () {
         });
         Route::middleware('can:pages-list')->group(function () {
             Route::get("/admin/pages-list", "view")->name("pages-list");
-            Route::get("/admin/pages-load-table", "load_table")->name("pages-load-table");
         });
         Route::middleware('can:pages-delete')->group(function () {
             Route::post("/admin/pages-delete", "delete")->name("pages-delete");
@@ -93,6 +94,53 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/pages-change-footer-status", "change_footer_status")->name("pages-change-footer-status");
         Route::post("/admin/pages-update-order", "update_order")->name("pages-update-order");
         Route::post('/admin/pages-image-upload', 'uploadImage')->name('pages-image-upload');
+    });
+
+    //For Blog Category
+    Route::controller(BcategoryController::class)->group(function (){
+        Route::middleware('can:bcategory-add')->group(function () {
+            Route::get("/admin/bcategory-add", "create")->name("bcategory-add");
+            Route::post("/admin/bcategory-insert", "insert")->name("bcategory-insert");
+        });
+        Route::middleware('can:bcategory-edit')->group(function () {
+            Route::get("/admin/bcategory-edit/{id}", "edit")->name("bcategory-edit");
+            Route::post("/admin/bcategory-update", "update")->name("bcategory-update");
+        });
+        Route::middleware('can:bcategory-list')->group(function () {
+            Route::get("/admin/bcategory-list", "view")->name("bcategory-list");
+            Route::get("/admin/bcategory-load-table", "load_table")->name("bcategory-load-table");
+        });
+        Route::middleware('can:bcategory-delete')->group(function () {
+            Route::post("/admin/bcategory-delete", "delete")->name("bcategory-delete");
+        });
+        Route::get("/admin/bcategory-create-slug", "createSlug")->name("bcategory-create-slug");
+        Route::post("/admin/bcategory-change-status", "change_status")->name("bcategory-change-status");
+        Route::post("/admin/bcategory-update-order", "update_order")->name("bcategory-update-order");
+    });
+
+    //For Blog
+    Route::controller(BlogController::class)->group(function (){
+        Route::middleware('can:blog-add')->group(function () {
+            Route::get("/admin/blog-add", "create")->name("blog-add");
+            Route::post("/admin/blog-insert", "insert")->name("blog-insert");
+        });
+        Route::middleware('can:blog-edit')->group(function () {
+            Route::get("/admin/blog-edit/{id}", "edit")->name("blog-edit");
+            Route::post("/admin/blog-update", "update")->name("blog-update");
+        });
+        Route::middleware('can:blog-list')->group(function () {
+            Route::get("/admin/blog-list", "view")->name("blog-list");
+            Route::get("/admin/blog-load-table", "load_table")->name("blog-load-table");
+        });
+        Route::middleware('can:blog-delete')->group(function () {
+            Route::post("/admin/blog-delete", "delete")->name("blog-delete");
+        });
+        Route::get("/admin/blog-create-slug", "createSlug")->name("blog-create-slug");
+        Route::post("/admin/blog-change-status", "change_status")->name("blog-change-status");
+        Route::post("/admin/blog-change-header-status", "change_header_status")->name("blog-change-header-status");
+        Route::post("/admin/blog-change-footer-status", "change_footer_status")->name("blog-change-footer-status");
+        Route::post("/admin/blog-update-order", "update_order")->name("blog-update-order");
+        Route::post('/admin/blog-image-upload', 'uploadImage')->name('blog-image-upload');
     });
 });
 

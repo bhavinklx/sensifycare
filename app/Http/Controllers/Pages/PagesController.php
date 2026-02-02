@@ -84,65 +84,6 @@ class PagesController extends Controller
         return view("admin.pages.list")->with('pagesDetail',$pagesDetail);
     }
 
-    public function load_table(Request $request)
-    {
-        $pagesDetail = Pages::with('children');
-        //return $pagesDetail;
-        return DataTables::of($pagesDetail)
-            ->editColumn("checkbox", function ($pages){
-                return '<input type="checkbox" name="check[]" id="check[]" value="'.$pages->page_id.'" class="custom-checkbox check_class" />';
-            })
-            ->editColumn("title", function ($pages){
-                //print_r($parent); exit();
-                return $pages->page_title;
-                /*if(count($pages->children) > 0) { foreach ($pages->children as $subpages) {
-                    return $subpages->page_title;
-                } }*/
-            })
-            ->editColumn("date", function ($pages){
-                return date('d-m-Y h:i:s A', strtotime($pages->created_at));
-            })
-            ->editColumn("status", function ($pages){
-                if ($pages->page_status == '1') {
-                    return '<span id="td_status_'.$pages->page_id.'"><a href="javascript:void(0)" onclick="change_status('.$pages->page_id.', 0)" ><div class="label label-table label-success">Active</div></a></span>';
-                } else {
-                    return '<span id="td_status_'.$pages->page_id.'"><a href="javascript:void(0)" onclick="change_status('.$pages->page_id.', 1)" ><div class="label label-table label-danger">Inactive</div></a></span>';
-                }
-            })
-            ->editColumn("header_status", function ($pages){
-                if ($pages->page_header_status == '1') {
-                    return '<span id="td_header_status_'.$pages->page_id.'"><a href="javascript:void(0)" onclick="change_header_status('.$pages->page_id.', 0)" ><div class="label label-table label-success">Active</div></a></span>';
-                } else {
-                    return '<span id="td_header_status_'.$pages->page_id.'"><a href="javascript:void(0)" onclick="change_header_status('.$pages->page_id.', 1)" ><div class="label label-table label-danger">Inactive</div></a></span>';
-                }
-            })
-            ->editColumn("footer_status", function ($pages){
-                if ($pages->page_footer_status == '1') {
-                    return '<span id="td_footer_status_'.$pages->page_id.'"><a href="javascript:void(0)" onclick="change_footer_status('.$pages->page_id.', 0)" ><div class="label label-table label-success">Active</div></a></span>';
-                } else {
-                    return '<span id="td_footer_status_'.$pages->page_id.'"><a href="javascript:void(0)" onclick="change_footer_status('.$pages->page_id.', 1)" ><div class="label label-table label-danger">Inactive</div></a></span>';
-                }
-            })
-            ->editColumn("action", function ($pages){
-                $action = "";
-                if ($pages->page_id == "1") {
-                    if (auth()->user()->can('pages-edit')) {
-                        $action.= '<a href="'.route("edit-pages", ['id' => $pages->page_id]).'" data-toggle="tooltip" data-placement="top" title="Edit"> <i class="fa fa-pencil text-inverse"></i> </a>';
-                    }
-                } else {
-                    if (auth()->user()->can('pages-edit')) {
-                        $action.= '<a href="'.route("edit-pages", ['id' => $pages->page_id]).'" data-toggle="tooltip" data-placement="top" title="Edit"> <i class="fa fa-pencil text-inverse"></i> </a>';
-                    }
-                    if (auth()->user()->can('pages-delete')) {
-                        $action.= '<a href="javascript:void(0)" data-toggle="tooltip" onclick="deleteSingal(' . $pages->page_id . ');" data-placement="top" title="Delete"> <i class="fa fa-trash text-danger"></i> </a>';
-                    }
-                }
-                return $action;
-            })
-            ->rawColumns(["checkbox", "status", "header_status", "footer_status", "action"])
-            ->make(true);
-    }
-
     public function change_status(Request $request)
     {
         if (!$request->ajax())

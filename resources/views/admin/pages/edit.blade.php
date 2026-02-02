@@ -37,7 +37,7 @@
                 <a href="{{ route('dashboard') }}">Home</a>
             </li>
             <li class="breadcrumb-item text-primary" aria-current="page">
-                Add Page
+                Edit Page
             </li>
         </ol>
         <!-- Breadcrumb ends -->
@@ -54,7 +54,7 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Add Page</h5>
+                            <h5 class="card-title">Edit Page</h5>
                         </div>
                         <div class="card-body">
                             <!-- Row starts -->
@@ -75,24 +75,21 @@
                                 <div class="col-xxl-3 col-lg-6 col-sm-6">
                                     <div class="mb-3">
                                         <label class="form-label" for="page_link">Page Link</label>
-                                        <input type="text" class="form-control" id="page_link" name="page_link"
-                                            placeholder="Enter Page Link" value="{{ $pagesDetail->page_link }}">
+                                        <input type="text" class="form-control" id="page_link" name="page_link" placeholder="Enter Page Link" value="{{ $pagesDetail->page_link }}">
                                         <div class="invalid-feedback" id="msg_page_link"></div>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-lg-4 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="email">Page Title</label>
-                                        <input type="text" class="form-control" id="page_title" name="page_title"
-                                            placeholder="Enter Page Title" value="{{ $pagesDetail->page_title }}">
+                                        <label class="form-label" for="page_title">Page Title</label>
+                                        <input type="text" class="form-control" id="page_title" name="page_title" placeholder="Enter Page Title" value="{{ $pagesDetail->page_title }}">
                                         <div class="invalid-feedback" id="msg_page_title"></div>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-lg-4 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="phone">Page Slug</label>
-                                        <input type="text" class="form-control" id="page_slug" name="page_slug"
-                                            placeholder="Enter Page Slug" value="{{ $pagesDetail->page_slug }}">
+                                        <label class="form-label" for="page_slug">Page Slug</label>
+                                        <input type="text" class="form-control" id="page_slug" name="page_slug" placeholder="Enter Page Slug" value="{{ $pagesDetail->page_slug }}">
                                         <div class="invalid-feedback" id="msg_page_slug"></div>
                                     </div>
                                 </div>
@@ -121,27 +118,24 @@
                                         <div class="col-xxl-6 col-lg-6 col-sm-6">
                                             <div class="mb-3">
                                                 <label class="form-label" for="page_meta_title">Meta Title</label>
-                                                <input type="text" class="form-control" id="page_meta_title"
-                                                    name="page_meta_title" placeholder="Enter Meta Title"
-                                                    value="{{ $pagesDetail->page_meta_title }}">
+                                                <input type="text" class="form-control" id="page_meta_title" name="page_meta_title" placeholder="Enter Meta Title" value="{{ $pagesDetail->page_meta_title }}">
                                                 <div class="invalid-feedback" id="msg_page_meta_title"></div>
                                             </div>
                                         </div>
 
                                         <div class="col-xxl-6 col-lg-6 col-sm-6">
                                             <div class="mb-3">
-                                                <label class="form-label" for="page_title">Meta Keyword</label>
-                                                <input type="text" class="form-control" id="page_meta_keyword"
-                                                    name="page_meta_keyword" placeholder="Meta Keyword"
-                                                    value="{{ $pagesDetail->page_meta_keyword }}">
-                                                <div class="invalid-feedback" id="msg_page_title"></div>
+                                                <label class="form-label" for="page_meta_keyword">Meta Keyword</label>
+                                                <input type="text" class="form-control" id="page_meta_keyword" name="page_meta_keyword" placeholder="Meta Keyword" value="{{ $pagesDetail->page_meta_keyword }}">
+                                                <div class="invalid-feedback" id="msg_page_meta_keyword"></div>
                                             </div>
                                         </div>
 
                                         <div class="col-xxl-12 col-lg-6 col-sm-6 mt-sm-2">
                                             <div class="mb-3">
-                                                <label class="form-label" for="page_link">Meta Description</label>
+                                                <label class="form-label" for="page_meta_desc">Meta Description</label>
                                                 <textarea type="text" class="form-control" id="page_meta_desc" name="page_meta_desc" rows="2">{{ $pagesDetail->page_meta_desc }}</textarea>
+                                                <div class="invalid-feedback" id="msg_page_meta_desc"></div>
                                             </div>
                                         </div>
                                     </div>

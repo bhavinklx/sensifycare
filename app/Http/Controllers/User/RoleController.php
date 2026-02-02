@@ -57,7 +57,7 @@ class RoleController extends Controller
         ]);
         $role->syncPermissions($request->permission);
 
-        Session::flash('successMsg', 'Role details added successfully');
+        Session::flash('successMsg', 'Role added successfully');
 
         return response()->json(['redirect_url' => route('role-list')]);
     }
@@ -97,7 +97,7 @@ class RoleController extends Controller
         $role->update(['name' => $request->name]);
         $role->syncPermissions($request->permission);
 
-        Session::flash('successMsg', 'Role details updated successfully');
+        Session::flash('successMsg', 'Role updated successfully');
         return response()->json(['redirect_url' => route('role-list')]);
     }
 

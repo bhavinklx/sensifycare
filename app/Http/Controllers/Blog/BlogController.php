@@ -56,7 +56,7 @@ class BlogController extends Controller
         $blog = new Blog();
         $this->saveUpdateData($blog, $request);
 
-        Session::flash('successMsg', 'Blog details added successfully');
+        Session::flash('successMsg', 'Blog added successfully');
         return response()->json(['redirect_url' => route('blog-list')]);
     }
     
@@ -74,7 +74,7 @@ class BlogController extends Controller
         $blog = Blog::findOrFail($request->blog_id);
         $this->saveUpdateData($blog, $request, true);
 
-        Session::flash('successMsg', 'Blog details updated successfully');
+        Session::flash('successMsg', 'Blog updated successfully');
         return response()->json(['redirect_url' => route('blog-list')]);
     }
 

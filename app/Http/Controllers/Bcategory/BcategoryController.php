@@ -103,7 +103,7 @@ class BcategoryController extends Controller
             ->editColumn("action", function ($bcategory){
                 $action = '<div class="d-inline-flex gap-1">';
                 if (auth()->user()->can('bcategory-delete')) {
-                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="deleteSingal(' . $bcategory->bcategory_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Category"> <i class="ri-delete-bin-line"></i> </button>';
+                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(' . $bcategory->bcategory_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Category"> <i class="ri-delete-bin-line"></i> </button>';
                 }
                 if (auth()->user()->can('bcategory-edit')) {
                     $action.= '<a href="'.route("bcategory-edit", ['id' => $bcategory->bcategory_id]).'" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Category"> <i class="ri-edit-box-line"></i> </a>';
@@ -115,6 +115,9 @@ class BcategoryController extends Controller
                 return 'row1';
             })
             ->setRowAttr([
+                "id" => function ($bcategory) {
+                    return 'row_' . $bcategory->bcategory_id;
+                },
                 "data-id" => function ($bcategory) {
                     return $bcategory->bcategory_id;
                 }

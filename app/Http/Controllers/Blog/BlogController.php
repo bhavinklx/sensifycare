@@ -121,7 +121,7 @@ class BlogController extends Controller
             ->editColumn("action", function ($blog){
                 $action = '<div class="d-inline-flex gap-1">';
                 if (auth()->user()->can('blog-delete')) {
-                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="deleteSingal(' . $blog->blog_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Blog"> <i class="ri-delete-bin-line"></i> </button>';
+                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(' . $blog->blog_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Blog"> <i class="ri-delete-bin-line"></i> </button>';
                 }
                 if (auth()->user()->can('blog-edit')) {
                     $action.= '<a href="'.route("blog-edit", ['id' => $blog->blog_id]).'" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Blog"> <i class="ri-edit-box-line"></i> </a>';
@@ -133,6 +133,9 @@ class BlogController extends Controller
                 return 'row1';
             })
             ->setRowAttr([
+                "id" => function ($blog) {
+                    return 'row_' . $blog->blog_id;
+                },
                 "data-id" => function ($blog) {
                     return $blog->blog_id;
                 }

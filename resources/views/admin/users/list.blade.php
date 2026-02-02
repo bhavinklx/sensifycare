@@ -52,7 +52,7 @@
                         <!-- Table ends -->
 
                         <!-- Modal Delete Row -->
-                        <div class="modal fade" id="delRow" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
                             <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -62,12 +62,13 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete the staff member?
+                                        <input type="hidden" id="user_id">
+                                        Are you sure you want to delete?
                                     </div>
                                     <div class="modal-footer">
                                         <div class="d-flex justify-content-end gap-2">
                                             <button class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">No</button>
-                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Yes</button>
+                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close" onclick="deleteData()">Yes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +99,7 @@
             $("#alert_msg").hide();
         });
 
-        $('#basicExample').DataTable({
+        var table = $('#basicExample').DataTable({
             pageLength: 25,
             processing: true,
             serverSide: true,
@@ -123,15 +124,30 @@
             }
         });
 
-        function deleteData(id) {
+        function openDeleteModal(user_id) {
+            $('#user_id').val(user_id);
+            $('#deleteModal').modal('show');
+        }
+
+        function deleteData() {
+            let user_id = $('#user_id').val();
             $.ajax({
                 url: "{{ route('user-delete') }}",
                 type: "POST",
                 data: {
                     _token:'{{ csrf_token() }}',
-                    id:id,
+                    user_id:user_id
                 },
                 success: function (response) {
+                    $('#deleteModal').modal('hide');
+                    /*$('#row_' + user_id).remove();
+                     setTimeout(function(){
+                     location.reload();
+                     },2000);*/
+                    table
+                            .row($('#row_' + user_id))
+                            .remove()
+                            .draw(false);
                 }
             });
         }

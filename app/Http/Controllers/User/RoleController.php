@@ -127,7 +127,7 @@ class RoleController extends Controller
             ->editColumn("action", function ($role){
                 $action = '<div class="d-inline-flex gap-1">';
                 if (auth()->user()->hasPermissionTo('user-delete', 'web')) {
-                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="deleteSingal(' . $role->id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Role"> <i class="ri-delete-bin-line"></i> </button>';
+                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(' . $role->id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Role"> <i class="ri-delete-bin-line"></i> </button>';
                 }
                 if (auth()->user()->hasPermissionTo('user-edit', 'web')) {
                     $action.= '<a href="'.route("role-edit", ['id' => $role->id]).'" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Role"> <i class="ri-edit-box-line"></i> </a>';
@@ -141,6 +141,9 @@ class RoleController extends Controller
             })
             //for add table row attr
             ->setRowAttr([
+                "id" => function ($role) {
+                    return 'row_' . $role->id;
+                },
                 'data-id' => function($role) {
                     return $role->id;
                 }
@@ -151,7 +154,7 @@ class RoleController extends Controller
 
     public function delete(Request $request)
     {
-        Role::findOrFail($request->id)->delete();
+        Role::findOrFail($request->role_id)->delete();
         return response()->json(['status' => true]);
     }
 

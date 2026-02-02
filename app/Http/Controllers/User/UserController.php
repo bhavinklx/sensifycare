@@ -99,7 +99,7 @@ class UserController extends Controller
             ->editColumn("action", function ($user){
                 $action = '<div class="d-inline-flex gap-1">';
                 if (auth()->user()->hasPermissionTo('user-delete', 'web')) {
-                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="deleteSingal(' . $user->id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Administrators"> <i class="ri-delete-bin-line"></i> </button>';
+                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(' . $user->id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Administrators"> <i class="ri-delete-bin-line"></i> </button>';
                 }
                 if (auth()->user()->hasPermissionTo('user-edit', 'web')) {
                     $action.= '<a href="'.route("user-edit", ['id' => $user->id]).'" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Administrators"> <i class="ri-edit-box-line"></i> </a>';
@@ -151,7 +151,7 @@ class UserController extends Controller
 
     public function delete(Request $request)
     {
-        User::findOrFail($request->id)->delete();
+        User::findOrFail($request->user_id)->delete();
         return response()->json(['status' => true]);
     }
 }

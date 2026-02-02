@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/pages-change-header-status", "change_header_status")->name("pages-change-header-status");
         Route::post("/admin/pages-change-footer-status", "change_footer_status")->name("pages-change-footer-status");
         Route::post("/admin/pages-update-order", "update_order")->name("pages-update-order");
+        Route::post('/admin/pages-image-upload', 'uploadImage')->name('pages-image-upload');
     });
 });
 

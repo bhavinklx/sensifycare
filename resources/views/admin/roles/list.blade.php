@@ -24,8 +24,8 @@
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
                         <h5 class="card-title">Role List</h5>
-                        @if (auth()->user()->can('user-add'))
-                            <a href="{{ route("user-add") }}" class="btn btn-primary ms-auto">Add Role</a>
+                        @if (auth()->user()->can('role-add'))
+                            <a href="{{ route("role-add") }}" class="btn btn-primary ms-auto">Add Role</a>
                         @endif
                     </div>
                     <div class="card-body">
@@ -50,7 +50,7 @@
                         <!-- Table ends -->
 
                         <!-- Modal Delete Row -->
-                        <div class="modal fade" id="delRow" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
                             <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -60,12 +60,13 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete the staff member?
+                                        <input type="hidden" id="role_id">
+                                        Are you sure you want to delete?
                                     </div>
                                     <div class="modal-footer">
                                         <div class="d-flex justify-content-end gap-2">
                                             <button class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">No</button>
-                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Yes</button>
+                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close" onclick="deleteData()">Yes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -96,7 +97,7 @@
             $("#alert_msg").hide();
         });
 
-        $('#basicExample').DataTable({
+        var table = $('#basicExample').DataTable({
             pageLength: 25,
             processing: true,
             serverSide: true,
@@ -119,15 +120,30 @@
             }
         });
 
-        function deleteData(id) {
+        function openDeleteModal(role_id) {
+            $('#role_id').val(role_id);
+            $('#deleteModal').modal('show');
+        }
+
+        function deleteData() {
+            let role_id = $('#role_id').val();
             $.ajax({
-                url: "{{ route('user-delete') }}",
+                url: "{{ route('role-delete') }}",
                 type: "POST",
                 data: {
                     _token:'{{ csrf_token() }}',
-                    id:id,
+                    role_id:role_id
                 },
                 success: function (response) {
+                    $('#deleteModal').modal('hide');
+                    /*$('#row_' + role_id).remove();
+                     setTimeout(function(){
+                     location.reload();
+                     },2000);*/
+                    table
+                            .row($('#row_' + role_id))
+                            .remove()
+                            .draw(false);
                 }
             });
         }

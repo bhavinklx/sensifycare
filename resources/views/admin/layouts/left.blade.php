@@ -58,7 +58,7 @@
             @if(auth()->user()->can('pages-list') || auth()->user()->can('pages-add'))
                 <li class="treeview {{ ($fileName == 'pages-list' || $fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">
-                        <i class="ri-nurse-line"></i>
+                        <i class="ri-pantone-line"></i>
                         <span class="menu-text">Pages</span>
                     </a>
                     <ul class="treeview-menu">
@@ -79,7 +79,7 @@
             @if(auth()->user()->can('bcategory-list', 'web') || auth()->user()->can('blog-list', 'web'))
                 <li class="treeview {{ ($fileName == 'bcategory-list' || $fileName == 'bcategory-add' || $fileName == 'bcategory-edit' || $fileName == 'blog-list' || $fileName == 'blog-add' || $fileName == 'blog-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">
-                        <i class="ri-nurse-line"></i>
+                        <i class="ri-news-line"></i>
                         <span class="menu-text">Blogs</span>
                     </a>
                     <ul class="treeview-menu">

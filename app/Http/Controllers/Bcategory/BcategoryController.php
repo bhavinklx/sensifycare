@@ -54,7 +54,7 @@ class BcategoryController extends Controller
         $bcategory = new Bcategory();
         $this->saveUpdateData($bcategory, $request);
 
-        Session::flash('successMsg', 'Category details added successfully');
+        Session::flash('successMsg', 'Category added successfully');
         return response()->json(['redirect_url' => route('bcategory-list')]);
     }
 
@@ -71,7 +71,7 @@ class BcategoryController extends Controller
         $bcategory = Bcategory::findOrFail($request->bcategory_id);
         $this->saveUpdateData($bcategory, $request, true);
 
-        Session::flash('successMsg', 'Category details updated successfully');
+        Session::flash('successMsg', 'Category updated successfully');
         return response()->json(['redirect_url' => route('bcategory-list')]);
     }
 

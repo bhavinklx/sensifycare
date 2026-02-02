@@ -21,3 +21,28 @@
 <script src="{{ url('assets/js/custom.js') }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if(Session::get('failedMsg') != "")
+    Swal.fire({
+        toast: true,
+        position: 'top-end',      // top-right corner
+        icon: 'error',          // success, error, warning, info
+        title: "{{ Session::get('failedMsg') }}",          // message text
+        showConfirmButton: false, // no OK button
+        timer: 3500,              // auto close after 3.5 seconds
+        timerProgressBar: true,
+        padding: '0.5em 1em',      // smaller padding
+    });
+    @elseif(Session::get('successMsg') != "")
+    Swal.fire({
+        toast: true,
+        position: 'top-end',      // top-right corner
+        icon: 'success',          // success, error, warning, info
+        title: "{{ Session::get('successMsg') }}",          // message text
+        showConfirmButton: false, // no OK button
+        timer: 3500,              // auto close after 3.5 seconds
+        timerProgressBar: true,
+        padding: '0.5em 1em',      // smaller padding
+    });
+    @endif
+</script>

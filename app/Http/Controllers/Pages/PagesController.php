@@ -55,7 +55,7 @@ class PagesController extends Controller
         $pages = new Pages();
         $this->saveUpdateData($pages, $request);
 
-        Session::flash('successMsg', 'Pages details added successfully');
+        Session::flash('successMsg', 'Page added successfully');
         return response()->json(['redirect_url' => route('pages-list')]);
     }
 
@@ -74,7 +74,7 @@ class PagesController extends Controller
         $pages = Pages::findOrFail($request->page_id);
         $this->saveUpdateData($pages, $request, true);
 
-        Session::flash('successMsg', 'Pages details updated successfully');
+        Session::flash('successMsg', 'Page updated successfully');
         return response()->json(['redirect_url' => route('pages-list')]);
     }
 

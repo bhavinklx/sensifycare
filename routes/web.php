@@ -9,6 +9,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Pages\PagesController;
 use App\Http\Controllers\Bcategory\BcategoryController;
 use App\Http\Controllers\Blog\BlogController;
+use App\Http\Controllers\Patient\PatientController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -141,6 +142,31 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/blog-change-footer-status", "change_footer_status")->name("blog-change-footer-status");
         Route::post("/admin/blog-update-order", "update_order")->name("blog-update-order");
         Route::post('/admin/blog-image-upload', 'uploadImage')->name('blog-image-upload');
+    });
+
+    //For Patient
+    Route::controller(PatientController::class)->group(function (){
+        Route::middleware('can:patient-add')->group(function () {
+            Route::get("/admin/patient-add", "create")->name("patient-add");
+            Route::post("/admin/patient-insert", "insert")->name("patient-insert");
+        });
+        Route::middleware('can:patient-edit')->group(function () {
+            Route::get("/admin/patient-edit/{id}", "edit")->name("patient-edit");
+            Route::post("/admin/patient-update", "update")->name("patient-update");
+        });
+        Route::middleware('can:patient-list')->group(function () {
+            Route::get("/admin/patient-list", "view")->name("patient-list");
+            Route::get("/admin/patient-load-table", "load_table")->name("patient-load-table");
+        });
+        Route::middleware('can:patient-delete')->group(function () {
+            Route::post("/admin/patient-delete", "delete")->name("patient-delete");
+        });
+        Route::get("/admin/patient-create-slug", "createSlug")->name("patient-create-slug");
+        Route::post("/admin/patient-change-status", "change_status")->name("patient-change-status");
+        Route::post("/admin/patient-change-header-status", "change_header_status")->name("patient-change-header-status");
+        Route::post("/admin/patient-change-footer-status", "change_footer_status")->name("patient-change-footer-status");
+        Route::post("/admin/patient-update-order", "update_order")->name("patient-update-order");
+        Route::post('/admin/patient-image-upload', 'uploadImage')->name('patient-image-upload');
     });
 });
 

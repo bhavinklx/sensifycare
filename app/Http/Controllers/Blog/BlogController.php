@@ -209,7 +209,6 @@ class BlogController extends Controller
         }
 
         $blog->fill([
-            'blog_id'              => $request->blog_id,
             'blog_title'                => $request->blog_title,
             'blog_slug'                 => $request->blog_slug,
             'blog_date'                 => date('Y-m-d',strtotime($request->blog_date)),

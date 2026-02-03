@@ -55,6 +55,27 @@
                 </li>
             @endif
 
+            @if(auth()->user()->can('patient-list') || auth()->user()->can('patient-add'))
+                <li class="treeview {{ ($fileName == 'patient-list' || $fileName == 'patient-add' || $fileName == 'patient-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-heart-pulse-line"></i>
+                        <span class="menu-text">Patients</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('patient-list')
+                            <li>
+                                <a href="{{ route("patient-list") }}" class="{{ ($fileName == 'patient-list') ? 'active-sub' : '' }}">Patient List</a>
+                            </li>
+                        @endcan
+                        {{--@can('patient-add')
+                            <li>
+                                <a href="{{ route("patient-add") }}" class="{{ ($fileName == 'patient-add' || $fileName == 'patient-edit') ? 'active-sub' : '' }}">Add Patient</a>
+                            </li>
+                        @endcan--}}
+                    </ul>
+                </li>
+            @endif
+
             @if(auth()->user()->can('pages-list') || auth()->user()->can('pages-add'))
                 <li class="treeview {{ ($fileName == 'pages-list' || $fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">
@@ -62,12 +83,12 @@
                         <span class="menu-text">Pages</span>
                     </a>
                     <ul class="treeview-menu">
-                        @can('role-list')
+                        @can('pages-list')
                             <li>
                                 <a href="{{ route("pages-list") }}" class="{{ ($fileName == 'pages-list') ? 'active-sub' : '' }}">Page List</a>
                             </li>
                         @endcan
-                        @can('role-add')
+                        @can('pages-add')
                             <li>
                                 <a href="{{ route("pages-add") }}" class="{{ ($fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active-sub' : '' }}">Add Page</a>
                             </li>

@@ -255,7 +255,10 @@
                 contentType: false,
                 success: function(res) {
                     $('#loading-wrapper').fadeOut(200);
-                    window.location.href = res.redirect_url;
+                    if (res.status) {
+                        localStorage.setItem('toast_success', res.message);
+                        window.location.href = res.redirect_url;
+                    }
                 },
                 error: function(xhr) {
                     if (xhr.status === 422) {
@@ -268,11 +271,12 @@
                 }
             });
         });
-
+        
         Dropzone.autoDiscover = false;
         let existingImage = "{{ $pagesDetail->page_image ?? '' }}";
         let dz = new Dropzone("#image-upload", {
             url: "{{ route('pages-image-upload') }}",
+            paramName: "page_image",
             maxFiles: 1,
             acceptedFiles: ".jpg,.jpeg,.png,.webp",
             addRemoveLinks: true,

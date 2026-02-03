@@ -16,6 +16,9 @@
 <link rel="stylesheet" href="{{ url('assets/vendor/datatables/dataTables.bs5-custom.css') }}">
 <link rel="stylesheet" href="{{ url('assets/vendor/datatables/buttons/dataTables.bs5-custom.css') }}">
 
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="{{ url('assets/css/toastr.min.css') }}">
+
 <style>
     #fullEditor {
         min-height: 300px;

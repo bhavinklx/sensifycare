@@ -303,19 +303,19 @@
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
-                success: function(response) {
-                    /*$.toast({
-                        heading: response
-                        , position: 'top-right'
-                        , loaderBg: '#ff6849'
-                        , icon: 'success'
-                        , hideAfter: 3500
-                        , stack: 6
-                    });*/
-                    if (status == 1) {
-                        $("#td_status_" + page_id).html(
-                            "<a href=\"javascript:void(0)\" onclick=\"change_status('" + page_id +
-                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                success: function (response) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',      // top-right corner
+                        icon: 'success',          // success, error, warning, info
+                        title: response,          // message text
+                        showConfirmButton: false, // no OK button
+                        timer: 3500,              // auto close after 3.5 seconds
+                        timerProgressBar: true,
+                        padding: '0.5em 1em',      // smaller padding
+                    });
+                    if (status == 1){
+                        $("#td_status_"+page_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+page_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
                         $("#td_status_" + page_id).html(
                             "<a href=\"javascript:void(0)\" onclick=\"change_status('" + page_id +
@@ -334,19 +334,19 @@
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
-                success: function(response) {
-                    /*$.toast({
-                        heading: response
-                        , position: 'top-right'
-                        , loaderBg: '#ff6849'
-                        , icon: 'success'
-                        , hideAfter: 3500
-                        , stack: 6
-                    });*/
-                    if (status == 1) {
-                        $("#td_header_status_" + page_id).html(
-                            "<a href=\"javascript:void(0)\" onclick=\"change_header_status('" + page_id +
-                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                success: function (response) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',      // top-right corner
+                        icon: 'success',          // success, error, warning, info
+                        title: response,          // message text
+                        showConfirmButton: false, // no OK button
+                        timer: 3500,              // auto close after 3.5 seconds
+                        timerProgressBar: true,
+                        padding: '0.5em 1em',      // smaller padding
+                    });
+                    if (status == 1){
+                        $("#td_header_status_"+page_id).html("<a href=\"javascript:void(0)\" onclick=\"change_header_status('"+page_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
                         $("#td_header_status_" + page_id).html(
                             "<a href=\"javascript:void(0)\" onclick=\"change_header_status('" + page_id +
@@ -365,19 +365,19 @@
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
-                success: function(response) {
-                    /*$.toast({
-                          heading: response
-                        , position: 'top-right'
-                        , loaderBg: '#ff6849'
-                        , icon: 'success'
-                        , hideAfter: 3500
-                        , stack: 6
-                    });*/
-                    if (status == 1) {
-                        $("#td_footer_status_" + page_id).html(
-                            "<a href=\"javascript:void(0)\" onclick=\"change_footer_status('" + page_id +
-                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                success: function (response) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',      // top-right corner
+                        icon: 'success',          // success, error, warning, info
+                        title: response,          // message text
+                        showConfirmButton: false, // no OK button
+                        timer: 3500,              // auto close after 3.5 seconds
+                        timerProgressBar: true,
+                        padding: '0.5em 1em',      // smaller padding
+                    });
+                    if (status == 1){
+                        $("#td_footer_status_"+page_id).html("<a href=\"javascript:void(0)\" onclick=\"change_footer_status('"+page_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
                         $("#td_footer_status_" + page_id).html(
                             "<a href=\"javascript:void(0)\" onclick=\"change_footer_status('" + page_id +

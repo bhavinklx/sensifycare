@@ -19,3 +19,9 @@
 
 <!-- Custom JS files -->
 <script src="{{ url('assets/js/custom.js') }}"></script>
+
+<!-- Toaster JS Files -->
+<script src="{{ url('assets/js/toastr.min.js') }}"></script>
+
+<!-- Sweet alert JS files --> 
+<script src="{{ url('assets/js/sweetalert2@11.js') }}"></script> 

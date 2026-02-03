@@ -55,8 +55,7 @@ class PagesController extends Controller
         $pages = new Pages();
         $this->saveUpdateData($pages, $request);
 
-        Session::flash('successMsg', 'Pages details added successfully');
-        return response()->json(['redirect_url' => route('pages-list')]);
+        return response()->json(['status' => true,'message' => 'Page added successfully','redirect_url' => route('pages-list')]);
     }
 
     public function edit($id)
@@ -74,8 +73,7 @@ class PagesController extends Controller
         $pages = Pages::findOrFail($request->page_id);
         $this->saveUpdateData($pages, $request, true);
 
-        Session::flash('successMsg', 'Pages details updated successfully');
-        return response()->json(['redirect_url' => route('pages-list')]);
+        return response()->json(['status' => true,'message' => 'Page updated successfully','redirect_url' => route('pages-list')]);
     }
 
     public function view()
@@ -150,7 +148,7 @@ class PagesController extends Controller
         $this->deleteFile($pages->blog_image);
 
         $pages->delete();
-        return response('Pages deleted successfully.');
+        return response()->json(['status' => true,'message' => 'Page deleted successfully','redirect_url' => route('pages-list')]);
     }
 
     private function validateData(Request $request)

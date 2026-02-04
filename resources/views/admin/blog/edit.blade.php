@@ -126,7 +126,7 @@
                                             Cancel
                                         </a>
                                         <button type="submit" name="submit" class="btn btn-primary">
-                                            Update Page
+                                            Update Blog
                                         </button>
                                     </div>
                                 </div>

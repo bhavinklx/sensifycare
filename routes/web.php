@@ -9,6 +9,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Pages\PagesController;
 use App\Http\Controllers\Bcategory\BcategoryController;
 use App\Http\Controllers\Blog\BlogController;
+use App\Http\Controllers\Banner\BannerController;
 use App\Http\Controllers\Patient\PatientController;
 
 Route::get('/clear-cache', function () {
@@ -138,10 +139,30 @@ Route::group(['middleware' => ['auth']], function () {
         });
         Route::get("/admin/blog-create-slug", "createSlug")->name("blog-create-slug");
         Route::post("/admin/blog-change-status", "change_status")->name("blog-change-status");
-        Route::post("/admin/blog-change-header-status", "change_header_status")->name("blog-change-header-status");
-        Route::post("/admin/blog-change-footer-status", "change_footer_status")->name("blog-change-footer-status");
         Route::post("/admin/blog-update-order", "update_order")->name("blog-update-order");
         Route::post('/admin/blog-image-upload', 'uploadImage')->name('blog-image-upload');
+    });
+
+    //For Banner
+    Route::controller(BannerController::class)->group(function (){
+        /*Route::middleware('can:banner-add')->group(function () {*/
+            Route::get("/admin/banner-add", "create")->name("banner-add");
+            Route::post("/admin/banner-insert", "insert")->name("banner-insert");
+        /*});*/
+        Route::middleware('can:banner-edit')->group(function () {
+            Route::get("/admin/banner-edit/{id}", "edit")->name("banner-edit");
+            Route::post("/admin/banner-update", "update")->name("banner-update");
+        });
+        Route::middleware('can:banner-list')->group(function () {
+            Route::get("/admin/banner-list", "view")->name("banner-list");
+            Route::get("/admin/banner-load-table", "load_table")->name("banner-load-table");
+        });
+        Route::middleware('can:banner-delete')->group(function () {
+            Route::post("/admin/banner-delete", "delete")->name("banner-delete");
+        });
+        Route::post("/admin/banner-change-status", "change_status")->name("banner-change-status");
+        Route::post("/admin/banner-update-order", "update_order")->name("banner-update-order");
+        Route::post('/admin/banner-image-upload', 'uploadImage')->name('banner-image-upload');
     });
 
     //For Patient
@@ -163,8 +184,6 @@ Route::group(['middleware' => ['auth']], function () {
         });
         Route::get("/admin/patient-create-slug", "createSlug")->name("patient-create-slug");
         Route::post("/admin/patient-change-status", "change_status")->name("patient-change-status");
-        Route::post("/admin/patient-change-header-status", "change_header_status")->name("patient-change-header-status");
-        Route::post("/admin/patient-change-footer-status", "change_footer_status")->name("patient-change-footer-status");
         Route::post("/admin/patient-update-order", "update_order")->name("patient-update-order");
         Route::post('/admin/patient-image-upload', 'uploadImage')->name('patient-image-upload');
     });

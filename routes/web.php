@@ -145,10 +145,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     //For Banner
     Route::controller(BannerController::class)->group(function (){
-        /*Route::middleware('can:banner-add')->group(function () {*/
+        Route::middleware('can:banner-add')->group(function () {
             Route::get("/admin/banner-add", "create")->name("banner-add");
             Route::post("/admin/banner-insert", "insert")->name("banner-insert");
-        /*});*/
+        });
         Route::middleware('can:banner-edit')->group(function () {
             Route::get("/admin/banner-edit/{id}", "edit")->name("banner-edit");
             Route::post("/admin/banner-update", "update")->name("banner-update");

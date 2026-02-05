@@ -76,6 +76,27 @@
                 </li>
             @endif
 
+            @if(auth()->user()->can('banner-list') || auth()->user()->can('banner-add'))
+                <li class="treeview {{ ($fileName == 'banner-list' || $fileName == 'banner-add' || $fileName == 'banner-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-file-image-line"></i>
+                        <span class="menu-text">Banners</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('banner-list')
+                            <li>
+                                <a href="{{ route("banner-list") }}" class="{{ ($fileName == 'banner-list') ? 'active-sub' : '' }}">Banner List</a>
+                            </li>
+                        @endcan
+                        @can('banner-add')
+                            <li>
+                                <a href="{{ route("banner-add") }}" class="{{ ($fileName == 'banner-add' || $fileName == 'banner-edit') ? 'active-sub' : '' }}">Add Banner</a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endif
+
             @if(auth()->user()->can('pages-list') || auth()->user()->can('pages-add'))
                 <li class="treeview {{ ($fileName == 'pages-list' || $fileName == 'pages-add' || $fileName == 'pages-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">

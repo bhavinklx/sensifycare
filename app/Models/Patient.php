@@ -20,6 +20,7 @@ class Patient extends Model
         "patient_gender",
         "patient_email",
         "patient_phone",
+        "patient_password",
         "patient_marital_status",
         "patient_occupation",
         "patient_blood_group",

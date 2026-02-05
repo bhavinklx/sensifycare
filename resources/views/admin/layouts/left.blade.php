@@ -76,6 +76,27 @@
                 </li>
             @endif
 
+            @if(auth()->user()->can('doctor-list') || auth()->user()->can('doctor-add'))
+                <li class="treeview {{ ($fileName == 'doctor-list' || $fileName == 'doctor-add' || $fileName == 'doctor-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-stethoscope-line"></i>
+                        <span class="menu-text">Doctors</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('doctor-list')
+                            <li>
+                                <a href="{{ route("doctor-list") }}" class="{{ ($fileName == 'doctor-list') ? 'active-sub' : '' }}">Doctor List</a>
+                            </li>
+                        @endcan
+                        {{--@can('doctor-add')
+                            <li>
+                                <a href="{{ route("doctor-add") }}" class="{{ ($fileName == 'doctor-add' || $fileName == 'doctor-edit') ? 'active-sub' : '' }}">Add Doctor</a>
+                            </li>
+                        @endcan--}}
+                    </ul>
+                </li>
+            @endif
+
             @if(auth()->user()->can('banner-list') || auth()->user()->can('banner-add'))
                 <li class="treeview {{ ($fileName == 'banner-list' || $fileName == 'banner-add' || $fileName == 'banner-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">

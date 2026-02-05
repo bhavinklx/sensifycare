@@ -11,6 +11,7 @@ use App\Http\Controllers\Bcategory\BcategoryController;
 use App\Http\Controllers\Blog\BlogController;
 use App\Http\Controllers\Banner\BannerController;
 use App\Http\Controllers\Patient\PatientController;
+use App\Http\Controllers\Doctor\DoctorController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -186,6 +187,29 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/patient-change-status", "change_status")->name("patient-change-status");
         Route::post("/admin/patient-update-order", "update_order")->name("patient-update-order");
         Route::post('/admin/patient-image-upload', 'uploadImage')->name('patient-image-upload');
+    });
+
+    //For Doctor
+    Route::controller(DoctorController::class)->group(function (){
+        Route::middleware('can:doctor-add')->group(function () {
+            Route::get("/admin/doctor-add", "create")->name("doctor-add");
+            Route::post("/admin/doctor-insert", "insert")->name("doctor-insert");
+        });
+        Route::middleware('can:doctor-edit')->group(function () {
+            Route::get("/admin/doctor-edit/{id}", "edit")->name("doctor-edit");
+            Route::post("/admin/doctor-update", "update")->name("doctor-update");
+        });
+        Route::middleware('can:doctor-list')->group(function () {
+            Route::get("/admin/doctor-list", "view")->name("doctor-list");
+            Route::get("/admin/doctor-load-table", "load_table")->name("doctor-load-table");
+        });
+        Route::middleware('can:doctor-delete')->group(function () {
+            Route::post("/admin/doctor-delete", "delete")->name("doctor-delete");
+        });
+        Route::get("/admin/doctor-create-slug", "createSlug")->name("doctor-create-slug");
+        Route::post("/admin/doctor-change-status", "change_status")->name("doctor-change-status");
+        Route::post("/admin/doctor-update-order", "update_order")->name("doctor-update-order");
+        Route::post('/admin/doctor-image-upload', 'uploadImage')->name('doctor-image-upload');
     });
 });
 

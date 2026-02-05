@@ -116,6 +116,7 @@
                                 <label class="form-label">Description</label>
                                 <div id="fullEditor">
                                 </div>
+                                <input type="hidden" name="blog_desc" id="description">
                             </div>
 
                             <div class="row g-3">
@@ -141,6 +142,17 @@
 @endsection
 @section('page-js')
     <script type="text/javascript">
+
+        // Sync content on typing
+        quill.on('text-change', function () {
+            document.getElementById('description').value = quill.root.innerHTML;
+        });
+
+        // ALSO sync before form submit (IMPORTANT)
+        document.querySelector('form').addEventListener('submit', function () {
+            document.getElementById('description').value = quill.root.innerHTML;
+        });
+       
         $('#blog_title').keyup(function(e) {
             $.ajax({
                 url: "{{ route('blog-create-slug') }}",

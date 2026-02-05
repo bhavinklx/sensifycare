@@ -117,6 +117,7 @@
                                 <label class="form-label">Description</label>
                                 <div id="fullEditor">
                                 </div>
+                                <input type="hidden" name="blog_desc" id="description">
                             </div>
 
                             <div class="row g-3">
@@ -126,7 +127,7 @@
                                             Cancel
                                         </a>
                                         <button type="submit" name="submit" class="btn btn-primary">
-                                            Update Page
+                                            Update Blog
                                         </button>
                                     </div>
                                 </div>
@@ -142,6 +143,18 @@
 @endsection
 @section('page-js')
     <script type="text/javascript">
+    
+        // OLD VALUE FROM BACKEND
+        var oldContent = `{!! addslashes($blogDetail->blog_desc ?? '') !!}`;
+
+        // SET OLD CONTENT
+        quill.root.innerHTML = oldContent;
+
+        // UPDATE HIDDEN INPUT ON CHANGE
+        quill.on('text-change', function () {
+            document.getElementById('description').value = quill.root.innerHTML;
+        });
+
         $('#blog_title').keyup(function(e) {
             $.ajax({
                 url: "{{ route('blog-create-slug') }}",

@@ -145,8 +145,9 @@
                             <div class="col-sm-12 mb-3">
                                 <div class="mb-3">
                                     <label class="form-label" for="page_desc">Description</label>
-                                    <input type="text" class="form-control" id="page_desc" name="page_desc" placeholder="Enter Meta Title" value="{{ $pagesDetail->page_desc }}">
-                                    <div class="invalid-feedback" id="msg_page_meta_title"></div>
+                                    <div id="fullEditor">
+                                </div>
+                                <input type="hidden" name="page_desc" id="description">
                                 </div>
                             </div>
 
@@ -224,6 +225,18 @@
 @endsection
 @section('page-js')
     <script type="text/javascript">
+
+        // OLD VALUE FROM BACKEND
+        var oldContent = `{!! addslashes($pagesDetail->page_desc ?? '') !!}`;
+
+        // SET OLD CONTENT
+        quill.root.innerHTML = oldContent;
+
+        // UPDATE HIDDEN INPUT ON CHANGE
+        quill.on('text-change', function () {
+            document.getElementById('description').value = quill.root.innerHTML;
+        });
+            
         $('#page_title').keyup(function(e) {
             $.ajax({
                 url: "{{ route('pages-create-slug') }}",

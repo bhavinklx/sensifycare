@@ -50,7 +50,8 @@
                                 </thead>
                                 <tbody id="tablecontents">
                                     @foreach ($pagesDetail as $pages)
-                                        <tr class="row1" data-id="{{ $pages->page_id }}" id="page-row-{{ $pages->page_id }}">
+                                        <tr class="row1" data-id="{{ $pages->page_id }}"
+                                            id="page-row-{{ $pages->page_id }}">
                                             <td>
                                                 <div class="form-check m-0"> <input class="form-check-input check_class"
                                                         type="checkbox" id="check[]" name="check[]"
@@ -220,7 +221,7 @@
                                             <button class="btn btn-outline-secondary" data-bs-dismiss="modal"
                                                 aria-label="Close">No</button>
                                             <button class="btn btn-danger" data-bs-dismiss="modal"
-                                                aria-label="Close">Yes</button>
+                                                aria-label="Close" id="confirmDeleteBtn">Yes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -238,6 +239,32 @@
 @section('page-js')
     <script type="text/javascript">
         $(document).ready(function() {
+            $(document).on('click', '#confirmDeleteBtn', function() {
+                $.ajax({
+                    url: "{{ route('pages-delete') }}",
+                    type: "POST",
+                    data: {
+                        page_id: deletePageId,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+
+                        if (response.status === true) {
+
+                            let table = $('#basicExample').DataTable();
+
+                            // ✅ REMOVE ROW BY ID
+                            table
+                                .row('#page-row-' + deletePageId)
+                                .remove()
+                                .draw(false);
+
+                            toastr.success(response.message);
+                        }
+                    }
+                });
+            });
+
             let message = localStorage.getItem('toast_success');
             if (message) {
                 toastr.success(message);
@@ -303,19 +330,21 @@
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
-                success: function (response) {
+                success: function(response) {
                     Swal.fire({
                         toast: true,
-                        position: 'top-end',      // top-right corner
-                        icon: 'success',          // success, error, warning, info
-                        title: response,          // message text
+                        position: 'top-end', // top-right corner
+                        icon: 'success', // success, error, warning, info
+                        title: response, // message text
                         showConfirmButton: false, // no OK button
-                        timer: 3500,              // auto close after 3.5 seconds
+                        timer: 3500, // auto close after 3.5 seconds
                         timerProgressBar: true,
-                        padding: '0.5em 1em',      // smaller padding
+                        padding: '0.5em 1em', // smaller padding
                     });
-                    if (status == 1){
-                        $("#td_status_"+page_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+page_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                    if (status == 1) {
+                        $("#td_status_" + page_id).html(
+                            "<a href=\"javascript:void(0)\" onclick=\"change_status('" + page_id +
+                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
                         $("#td_status_" + page_id).html(
                             "<a href=\"javascript:void(0)\" onclick=\"change_status('" + page_id +
@@ -334,19 +363,21 @@
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
-                success: function (response) {
+                success: function(response) {
                     Swal.fire({
                         toast: true,
-                        position: 'top-end',      // top-right corner
-                        icon: 'success',          // success, error, warning, info
-                        title: response,          // message text
+                        position: 'top-end', // top-right corner
+                        icon: 'success', // success, error, warning, info
+                        title: response, // message text
                         showConfirmButton: false, // no OK button
-                        timer: 3500,              // auto close after 3.5 seconds
+                        timer: 3500, // auto close after 3.5 seconds
                         timerProgressBar: true,
-                        padding: '0.5em 1em',      // smaller padding
+                        padding: '0.5em 1em', // smaller padding
                     });
-                    if (status == 1){
-                        $("#td_header_status_"+page_id).html("<a href=\"javascript:void(0)\" onclick=\"change_header_status('"+page_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                    if (status == 1) {
+                        $("#td_header_status_" + page_id).html(
+                            "<a href=\"javascript:void(0)\" onclick=\"change_header_status('" + page_id +
+                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
                         $("#td_header_status_" + page_id).html(
                             "<a href=\"javascript:void(0)\" onclick=\"change_header_status('" + page_id +
@@ -365,19 +396,21 @@
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
-                success: function (response) {
+                success: function(response) {
                     Swal.fire({
                         toast: true,
-                        position: 'top-end',      // top-right corner
-                        icon: 'success',          // success, error, warning, info
-                        title: response,          // message text
+                        position: 'top-end', // top-right corner
+                        icon: 'success', // success, error, warning, info
+                        title: response, // message text
                         showConfirmButton: false, // no OK button
-                        timer: 3500,              // auto close after 3.5 seconds
+                        timer: 3500, // auto close after 3.5 seconds
                         timerProgressBar: true,
-                        padding: '0.5em 1em',      // smaller padding
+                        padding: '0.5em 1em', // smaller padding
                     });
-                    if (status == 1){
-                        $("#td_footer_status_"+page_id).html("<a href=\"javascript:void(0)\" onclick=\"change_footer_status('"+page_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                    if (status == 1) {
+                        $("#td_footer_status_" + page_id).html(
+                            "<a href=\"javascript:void(0)\" onclick=\"change_footer_status('" + page_id +
+                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
                         $("#td_footer_status_" + page_id).html(
                             "<a href=\"javascript:void(0)\" onclick=\"change_footer_status('" + page_id +
@@ -387,45 +420,52 @@
             });
         }
 
-        function deleteData(page_id) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This page will be permanently deleted!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
+        var deletePageId = null;
 
-                    $.ajax({
-                        url: "{{ route('pages-delete') }}",
-                        type: "POST",
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            page_id: page_id
-                        },
-                        success: function(response) {
-                            if (response.status === true) {
-
-                                // Remove row from DataTable
-                                let table = $('#basicExample').DataTable();
-                                table.row('#page-row-' + page_id).remove().draw(false);
-
-                                toastr.success(response.message);
-                            }
-                        },
-                        error: function(xhr) {
-                            if (xhr.status === 403) {
-                                toastr.error('You are not authorized to delete this page');
-                            } else {
-                                toastr.error('Delete failed');
-                            }
-                        }
-                    });
-                }
-            });
+        function deleteData(id) {
+            deletePageId = id;
+            $('#delRow').modal('show');
         }
+
+        // function deleteData(page_id) {
+        //     Swal.fire({
+        //         title: 'Are you sure?',
+        //         text: "This page will be permanently deleted!",
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#d33',
+        //         cancelButtonColor: '#3085d6',
+        //         confirmButtonText: 'Yes, delete it!'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+
+        //             $.ajax({
+        //                 url: "{{ route('pages-delete') }}",
+        //                 type: "POST",
+        //                 data: {
+        //                     _token: '{{ csrf_token() }}',
+        //                     page_id: page_id
+        //                 },
+        //                 success: function(response) {
+        //                     if (response.status === true) {
+
+        //                         // Remove row from DataTable
+        //                         let table = $('#basicExample').DataTable();
+        //                         table.row('#page-row-' + page_id).remove().draw(false);
+
+        //                         toastr.success(response.message);
+        //                     }
+        //                 },
+        //                 error: function(xhr) {
+        //                     if (xhr.status === 403) {
+        //                         toastr.error('You are not authorized to delete this page');
+        //                     } else {
+        //                         toastr.error('Delete failed');
+        //                     }
+        //                 }
+        //             });
+        //         }
+        //     });
+        // }
     </script>
 @endsection

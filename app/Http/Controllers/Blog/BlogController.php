@@ -91,12 +91,14 @@ class BlogController extends Controller
                 return '<div class="form-check m-0"> <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="' . $blog->blog_id . '"> </div>';
             })
             ->editColumn("category", function ($blog){
-                $categoryDetail = Bcategory::get()->toArray();
+                $categoryDetail = Bcategory::get();
+
                 $categoryArray = [];
-                for ($c=0; $c < count($categoryDetail); $c++) {
-                    $categoryArray[$categoryDetail[$c]['bcategory_id']] = $categoryDetail[$c]['bcategory_title'];
+                foreach ($categoryDetail as $category) {
+                    $categoryArray[$category->bcategory_id] = $category->bcategory_title;
                 }
-                return $categoryArray[$blog->blog_id] ?? "--";
+
+                return $categoryArray[$blog->bcategory_id] ?? "--";
             })
             ->editColumn("title", function ($blog){
                 return $blog->blog_title;
@@ -121,7 +123,7 @@ class BlogController extends Controller
             ->editColumn("action", function ($blog){
                 $action = '<div class="d-inline-flex gap-1">';
                 if (auth()->user()->can('blog-delete')) {
-                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="deleteSingal(' . $blog->blog_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Blog"> <i class="ri-delete-bin-line"></i> </button>';
+                    $action.= '<button class="btn btn-outline-danger btn-sm" onclick="deleteData(' . $blog->blog_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Blog"> <i class="ri-delete-bin-line"></i> </button>';
                 }
                 if (auth()->user()->can('blog-edit')) {
                     $action.= '<a href="'.route("blog-edit", ['id' => $blog->blog_id]).'" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Blog"> <i class="ri-edit-box-line"></i> </a>';
@@ -173,7 +175,7 @@ class BlogController extends Controller
         $this->deleteFile($blog->blog_image);
 
         $blog->delete();
-        return response('Blog deleted successfully.');
+        return response()->json(['status' => true,'message' => 'Blog deleted successfully.']);
     }
 
     private function validateData(Request $request)
@@ -199,7 +201,7 @@ class BlogController extends Controller
         if ($request->blog_image) {
             $blog->blog_image           = $request->blog_image; // filename string
         }
-        
+       
         if ($isUpdate) {
             $blog->updated_at           = date('Y-m-d H:i:s');
         } else {
@@ -207,8 +209,11 @@ class BlogController extends Controller
             $blog->blog_order           = (!empty($lastOrder)) ? $lastOrder->blog_order + 1 : 1;
             $blog->created_at           = date('Y-m-d H:i:s');
         }
+        
+        $bcategoryDetail = Bcategory::where("bcategory_status", "1")->first();
 
         $blog->fill([
+            'bcategory_id'              => $request->bcategory_id,
             'blog_title'                => $request->blog_title,
             'blog_slug'                 => $request->blog_slug,
             'blog_date'                 => date('Y-m-d',strtotime($request->blog_date)),
@@ -220,7 +225,7 @@ class BlogController extends Controller
             'blog_canonical'            => $request->blog_canonical,
             'blog_status'               => '1'
         ]);
-
+   
         $blog->save();
     }
 

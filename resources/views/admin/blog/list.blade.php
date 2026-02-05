@@ -1,4 +1,4 @@
-@extends("admin.layouts.app")
+@extends('admin.layouts.app')
 @section('content')
     <!-- App hero header starts -->
     <div class="app-hero-header d-flex align-items-center">
@@ -6,7 +6,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
                 <i class="ri-home-8-line lh-1 pe-3 me-3 border-end"></i>
-                <a href="{{ route("dashboard") }}">Home</a>
+                <a href="{{ route('dashboard') }}">Home</a>
             </li>
             <li class="breadcrumb-item text-primary" aria-current="page">
                 Blog List
@@ -25,7 +25,7 @@
                     <div class="card-header d-flex align-items-center justify-content-between">
                         <h5 class="card-title">Blog List</h5>
                         @if (auth()->user()->can('blog-add'))
-                            <a href="{{ route("blog-add") }}" class="btn btn-primary ms-auto">Add Blog</a>
+                            <a href="{{ route('blog-add') }}" class="btn btn-primary ms-auto">Add Blog</a>
                         @endif
                     </div>
                     <div class="card-body">
@@ -33,19 +33,20 @@
                         <div class="table-responsive">
                             <table id="basicExample" class="table m-0 align-middle">
                                 <thead>
-                                <tr>
-                                    <th>
-                                        <div class="form-check m-0">
-                                            <input class="form-check-input" type="checkbox" value="" id="checkall" name="checkall">
-                                        </div>
-                                    </th>
-                                    <th>Title</th>
-                                    <th>Image</th>
-                                    <th>Category</th>
-                                    <th>Created Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
+                                    <tr>
+                                        <th>
+                                            <div class="form-check m-0">
+                                                <input class="form-check-input" type="checkbox" value=""
+                                                    id="checkall" name="checkall">
+                                            </div>
+                                        </th>
+                                        <th>Title</th>
+                                        <th>Image</th>
+                                        <th>Category</th>
+                                        <th>Created Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="tablecontents" />
                             </table>
@@ -53,22 +54,26 @@
                         <!-- Table ends -->
 
                         <!-- Modal Delete Row -->
-                        <div class="modal fade" id="delRow" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
+                        <div class="modal fade" id="delRow" tabindex="-1" aria-labelledby="delRowLabel"
+                            aria-hidden="true">
                             <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="delRowLabel">
                                             Confirm
                                         </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete the staff member?
+                                        Are you sure you want to delete the blog?
                                     </div>
                                     <div class="modal-footer">
                                         <div class="d-flex justify-content-end gap-2">
-                                            <button class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">No</button>
-                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Yes</button>
+                                            <button class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                                aria-label="Close">No</button>
+                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close"
+                                                id="confirmDeleteBtn">Yes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -85,19 +90,44 @@
 
 @section('page-js')
     <script type="text/javascript">
-        $(document).ready(function(){
-            $("#checkall").click(function(){
-                if(this.checked){
-                    $(".check_class").attr("checked",true);
-                    $(".check_class").parent().addClass("checked");
-                }else{
-                    $(".check_class").attr("checked",false);
-                    $(".check_class").parent().removeClass("checked");
+        $(document).on('click', '#confirmDeleteBtn', function() {
+            $.ajax({
+                url: "{{ route('blog-delete') }}",
+                type: "POST",
+                data: {
+                    blog_id: deleteBlogId,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+
+                    if (response.status === true) {
+
+                        let table = $('#basicExample').DataTable();
+
+                        // ✅ REMOVE ROW BY ID
+                        table
+                            .row('#page-row-' + deleteBlogId)
+                            .remove()
+                            .draw(false);
+
+                        toastr.success(response.message);
+                    }
                 }
             });
-            $("#status_msg").hide();
-            $("#alert_msg").hide();
         });
+
+        $("#checkall").click(function() {
+            if (this.checked) {
+                $(".check_class").attr("checked", true);
+                $(".check_class").parent().addClass("checked");
+            } else {
+                $(".check_class").attr("checked", false);
+                $(".check_class").parent().removeClass("checked");
+            }
+        });
+        $("#status_msg").hide();
+        $("#alert_msg").hide();
+
 
         $('#basicExample').DataTable({
             pageLength: 25,
@@ -106,26 +136,48 @@
             responsive: true,
             ordering: true,
             autoWidth: false,
-            ajax: '{{ route("blog-load-table") }}',
-            columns: [
-                { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title' },
-                { data: 'image', orderable: false, searchable: false },
-                { data: 'category' },
-                { data: 'date', name: 'date' },
-                { data: 'status', orderable: false, searchable: false },
-                { data: 'action', orderable: false, searchable: false }
+            ajax: '{{ route('blog-load-table') }}',
+            columns: [{
+                    data: 'checkbox',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'title'
+                },
+                {
+                    data: 'image',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'category'
+                },
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'status',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'action',
+                    orderable: false,
+                    searchable: false
+                }
             ],
             language: {
                 lengthMenu: "Display _MENU_ Records Per Page",
                 info: "Showing Page _PAGE_ of _PAGES_",
             },
-            drawCallback: function () {
+            drawCallback: function() {
                 $('[data-bs-toggle="tooltip"]').tooltip();
             }
         });
 
-        $( "#tablecontents" ).sortable({
+        $("#tablecontents").sortable({
             items: "tr",
             cursor: 'move',
             opacity: 0.8,
@@ -148,17 +200,17 @@
                 type: "POST",
                 //dataType: "json",
                 data: {
-                    order:order,
-                    _token: '{{csrf_token()}}'
+                    order: order,
+                    _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
                     $.toast({
-                        heading: response
-                        , position: 'top-right'
-                        , loaderBg: '#ff6849'
-                        , icon: 'success'
-                        , hideAfter: 3500
-                        , stack: 6
+                        heading: response,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 3500,
+                        stack: 6
                     });
                 }
             });
@@ -170,11 +222,11 @@
                 url: "{{ route('blog-change-status') }}",
                 method: "POST",
                 data: {
-                    blog_id:blog_id,
-                    status:status,
-                    _token:"{{ csrf_token() }}"
+                    blog_id: blog_id,
+                    status: status,
+                    _token: "{{ csrf_token() }}"
                 },
-                success: function (response) {
+                success: function(response) {
                     /*$.toast({
                      heading: response
                      , position: 'top-right'
@@ -183,26 +235,24 @@
                      , hideAfter: 3500
                      , stack: 6
                      });*/
-                    if (status == 1){
-                        $("#td_status_"+blog_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+blog_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                    if (status == 1) {
+                        $("#td_status_" + blog_id).html(
+                            "<a href=\"javascript:void(0)\" onclick=\"change_status('" + blog_id +
+                            "', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
-                        $("#td_status_"+blog_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+blog_id+"', '1')\" ><span class=\"badge bg-danger\">Inactive</span></a>");
+                        $("#td_status_" + blog_id).html(
+                            "<a href=\"javascript:void(0)\" onclick=\"change_status('" + blog_id +
+                            "', '1')\" ><span class=\"badge bg-danger\">Inactive</span></a>");
                     }
                 }
             });
         }
 
-        function deleteData(blog_id) {
-            $.ajax({
-                url: "{{ route('blog-delete') }}",
-                type: "POST",
-                data: {
-                    _token:'{{ csrf_token() }}',
-                    blog_id:blog_id,
-                },
-                success: function (response) {
-                }
-            });
+        var deleteBlogId = null;
+
+        function deleteData(id) {
+            deleteBlogId = id;
+            $('#delRow').modal('show');
         }
     </script>
 @endsection

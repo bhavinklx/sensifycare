@@ -68,6 +68,9 @@ class DoctorController extends Controller
             ->editColumn("title", function ($doctor){
                 return $doctor->doctor_fname . ' ' . $doctor->doctor_lname;
             })
+            ->editColumn("designation", function ($doctor){
+                return $doctor->doctor_designation;
+            })
             ->editColumn("email", function ($doctor){
                 return $doctor->doctor_email;
             })

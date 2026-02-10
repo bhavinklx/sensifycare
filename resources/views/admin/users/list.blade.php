@@ -109,10 +109,10 @@
             ajax: '{{ route("user-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'name' },
-                { data: 'email' },
-                { data: 'mobile' },
-                { data: 'date', name: 'date' },
+                { data: 'name', name: 'name' },
+                { data: 'email', name: 'email' },
+                { data: 'mobile', name: 'phone' },
+                { data: 'date', name: 'created_at' },
                 { data: 'action', orderable: false, searchable: false }
             ],
             language: {

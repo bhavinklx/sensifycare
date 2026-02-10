@@ -108,7 +108,7 @@
             ajax: '{{ route("banner-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title' },
+                { data: 'title', name: 'banner_title' },
                 { data: 'image', orderable: false, searchable: false },
                 { data: 'status', orderable: false, searchable: false },
                 { data: 'action', orderable: false, searchable: false }

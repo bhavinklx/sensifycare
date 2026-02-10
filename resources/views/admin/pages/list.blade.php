@@ -49,7 +49,7 @@
                                 </thead>
                                 <tbody id="tablecontents">
                                 @foreach($pagesDetail as $pages)
-                                    <tr class="row1" data-id="{{ $pages->page_id }}">
+                                    <tr class="row1" data-id="{{ $pages->page_id }}" id="row_{{ $pages->page_id }}">
                                         <td>
                                             <div class="form-check m-0"> <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="{{ $pages->page_id }}"></div>
                                         </td>
@@ -95,7 +95,7 @@
                                         </td>
                                     </tr>
                                     @foreach($pages->subPages as $subPages)
-                                        <tr>
+                                        <tr class="row1" data-id="{{ $subPages->page_id }}" id="row_{{ $subPages->page_id }}">
                                             <td>
                                                 <div class="form-check m-0"> <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="{{ $subPages->page_id }}"></div>
                                             </td>
@@ -141,7 +141,7 @@
                         <!-- Table ends -->
 
                         <!-- Modal Delete Row -->
-                        <div class="modal fade" id="delRow" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="delRowLabel" aria-hidden="true">
                             <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -151,12 +151,13 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete the staff member?
+                                        <input type="hidden" id="page_id">
+                                        Are you sure you want to delete?
                                     </div>
                                     <div class="modal-footer">
                                         <div class="d-flex justify-content-end gap-2">
                                             <button class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">No</button>
-                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Yes</button>
+                                            <button class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close" onclick="deleteData()">Yes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -174,7 +175,7 @@
 @section('page-js')
     <script type="text/javascript">
         var page_length = 25;
-        $("#basicExample").DataTable({
+        var table = $("#basicExample").DataTable({
             pageLength: 25,
             language: {
                 lengthMenu: "Display _MENU_ Records Per Page",
@@ -309,7 +310,13 @@
             });
         }
 
-        function deleteData(page_id) {
+        function openDeleteModal(page_id) {
+            $('#page_id').val(page_id);
+            $('#deleteModal').modal('show');
+        }
+
+        function deleteData() {
+            let page_id = $('#page_id').val();
             $.ajax({
                 url: "{{ route('pages-delete') }}",
                 type: "POST",
@@ -318,6 +325,15 @@
                     page_id:page_id,
                 },
                 success: function (response) {
+                    $('#deleteModal').modal('hide');
+                    /*$('#row_' + page_id).remove();
+                     setTimeout(function(){
+                     location.reload();
+                     },2000);*/
+                    table
+                            .row($('#row_' + page_id))
+                            .remove()
+                            .draw(false);
                 }
             });
         }

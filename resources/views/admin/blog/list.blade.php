@@ -110,10 +110,10 @@
             ajax: '{{ route("blog-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title' },
+                { data: 'title', name: 'blog_title' },
                 { data: 'image', orderable: false, searchable: false },
-                { data: 'category' },
-                { data: 'date', name: 'date' },
+                { data: 'category', orderable: false, searchable: false },
+                { data: 'date', name: 'created_at' },
                 { data: 'status', orderable: false, searchable: false },
                 { data: 'action', orderable: false, searchable: false }
             ],

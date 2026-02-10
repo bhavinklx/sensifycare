@@ -9,7 +9,7 @@
                 <a href="{{ route("dashboard") }}">Home</a>
             </li>
             <li class="breadcrumb-item text-primary" aria-current="page">
-                Blog Category List
+                Doctor List
             </li>
         </ol>
         <!-- Breadcrumb ends -->
@@ -23,9 +23,9 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <h5 class="card-title">Blog Category List</h5>
-                        @if (auth()->user()->can('bcategory-add'))
-                            <a href="{{ route("bcategory-add") }}" class="btn btn-primary ms-auto">Add Blog Category</a>
+                        <h5 class="card-title">Doctor List</h5>
+                        @if (auth()->user()->can('patient-add'))
+                            <a href="{{ route("patient-add") }}" class="btn btn-primary ms-auto">Add Blog</a>
                         @endif
                     </div>
                     <div class="card-body">
@@ -39,10 +39,17 @@
                                             <input class="form-check-input" type="checkbox" value="" id="checkall" name="checkall">
                                         </div>
                                     </th>
-                                    <th>Title</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Designation</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Gender</th>
+                                    <th>Age</th>
+                                    <th>Blood Group</th>
                                     <th>Created Date</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody id="tablecontents" />
@@ -61,7 +68,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <input type="hidden" id="bcategory_id">
+                                        <input type="hidden" id="doctor_id">
                                         Are you sure you want to delete?
                                     </div>
                                     <div class="modal-footer">
@@ -83,7 +90,7 @@
 @endsection
 
 @section('page-js')
-    <script type="application/javascript">
+    <script type="text/javascript">
         $(document).ready(function(){
             $("#checkall").click(function(){
                 if(this.checked){
@@ -105,12 +112,19 @@
             responsive: true,
             ordering: true,
             autoWidth: false,
-            ajax: '{{ route("bcategory-load-table") }}',
+            ajax: '{{ route("doctor-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title', name: 'bcategory_title' },
+                { data: 'uid', name: 'doctor_uid' },
+                { data: 'title', name: 'doctor_fname' },
+                { data: 'designation', name: 'doctor_designation' },
+                { data: 'email', name: 'doctor_email' },
+                { data: 'phone', name: 'doctor_phone' },
+                { data: 'gender', name: 'doctor_gender' },
+                { data: 'age', name: 'doctor_age' },
+                { data: 'blood_group', name: 'doctor_blood_group' },
                 { data: 'date', name: 'created_at' },
-                { data: 'status', name: 'status', orderable: false, searchable: false },
+                { data: 'status', orderable: false, searchable: false },
                 { data: 'action', orderable: false, searchable: false }
             ],
             language: {
@@ -122,12 +136,52 @@
             }
         });
 
-        function change_status(bcategory_id, status) {
+        $( "#tablecontents" ).sortable({
+            items: "tr",
+            cursor: 'move',
+            opacity: 0.8,
+            update: function() {
+                sendOrderToServer();
+            }
+        });
+
+        function sendOrderToServer() {
+            var order = [];
+            $('tr.row1').each(function(index, element) {
+                order.push({
+                    doctor_id: $(this).attr('data-id'),
+                    position: index + 1
+                });
+            });
+            //alert(order)
             $.ajax({
-                url: "{{ route('bcategory-change-status') }}",
+                url: "{{ route('doctor-update-order') }}",
+                type: "POST",
+                //dataType: "json",
+                data: {
+                    order:order,
+                    _token: '{{csrf_token()}}'
+                },
+                success: function(response) {
+                    $.toast({
+                        heading: response
+                        , position: 'top-right'
+                        , loaderBg: '#ff6849'
+                        , icon: 'success'
+                        , hideAfter: 3500
+                        , stack: 6
+                    });
+                }
+            });
+
+        }
+
+        function change_status(doctor_id, status) {
+            $.ajax({
+                url: "{{ route('doctor-change-status') }}",
                 method: "POST",
                 data: {
-                    bcategory_id:bcategory_id,
+                    doctor_id:doctor_id,
                     status:status,
                     _token:"{{ csrf_token() }}"
                 },
@@ -143,36 +197,35 @@
                         padding: '0.5em 1em',      // smaller padding
                     });
                     if (status == 1){
-                        $("#td_status_"+bcategory_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+bcategory_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                        $("#td_status_"+doctor_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+doctor_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
-                        $("#td_status_"+bcategory_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+bcategory_id+"', '1')\" ><span class=\"badge bg-danger\">Inactive</span></a>");
+                        $("#td_status_"+doctor_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+doctor_id+"', '1')\" ><span class=\"badge bg-danger\">Inactive</span></a>");
                     }
                 }
             });
         }
 
-        function openDeleteModal(bcategory_id) {
-            $('#bcategory_id').val(bcategory_id);
+        function openDeleteModal(doctor_id) {
+            $('#doctor_id').val(doctor_id);
             $('#deleteModal').modal('show');
         }
 
         function deleteData() {
-            let bcategory_id = $('#bcategory_id').val();
+            let doctor_id = $('#doctor_id').val();
             $.ajax({
-                url: "{{ route('bcategory-delete') }}",
+                url: "{{ route('doctor-delete') }}",
                 type: "POST",
                 data: {
                     _token:'{{ csrf_token() }}',
-                    bcategory_id:bcategory_id,
+                    doctor_id:doctor_id
                 },
                 success: function (response) {
                     $('#deleteModal').modal('hide');
-                    /*$('#row_' + bcategory_id).remove();
-                    setTimeout(function(){
-                        location.reload();
-                    },2000);*/
-                    table
-                            .row($('#row_' + bcategory_id))
+                    /*$('#row_' + doctor_id).remove();
+                     setTimeout(function(){
+                     location.reload();
+                     },2000);*/
+                    table.row($('#row_' + doctor_id))
                             .remove()
                             .draw(false);
                 }

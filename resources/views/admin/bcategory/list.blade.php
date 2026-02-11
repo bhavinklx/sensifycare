@@ -107,8 +107,8 @@
             ajax: '{{ route("bcategory-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title' },
-                { data: 'date', name: 'date' },
+                { data: 'title', name: 'bcategory_title' },
+                { data: 'date', name: 'created_at' },
                 { data: 'status', name: 'status', orderable: false, searchable: false },
                 { data: 'action', orderable: false, searchable: false }
             ],

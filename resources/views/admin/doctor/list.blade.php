@@ -9,7 +9,7 @@
                 <a href="{{ route("dashboard") }}">Home</a>
             </li>
             <li class="breadcrumb-item text-primary" aria-current="page">
-                Banner List
+                Doctor List
             </li>
         </ol>
         <!-- Breadcrumb ends -->
@@ -23,9 +23,9 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <h5 class="card-title">Banner List</h5>
-                        @if (auth()->user()->can('banner-add'))
-                            <a href="{{ route("banner-add") }}" class="btn btn-primary ms-auto">Add Banner</a>
+                        <h5 class="card-title">Doctor List</h5>
+                        @if (auth()->user()->can('patient-add'))
+                            <a href="{{ route("patient-add") }}" class="btn btn-primary ms-auto">Add Blog</a>
                         @endif
                     </div>
                     <div class="card-body">
@@ -39,10 +39,17 @@
                                             <input class="form-check-input" type="checkbox" value="" id="checkall" name="checkall">
                                         </div>
                                     </th>
-                                    <th>Title</th>
-                                    <th>Image</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Designation</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Gender</th>
+                                    <th>Age</th>
+                                    <th>Blood Group</th>
+                                    <th>Created Date</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody id="tablecontents" />
@@ -61,7 +68,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <input type="hidden" id="banner_id">
+                                        <input type="hidden" id="doctor_id">
                                         Are you sure you want to delete?
                                     </div>
                                     <div class="modal-footer">
@@ -105,11 +112,18 @@
             responsive: true,
             ordering: true,
             autoWidth: false,
-            ajax: '{{ route("banner-load-table") }}',
+            ajax: '{{ route("doctor-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title', name: 'banner_title' },
-                { data: 'image', orderable: false, searchable: false },
+                { data: 'uid', name: 'doctor_uid' },
+                { data: 'title', name: 'doctor_fname' },
+                { data: 'designation', name: 'doctor_designation' },
+                { data: 'email', name: 'doctor_email' },
+                { data: 'phone', name: 'doctor_phone' },
+                { data: 'gender', name: 'doctor_gender' },
+                { data: 'age', name: 'doctor_age' },
+                { data: 'blood_group', name: 'doctor_blood_group' },
+                { data: 'date', name: 'created_at' },
                 { data: 'status', orderable: false, searchable: false },
                 { data: 'action', orderable: false, searchable: false }
             ],
@@ -135,13 +149,13 @@
             var order = [];
             $('tr.row1').each(function(index, element) {
                 order.push({
-                    banner_id: $(this).attr('data-id'),
+                    doctor_id: $(this).attr('data-id'),
                     position: index + 1
                 });
             });
             //alert(order)
             $.ajax({
-                url: "{{ route('banner-update-order') }}",
+                url: "{{ route('doctor-update-order') }}",
                 type: "POST",
                 //dataType: "json",
                 data: {
@@ -162,12 +176,12 @@
 
         }
 
-        function change_status(banner_id, status) {
+        function change_status(doctor_id, status) {
             $.ajax({
-                url: "{{ route('banner-change-status') }}",
+                url: "{{ route('doctor-change-status') }}",
                 method: "POST",
                 data: {
-                    banner_id:banner_id,
+                    doctor_id:doctor_id,
                     status:status,
                     _token:"{{ csrf_token() }}"
                 },
@@ -183,36 +197,35 @@
                         padding: '0.5em 1em',      // smaller padding
                     });
                     if (status == 1){
-                        $("#td_status_"+banner_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+banner_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
+                        $("#td_status_"+doctor_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+doctor_id+"', '0')\" ><span class=\"badge bg-success\">Active</span></a>");
                     } else {
-                        $("#td_status_"+banner_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+banner_id+"', '1')\" ><span class=\"badge bg-danger\">Inactive</span></a>");
+                        $("#td_status_"+doctor_id).html("<a href=\"javascript:void(0)\" onclick=\"change_status('"+doctor_id+"', '1')\" ><span class=\"badge bg-danger\">Inactive</span></a>");
                     }
                 }
             });
         }
 
-        function openDeleteModal(banner_id) {
-            $('#banner_id').val(banner_id);
+        function openDeleteModal(doctor_id) {
+            $('#doctor_id').val(doctor_id);
             $('#deleteModal').modal('show');
         }
 
         function deleteData() {
-            let banner_id = $('#banner_id').val();
+            let doctor_id = $('#doctor_id').val();
             $.ajax({
-                url: "{{ route('banner-delete') }}",
+                url: "{{ route('doctor-delete') }}",
                 type: "POST",
                 data: {
                     _token:'{{ csrf_token() }}',
-                    banner_id:banner_id
+                    doctor_id:doctor_id
                 },
                 success: function (response) {
                     $('#deleteModal').modal('hide');
-                    /*$('#row_' + banner_id).remove();
+                    /*$('#row_' + doctor_id).remove();
                      setTimeout(function(){
                      location.reload();
                      },2000);*/
-                    table
-                            .row($('#row_' + banner_id))
+                    table.row($('#row_' + doctor_id))
                             .remove()
                             .draw(false);
                 }

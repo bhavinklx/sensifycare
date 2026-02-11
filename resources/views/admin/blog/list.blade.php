@@ -136,37 +136,15 @@
             responsive: true,
             ordering: true,
             autoWidth: false,
-            ajax: '{{ route('blog-load-table') }}',
-            columns: [{
-                    data: 'checkbox',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'title'
-                },
-                {
-                    data: 'image',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'category'
-                },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
-                {
-                    data: 'status',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    orderable: false,
-                    searchable: false
-                }
+            ajax: '{{ route("blog-load-table") }}',
+            columns: [
+                { data: 'checkbox', orderable: false, searchable: false },
+                { data: 'title', name: 'blog_title' },
+                { data: 'image', orderable: false, searchable: false },
+                { data: 'category', orderable: false, searchable: false },
+                { data: 'date', name: 'created_at' },
+                { data: 'status', orderable: false, searchable: false },
+                { data: 'action', orderable: false, searchable: false }
             ],
             language: {
                 lengthMenu: "Display _MENU_ Records Per Page",

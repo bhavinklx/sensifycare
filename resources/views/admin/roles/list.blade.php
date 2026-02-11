@@ -106,8 +106,8 @@
             ajax: '{{ route("role-load-table") }}',
             columns: [
                 { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'name' },
-                { data: 'date', name: 'date' },
+                { data: 'name', name: 'name' },
+                { data: 'date', name: 'created_at' },
                 { data: 'action', orderable: false, searchable: false }
             ],
             language: {

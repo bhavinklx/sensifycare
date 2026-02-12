@@ -98,6 +98,58 @@
             $("#alert_msg").hide();
         });
 
+        $(document).ready(function () {
+            $("#tablecontents").sortable({
+                items: "tr",
+                cursor: "move",
+                opacity: 0.8,
+                helper: function(e, tr) {
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+                    $helper.children().each(function(index) {
+                        $(this).width($originals.eq(index).width());
+                    });
+                    return $helper;
+                },
+                update: function () {
+                    sendOrderToServer();
+                }
+            });
+        });
+
+        function sendOrderToServer() {
+            var order = [];
+            $('#tablecontents tr.row1').each(function(index) {
+                order.push({
+                    bcategory_id: $(this).data('id'),
+                    position: index + 1
+                });
+            });
+
+            //alert(order)
+            $.ajax({
+                url: "{{ route('bcategory-update-order') }}",
+                type: "POST",
+                //dataType: "json",
+                data: {
+                    order:order,
+                    _token: '{{csrf_token()}}'
+                },
+                success: function(response) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',      // top-right corner
+                        icon: 'success',          // success, error, warning, info
+                        title: response,          // message text
+                        showConfirmButton: false, // no OK button
+                        timer: 3500,              // auto close after 3.5 seconds
+                        timerProgressBar: true,
+                        padding: '0.5em 1em',      // smaller padding
+                    });
+                }
+            });
+        }
+
         var table = $('#basicExample').DataTable({
             pageLength: 25,
             processing: true,

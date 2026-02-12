@@ -126,23 +126,34 @@
             }
         });
 
-        $( "#tablecontents" ).sortable({
-            items: "tr",
-            cursor: 'move',
-            opacity: 0.8,
-            update: function() {
-                sendOrderToServer();
-            }
+        $(document).ready(function () {
+            $("#tablecontents").sortable({
+                items: "tr",
+                cursor: "move",
+                opacity: 0.8,
+                helper: function(e, tr) {
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+                    $helper.children().each(function(index) {
+                        $(this).width($originals.eq(index).width());
+                    });
+                    return $helper;
+                },
+                update: function () {
+                    sendOrderToServer();
+                }
+            });
         });
 
         function sendOrderToServer() {
             var order = [];
-            $('tr.row1').each(function(index, element) {
+            $('#tablecontents tr.row1').each(function(index) {
                 order.push({
-                    blog_id: $(this).attr('data-id'),
+                    blog_id: $(this).data('id'),
                     position: index + 1
                 });
             });
+
             //alert(order)
             $.ajax({
                 url: "{{ route('blog-update-order') }}",
@@ -153,17 +164,18 @@
                     _token: '{{csrf_token()}}'
                 },
                 success: function(response) {
-                    $.toast({
-                        heading: response
-                        , position: 'top-right'
-                        , loaderBg: '#ff6849'
-                        , icon: 'success'
-                        , hideAfter: 3500
-                        , stack: 6
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',      // top-right corner
+                        icon: 'success',          // success, error, warning, info
+                        title: response,          // message text
+                        showConfirmButton: false, // no OK button
+                        timer: 3500,              // auto close after 3.5 seconds
+                        timerProgressBar: true,
+                        padding: '0.5em 1em',      // smaller padding
                     });
                 }
             });
-
         }
 
         function change_status(blog_id, status) {

@@ -17,7 +17,7 @@
     <!-- App Hero header ends -->
 
     <!-- App body starts -->
-    <form id="bannerFrm" method="post" action="{{ route('banner-insert') }}">
+    <form id="bannerFrm" method="post" action="{{ route('banner-update') }}">
         <input type="hidden" name="banner_id" value="{{ $bannerDetail->banner_id }}">
         {{ csrf_field() }}
         <div class="app-body">

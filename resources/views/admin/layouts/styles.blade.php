@@ -25,4 +25,5 @@
     }
 </style>
 <!-- Required jQuery first, then Bootstrap Bundle JS -->
-<script src="{{ url('assets/js/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ url('assets/js/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>

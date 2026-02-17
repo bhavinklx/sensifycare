@@ -1,0 +1,11 @@
+[01-May-2024 10:10:40 UTC] PHP Warning:  A non-numeric value encountered in /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/Utils/Misc.php on line 202
+[01-May-2024 10:10:40 UTC] PHP Warning:  A non-numeric value encountered in /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/Utils/Misc.php on line 202
+[01-May-2024 10:10:40 UTC] PHP Warning:  A non-numeric value encountered in /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/Utils/Misc.php on line 202
+[01-May-2024 10:10:40 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function each() in /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/Core/Config.php:438
+Stack trace:
+#0 /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/CommandHandler/Init.php(144): CKFinder_Connector_Core_Config->getResourceTypeConfig()
+#1 /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/CommandHandler/XmlCommandHandlerBase.php(82): CKFinder_Connector_CommandHandler_Init->buildXml()
+#2 /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/Core/Connector.php(100): CKFinder_Connector_CommandHandler_XmlCommandHandlerBase->sendResponse()
+#3 /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/connector.php(101): CKFinder_Connector_Core_Connector->executeCommand()
+#4 {main}
+  thrown in /home/pvja0pu1hp5k/public_html/public/assets/ckfinder/core/connector/php/php5/Core/Config.php on line 438

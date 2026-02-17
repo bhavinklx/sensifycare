@@ -6,7 +6,7 @@
 <nav id="sidebar" class="sidebar-wrapper">
     <!-- Sidebar profile starts -->
     <div class="sidebar-profile">
-        <img src="{{ url('assets/images/user6.png') }}" class="img-shadow img-3x me-3 rounded-5" alt="Hospital Admin Templates">
+        <img src="{{ url('assets/images/logo.png') }}" class="img-shadow img-3x me-3 rounded-5" alt="Sensify Care">
         <div class="m-0">
             <h5 class="mb-1 profile-name text-nowrap text-truncate">{{ Auth::user()->name }}</h5>
             <p class="m-0 small profile-name text-nowrap text-truncate">{{ Auth::user()->getRoleNames()->first() ?? 'No Role' }}</p>

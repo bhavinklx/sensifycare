@@ -141,7 +141,7 @@ class PagesController extends Controller
         {
             Pages::where("page_id", $order["page_id"])->update(["page_order" => $order["position"]]);
         }
-        echo 'Pages order changed successfully.';
+        echo 'Page order changed successfully.';
     }
 
     public function delete(Request $request)
@@ -150,7 +150,7 @@ class PagesController extends Controller
         $this->deleteFile($pages->blog_image);
 
         $pages->delete();
-        return response('Pages deleted successfully.');
+        return response('Page deleted successfully.');
     }
 
     private function validateData(Request $request)

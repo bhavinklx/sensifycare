@@ -113,9 +113,22 @@
                             </div>
 
                             <div class="col-sm-12 mb-3">
-                                <label class="form-label">Description</label>
-                                <div id="fullEditor">
-                                </div>
+                                <label for="blog_desc" class="form-label">Description</label>
+                                <textarea id="blog_desc" name="blog_desc"></textarea>
+                                <script type="text/javascript">
+                                    CKEDITOR.replace( 'blog_desc',
+                                        {
+                                            filebrowserBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html') }}',
+                                            filebrowserUploadUrl : '{{ url('assets/ckfinder/userfiles') }}',
+                                            filebrowserImageBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html?Type=Images') }}',
+                                            filebrowserFlashBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html?Type=Flash') }}',
+                                            filebrowserUploadUrl : '{{ url('assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files') }}',
+                                            filebrowserImageUploadUrl : '{{ url('assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images') }}',
+                                            filebrowserFlashUploadUrl : '{{ url('assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash') }}',
+                                            enterMode: CKEDITOR.ENTER_P,
+                                        }
+                                    );
+                                </script>
                             </div>
 
                             <div class="row g-3">
@@ -156,6 +169,10 @@
 
         $('#blogFrm').submit(function(e) {
             e.preventDefault();
+            for (instance in CKEDITOR.instances) {
+                CKEDITOR.instances[instance].updateElement();
+                CKEDITOR.config.allowedContent=true;
+            }
 
             $('#loading-wrapper').fadeIn(200);
             let formData = new FormData(this);

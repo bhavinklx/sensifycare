@@ -96,7 +96,7 @@ class BlogController extends Controller
                 for ($c=0; $c < count($categoryDetail); $c++) {
                     $categoryArray[$categoryDetail[$c]['bcategory_id']] = $categoryDetail[$c]['bcategory_title'];
                 }
-                return $categoryArray[$blog->blog_id] ?? "--";
+                return $categoryArray[$blog->bcategory_id] ?? "--";
             })
             ->editColumn("title", function ($blog){
                 return $blog->blog_title;

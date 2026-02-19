@@ -25,6 +25,8 @@
                 $greeting = "Good Morning";
             } elseif ($hour < 17) {
                 $greeting = "Good Afternoon";
+            } elseif ($hour < 21) {
+                $greeting = "Good Evening";
             } else {
                 $greeting = "Good Night";
             }

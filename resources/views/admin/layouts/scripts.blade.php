@@ -23,6 +23,11 @@
 <!-- jQuery UI -->
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
+<!-- Apex Charts -->
+<script src="{{ url('assets/vendor/apex/apexcharts.min.js') }}"></script>
+<script src="{{ url('assets/vendor/apex/custom/home/earnings.js') }}"></script>
+<script src="{{ url('assets/vendor/apex/custom/home/claims.js') }}"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     @if(Session::get('failedMsg') != "")

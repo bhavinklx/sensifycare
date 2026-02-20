@@ -57,18 +57,22 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-column">
-                                <h2 class="lh-1">890</h2>
+                                <h2 class="lh-1">{{ $totalPatient }}</h2>
                                 <p class="m-0">New Patients</p>
                             </div>
                         </div>
                         <div class="d-flex align-items-end justify-content-between mt-1">
-                            <a class="text-success" href="javascript:void(0);">
-                                <span>View All</span>
-                                <i class="ri-arrow-right-line text-success ms-1"></i>
-                            </a>
+                            @if (auth()->user()->can('patient-list'))
+                                <a class="text-success" href="{{ route("patient-list") }}">
+                                    <span>View All</span>
+                                    <i class="ri-arrow-right-line text-success ms-1"></i>
+                                </a>
+                            @endif
                             <div class="text-end">
-                                <p class="mb-0 text-success">+40%</p>
-                                <span class="badge bg-success-subtle text-success small">this month</span>
+                                <p class="mb-0 {{ $patientPercentage > 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ $patientPercentage >= 0 ? '+' : '' }}{{ round($patientPercentage, 2) }}%
+                                </p>
+                                <span class="badge {{ $patientPercentage > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} small">this month</span>
                             </div>
                         </div>
                     </div>
@@ -84,18 +88,22 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-column">
-                                <h2 class="lh-1">360</h2>
+                                <h2 class="lh-1">{{ $totalDoctor }}</h2>
                                 <p class="m-0">New Doctors</p>
                             </div>
                         </div>
                         <div class="d-flex align-items-end justify-content-between mt-1">
-                            <a class="text-primary" href="javascript:void(0);">
-                                <span>View All</span>
-                                <i class="ri-arrow-right-line ms-1"></i>
-                            </a>
+                            @if (auth()->user()->can('doctor-list'))
+                                <a class="text-primary" href="{{ route("doctor-list") }}">
+                                    <span>View All</span>
+                                    <i class="ri-arrow-right-line ms-1"></i>
+                                </a>
+                            @endif
                             <div class="text-end">
-                                <p class="mb-0 text-primary">+30%</p>
-                                <span class="badge bg-primary-subtle text-primary small">this month</span>
+                                <p class="mb-0 {{ $doctorPercentage > 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ $doctorPercentage >= 0 ? '+' : '' }}{{ round($doctorPercentage, 2) }}%
+                                </p>
+                                <span class="badge {{ $doctorPercentage > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} small">this month</span>
                             </div>
                         </div>
                     </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Patient;
+use App\Models\Doctor;
 use Carbon\Carbon;
 use DB;
 
@@ -28,6 +29,52 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // Total Patients
+        $totalPatient = Patient::count();
+
+        // This Month
+        $thisMonthPatient = Patient::whereBetween('created_at', [
+            Carbon::now()->startOfMonth(),
+            Carbon::now()->endOfMonth()
+        ])->count();
+
+        // Last Month
+        $lastMonthPatient = Patient::whereBetween('created_at', [
+            Carbon::now()->subMonth()->startOfMonth(),
+            Carbon::now()->subMonth()->endOfMonth()
+        ])->count();
+
+        // Percentage Calculation
+        if ($lastMonthPatient > 0) {
+            $patientPercentage = (($thisMonthPatient - $lastMonthPatient) / $lastMonthPatient) * 100;
+            if ($thisMonthPatient == 0) {
+                $patientPercentage = 0;
+            }
+        } else {
+            $patientPercentage = $thisMonthPatient > 0 ? 100 : 0;
+        }
+
+        $totalDoctor = Doctor::count();
+
+        $thisMonthDoctor = Doctor::whereBetween('created_at', [
+            Carbon::now()->startOfMonth(),
+            Carbon::now()->endOfMonth()
+        ])->count();
+
+        $lastMonthDoctor = Doctor::whereBetween('created_at', [
+            Carbon::now()->subMonth()->startOfMonth(),
+            Carbon::now()->subMonth()->endOfMonth()
+        ])->count();
+
+        if ($lastMonthDoctor > 0) {
+            $doctorPercentage = (($thisMonthDoctor - $lastMonthDoctor) / $lastMonthDoctor) * 100;
+            if ($thisMonthDoctor == 0) {
+                $doctorPercentage = 0;
+            }
+        } else {
+            $doctorPercentage = $thisMonthDoctor > 0 ? 100 : 0;
+        }
+
         $year = Carbon::now()->year;
         $register = Patient::select(
             DB::raw("MONTH(created_at) as month"),
@@ -51,6 +98,15 @@ class DashboardController extends Controller
         // Other Count (example: age < 15)
         $other = Patient::where('patient_gender', 'other')->count();
 
-        return view("admin.dashboard.dashboard", compact('registerData', 'male', 'female', 'other'));
+        return view("admin.dashboard.dashboard", compact(
+            'totalPatient',
+            'patientPercentage',
+            'totalDoctor',
+            'doctorPercentage',
+            'registerData',
+            'male',
+            'female',
+            'other'
+        ));
     }
 }

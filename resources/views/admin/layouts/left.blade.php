@@ -169,6 +169,15 @@
                     </ul>
                 </li>
             @endif
+
+            @if(auth()->user()->can('setting-edit'))
+                <li class="{{ ($fileName == 'setting') ? 'active current-page' : '' }}">
+                    <a href="{{ route("setting") }}">
+                        <i class="ri-settings-5-line"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+            @endif
         </ul>
     </div>
     <!-- Sidebar menu ends -->

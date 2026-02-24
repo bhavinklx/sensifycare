@@ -12,6 +12,7 @@ use App\Http\Controllers\Blog\BlogController;
 use App\Http\Controllers\Banner\BannerController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Doctor\DoctorController;
+use App\Http\Controllers\Setting\SettingController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -210,6 +211,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/doctor-change-status", "change_status")->name("doctor-change-status");
         Route::post("/admin/doctor-update-order", "update_order")->name("doctor-update-order");
         Route::post('/admin/doctor-image-upload', 'uploadImage')->name('doctor-image-upload');
+    });
+
+    //For Setting
+    Route::controller(SettingController::class)->group(function (){
+        Route::middleware('can:setting-edit')->group(function () {
+            Route::get("/admin/setting", "edit")->name("setting");
+            Route::post("/admin/setting-update", "update")->name("setting-update");
+        });
     });
 });
 

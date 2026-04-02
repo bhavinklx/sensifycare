@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Patient;
@@ -109,4 +110,39 @@ class DashboardController extends Controller
             'other'
         ));
     }
+
+    public function analyzeReport(Request $request)
+    {
+        // Validate: At least one of 'file_url' OR 'question' must be provided
+        $request->validate([
+            'file_url' => 'required_without:question',
+            'question' => 'required_without:file_url',
+            'language' => 'nullable|string'
+        ]);
+
+        // Prepare the payload for the AI Agent
+        $payload = [
+            'language' => $request->language ?? 'en'
+        ];
+
+        if ($request->filled('file_url')) {
+            // Option 1: Handle File Upload (Image, PDF, Excel)
+            $payload['type'] = 'file';
+            $payload['fileUrl'] = $request->file_url;
+        } else {
+            // Option 2: Handle Health Question (Message)
+            $payload['type'] = 'text';
+            $payload['question'] = $request->question;
+        }
+
+        // Call the Sensify Care AI Agent
+        $response = Http::timeout(60)->post(
+            'http://localhost:5000/analyze-report',
+            $payload
+        );
+
+        // Return the agent's response (now contains 'answer' and 'disclaimer')
+        return response()->json($response->json());
+    }
+
 }

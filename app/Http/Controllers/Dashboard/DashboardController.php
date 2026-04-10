@@ -113,36 +113,63 @@ class DashboardController extends Controller
 
     public function analyzeReport(Request $request)
     {
-        // Validate: At least one of 'file_url' OR 'question' must be provided
+        // Validate: At least one of 'file_url', 'question', or 'text' must be provided
         $request->validate([
-            'file_url' => 'required_without:question',
-            'question' => 'required_without:file_url',
+            'file_url' => 'required_without_all:question,text',
+            'question' => 'required_without_all:file_url,text',
+            'text'     => 'required_without_all:file_url,question',
             'language' => 'nullable|string'
         ]);
 
-        // Prepare the payload for the AI Agent
+        // Mapping input as per Node.js example logic
+        $finalType = $request->type ?? ($request->filled('file_url') ? 'file' : 'text');
+        $finalUrl = $request->file_url ?? $request->fileUrl;
+        $inputText = $request->text ?? $request->question;
+
+        // Prepare the payload for the Sensify Care AI Agent
         $payload = [
+            'type' => $finalType,
             'language' => $request->language ?? 'en'
         ];
 
-        if ($request->filled('file_url')) {
-            // Option 1: Handle File Upload (Image, PDF, Excel)
-            $payload['type'] = 'file';
-            $payload['fileUrl'] = $request->file_url;
+        if ($finalType === 'text') {
+            $payload['question'] = $inputText;
         } else {
-            // Option 2: Handle Health Question (Message)
-            $payload['type'] = 'text';
-            $payload['question'] = $request->question;
+            $payload['file_url'] = $finalUrl;
+            if ($inputText) {
+                $payload['question'] = $inputText;
+            }
         }
 
         // Call the Sensify Care AI Agent
+        // URL updated as per user request: http://api.sensifycare.com/nodeapp/analyze-report
         $response = Http::timeout(60)->post(
-            'http://localhost:5000/analyze-report',
+            'http://api.sensifycare.com/nodeapp/analyze-report',
             $payload
         );
 
-        // Return the agent's response (now contains 'answer' and 'disclaimer')
+        // Return the agent's response
         return response()->json($response->json());
     }
 
+    public function uploadReport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:jpg,jpeg,png,pdf,xlsx,xls|max:5120',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = 'REP-' . time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/report'), $filename);
+            $fileUrl = asset('uploads/report/' . $filename);
+
+            return response()->json([
+                'success' => true,
+                'file_url' => $fileUrl
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'File upload failed'], 400);
+    }
 }

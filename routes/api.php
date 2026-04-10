@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Api\PatientAuthController;
 
 Route::post('/analyze-report', [DashboardController::class, 'analyzeReport'])->name("analyze-report");
+Route::post('/analyze-report-upload', [DashboardController::class, 'uploadReport'])->name("analyze-report-upload");
 
 /**
  * Patient Auth Routes

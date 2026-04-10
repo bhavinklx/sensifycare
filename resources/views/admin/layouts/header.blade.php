@@ -24,6 +24,13 @@
 
     <!-- App header actions starts -->
     <div class="header-actions">
+        <!-- AI Chat start -->
+        <div class="me-2">
+            <button class="btn btn-outline-primary btn-sm rounded-pill d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#aiChatModal">
+                <i class="ri-robot-2-line me-1"></i> AI Assistant
+            </button>
+        </div>
+        <!-- AI Chat end -->
         <!-- Header user settings starts -->
         <div class="dropdown ms-2">
             <a id="userSettings" class="dropdown-toggle d-flex align-items-center" href="#!" role="button"

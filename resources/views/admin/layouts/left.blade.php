@@ -170,6 +170,13 @@
                 </li>
             @endif
 
+            <li>
+                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#aiChatModal">
+                    <i class="ri-robot-2-line"></i>
+                    <span class="menu-text">AI Assistant</span>
+                </a>
+            </li>
+
             @if(auth()->user()->can('setting-edit'))
                 <li class="{{ ($fileName == 'setting') ? 'active current-page' : '' }}">
                     <a href="{{ route("setting") }}">

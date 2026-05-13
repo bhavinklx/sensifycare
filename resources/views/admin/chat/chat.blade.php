@@ -135,6 +135,44 @@
     .typing-indicator span:nth-of-type(2) { animation: 1s blink infinite 0.6666s; }
     .typing-indicator span:nth-of-type(3) { animation: 1s blink infinite 0.9999s; }
     @keyframes blink { 50% { opacity: 1; } }
+
+    /* Progressive Flow Styles */
+    .progressive-step {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .hook-button {
+        background: #e7f3ff;
+        color: #007bff;
+        border: 1px dashed #007bff;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .hook-button:hover {
+        background: #007bff;
+        color: white;
+        border-style: solid;
+    }
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .status-yellow { background: #fff3cd; color: #856404; }
+    .status-green { background: #d4edda; color: #155724; }
+    .status-red { background: #f8d7da; color: #721c24; }
 </style>
 
 <script>
@@ -258,8 +296,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success === false) {
                 appendMessage('ai', 'Error: ' + (data.message || 'Something went wrong.'));
             } else {
-                const aiResponse = data.answer || data.analysis || JSON.stringify(data);
-                appendMessage('ai', aiResponse);
+                if (data.data && data.data.step1) {
+                    renderProgressiveFlow(data.data);
+                } else {
+                    const aiResponse = data.answer || data.analysis || data.message || JSON.stringify(data);
+                    appendMessage('ai', aiResponse);
+                }
             }
         } catch (error) {
             removeTypingIndicator(indicatorId);
@@ -287,13 +329,111 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="avatar-box sm ${bg} text-white me-2 rounded-circle d-flex align-items-center justify-content-center">
                     <i class="${icon}"></i>
                 </div>
-                <div class="message-bubble p-2 rounded-3 shadow-sm border" style="max-width: 80%;">
-                    ${text.replace(/\n/g, '<br>')}
+                <div class="message-bubble p-3 rounded-3 shadow-sm border" style="max-width: 85%;">
+                    ${typeof text === 'string' ? text.replace(/\n/g, '<br>') : text}
                 </div>
             </div>
         `;
         chatMessages.appendChild(div);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        return div;
+    }
+
+    function renderProgressiveFlow(data) {
+        const container = appendMessage('ai', '<div id="progressiveFlowContainer"></div>');
+        const flowRoot = container.querySelector('#progressiveFlowContainer');
+        
+        function renderStep1() {
+            const step1 = data.step1;
+            const statusClass = `status-${step1.status.toLowerCase()}`;
+            
+            const html = `
+                <div class="progressive-step" id="step1">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold text-primary"><i class="ri-survey-line"></i> Step 1: Summary</span>
+                        <span class="status-badge ${statusClass}">${step1.status_label}</span>
+                    </div>
+                    <ul class="ps-3 mb-2 small">
+                        ${step1.takeaways.map(t => `<li class="mb-1">${t}</li>`).join('')}
+                    </ul>
+                    <div class="p-2 bg-light rounded-2 border-start border-success border-3 small mb-2">
+                        <i class="ri-shield-check-line text-success"></i> ${step1.reassurance}
+                    </div>
+                    ${step1.hook ? `<button class="hook-button" onclick="window.revealStep(2)">${step1.hook} <i class="ri-arrow-right-s-line"></i></button>` : ''}
+                </div>
+            `;
+            flowRoot.innerHTML = html;
+        }
+
+        window.revealStep = function(stepNum) {
+            const currentHook = flowRoot.querySelector('.hook-button');
+            if (currentHook) currentHook.remove();
+
+            if (stepNum === 2) {
+                const step2 = data.step2;
+                const html = `
+                    <div class="progressive-step mt-3 pt-3 border-top" id="step2">
+                        <div class="fw-bold text-primary mb-2"><i class="ri-body-scan-line"></i> Step 2: System Breakdown</div>
+                        ${step2.modules.map(m => `
+                            <div class="mb-3">
+                                <div class="small fw-bold text-dark">${m.category}</div>
+                                <div class="small text-muted mt-1">${m.interpretation}</div>
+                                <div class="small font-italic text-secondary mt-1 border-start ps-2" style="border-width: 2px !important;">${m.comparison}</div>
+                            </div>
+                        `).join('')}
+                        ${step2.hook ? `<button class="hook-button" onclick="window.revealStep(3)">${step2.hook} <i class="ri-arrow-right-s-line"></i></button>` : ''}
+                    </div>
+                `;
+                flowRoot.insertAdjacentHTML('beforeend', html);
+            } else if (stepNum === 3) {
+                const step3 = data.step3;
+                const html = `
+                    <div class="progressive-step mt-3 pt-3 border-top" id="step3">
+                        <div class="fw-bold text-primary mb-2"><i class="ri-leaf-line"></i> Step 3: Advice & Roadmap</div>
+                        <div class="row g-2">
+                            <div class="col-12 mb-2">
+                                <div class="p-2 bg-info-subtle rounded-2 border border-info-subtle">
+                                    <div class="small fw-bold text-info-emphasis"><i class="ri-restaurant-line"></i> Diet</div>
+                                    <div class="small text-dark">${step3.lifestyle.diet}</div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <div class="p-2 bg-success-subtle rounded-2 border border-success-subtle">
+                                    <div class="small fw-bold text-success-emphasis"><i class="ri-run-line"></i> Activity</div>
+                                    <div class="small text-dark">${step3.lifestyle.activity}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-2 bg-warning-subtle rounded-2 border border-warning-subtle">
+                            <div class="small fw-bold text-warning-emphasis"><i class="ri-map-pin-user-line"></i> Medical Roadmap</div>
+                            <div class="small text-dark mb-1">${step3.medical_roadmap.specialist}</div>
+                            <div class="small text-muted"><strong>Checklist:</strong> ${step3.medical_roadmap.checklist}</div>
+                        </div>
+                        ${step3.hook ? `<button class="hook-button" onclick="window.revealStep(4)">${step3.hook} <i class="ri-arrow-right-s-line"></i></button>` : ''}
+                    </div>
+                `;
+                flowRoot.insertAdjacentHTML('beforeend', html);
+            } else if (stepNum === 4) {
+                const step4 = data.step4;
+                const html = `
+                    <div class="progressive-step mt-3 pt-3 border-top" id="step4">
+                        <div class="fw-bold text-primary mb-2"><i class="ri-flask-line"></i> Step 4: Next Steps</div>
+                        <div class="small mb-2"><strong>Reflex Testing:</strong> ${step4.reflex_testing}</div>
+                        <div class="small mb-3"><strong>Follow-up:</strong> ${step4.follow_up_timeline}</div>
+                        <div class="d-flex gap-2">
+                            ${step4.cta_buttons.map(btn => `<button class="btn btn-sm btn-outline-primary rounded-pill px-3">${btn}</button>`).join('')}
+                        </div>
+                        <div class="mt-3 p-2 bg-secondary-subtle rounded-2 border text-center" style="font-size: 0.7rem;">
+                            <i class="ri-information-line"></i> ${data.disclaimer}
+                        </div>
+                    </div>
+                `;
+                flowRoot.insertAdjacentHTML('beforeend', html);
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+
+        renderStep1();
     }
 
     function showTypingIndicator() {

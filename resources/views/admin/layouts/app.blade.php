@@ -61,7 +61,6 @@
     <!-- Page wrapper ends -->
 
     <!-- All Jquery -->
-    @include('admin.chat.chat')
     @include('admin.layouts.scripts')
     @yield('page-js')
 </body>

@@ -111,6 +111,11 @@ class DashboardController extends Controller
         ));
     }
 
+    public function aiAssistant()
+    {
+        return view("admin.chat.index");
+    }
+
     public function analyzeReport(Request $request)
     {
         // Validate: At least one of 'file_url', 'question', or 'text' must be provided

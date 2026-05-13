@@ -34,6 +34,7 @@ Route::post('/admin/login', [LoginController::class, 'login'])->name('login');
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name("dashboard");
     Route::get('/admin/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/admin/ai-assistant', [DashboardController::class, 'aiAssistant'])->name("ai-assistant");
 
     //For Administrator
     Route::controller(UserController::class)->group(function (){

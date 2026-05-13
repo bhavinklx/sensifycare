@@ -170,8 +170,8 @@
                 </li>
             @endif
 
-            <li>
-                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#aiChatModal">
+            <li class="{{ ($fileName == 'ai-assistant') ? 'active current-page' : '' }}">
+                <a href="{{ route("ai-assistant") }}">
                     <i class="ri-robot-2-line"></i>
                     <span class="menu-text">AI Assistant</span>
                 </a>

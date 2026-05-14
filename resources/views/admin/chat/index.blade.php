@@ -392,8 +392,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="answer-text lh-base">${simpleMarkdown(data.answer)}</div>`;
         
         if (data.suggested_questions && data.suggested_questions.length > 0) {
-            html += `<div class="mt-2 pt-2 border-top border-light">
-                <div class="small fw-bold text-secondary mb-1" style="font-size: 0.75rem;">Suggested Questions:</div>
+            html += `<div class="mt-3 pt-3 border-top border-light">
+                <div class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">Suggested Questions:</div>
                 <div class="d-flex flex-wrap">
                     ${data.suggested_questions.map(q => `<div class="suggestion-chip shadow-xs" onclick="askSuggestedQuestion('${q.replace(/'/g, "\\'")}')">${q}</div>`).join('')}
                 </div>
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (data.disclaimer) {
-            html += `<div class="mt-2 text-center text-muted" style="font-size: 0.7rem; opacity: 0.7;">
+            html += `<div class="mt-3 p-2 bg-light rounded-2 border border-light-subtle text-center text-muted" style="font-size: 0.75rem;">
                 <i class="ri-information-line"></i> ${data.disclaimer}
             </div>`;
         }
@@ -532,11 +532,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex gap-3 mb-4">
-                            ${step4.cta_buttons.map(btn => `<button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">${btn}</button>`).join('')}
-                        </div>
-                        <div class="p-3 bg-secondary-subtle rounded-3 border border-secondary-subtle text-center" style="font-size: 0.8rem;">
-                            <i class="ri-information-line me-1"></i> ${data.disclaimer}
+                        <!-- CTA buttons removed as requested -->
+                        <div class="p-2 bg-light rounded-2 border border-light-subtle text-center text-muted" style="font-size: 0.75rem;">
+                            <i class="ri-information-line"></i> ${data.disclaimer}
                         </div>
                     </div>
                 `;

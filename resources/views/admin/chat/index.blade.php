@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="ri-file-search-line me-2 fs-5"></i> Analyzing Report: <em>${fileInput.files[0].name}</em>
                         </div>`;
         }
-        appendMessage('user', userMsgText);
+        appendMessage('user', userMsgText, true);
 
         // Show typing indicator
         const indicatorId = showTypingIndicator();
@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function appendMessage(role, text) {
+    function appendMessage(role, content, isHtml = false) {
         const div = document.createElement('div');
         div.className = `message-container ${role}-message mb-3`;
         
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="${icon} ${role === 'ai' ? 'fs-5' : ''}"></i>
                 </div>
                 <div class="message-bubble p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
-                    ${typeof text === 'string' ? simpleMarkdown(text) : text}
+                    ${isHtml ? content : simpleMarkdown(content)}
                 </div>
             </div>
         `;
@@ -389,10 +389,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderStandardAnswer(data) {
         let html = `<div class="standard-answer">
-            <div class="answer-text lh-base">${simpleMarkdown(data.answer)}</div>`;
+            <div class="answer-text lh-base">${simpleMarkdown(data.answer.trim())}</div>`;
         
         if (data.suggested_questions && data.suggested_questions.length > 0) {
-            html += `<div class="mt-3 pt-3 border-top border-light">
+            html += `<div class="mt-2 pt-2 border-top border-light">
                 <div class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">Suggested Questions:</div>
                 <div class="d-flex flex-wrap">
                     ${data.suggested_questions.map(q => `<div class="suggestion-chip shadow-xs" onclick="askSuggestedQuestion('${q.replace(/'/g, "\\'")}')">${q}</div>`).join('')}
@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         html += `</div>`;
-        appendMessage('ai', html);
+        appendMessage('ai', html, true);
     }
 
     window.askSuggestedQuestion = function(question) {
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function renderProgressiveFlow(data) {
-        const container = appendMessage('ai', '<div id="progressiveFlowContainer"></div>');
+        const container = appendMessage('ai', '<div id="progressiveFlowContainer"></div>', true);
         const flowRoot = container.querySelector('#progressiveFlowContainer');
         
         function renderStep1() {

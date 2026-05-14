@@ -156,22 +156,23 @@
         to { opacity: 1; transform: translateY(0); }
     }
     .suggestion-chip {
-        background: white;
-        border: 1px solid #dee2e6;
-        padding: 6px 14px;
-        border-radius: 18px;
-        font-size: 0.85rem;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
         cursor: pointer;
         transition: all 0.2s;
         display: inline-block;
-        margin: 4px;
-        color: #007bff;
+        margin: 2px 4px 2px 0;
+        color: #0d6efd;
+        font-weight: 500;
     }
     .suggestion-chip:hover {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
-        box-shadow: 0 2px 6px rgba(0, 123, 255, 0.2);
+        background: #e7f3ff;
+        color: #0a58ca;
+        border-color: #0d6efd;
+        transform: translateY(-1px);
     }
     .hook-button {
         background: #f0f7ff;
@@ -388,19 +389,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderStandardAnswer(data) {
         let html = `<div class="standard-answer">
-            <div class="answer-text">${simpleMarkdown(data.answer)}</div>`;
+            <div class="answer-text lh-base">${simpleMarkdown(data.answer)}</div>`;
         
         if (data.suggested_questions && data.suggested_questions.length > 0) {
-            html += `<div class="mt-3 pt-2 border-top">
-                <div class="small fw-bold text-muted mb-2">Suggested Questions:</div>
+            html += `<div class="mt-2 pt-2 border-top border-light">
+                <div class="small fw-bold text-secondary mb-1" style="font-size: 0.75rem;">Suggested Questions:</div>
                 <div class="d-flex flex-wrap">
-                    ${data.suggested_questions.map(q => `<div class="suggestion-chip" onclick="askSuggestedQuestion('${q.replace(/'/g, "\\'")}')">${q}</div>`).join('')}
+                    ${data.suggested_questions.map(q => `<div class="suggestion-chip shadow-xs" onclick="askSuggestedQuestion('${q.replace(/'/g, "\\'")}')">${q}</div>`).join('')}
                 </div>
             </div>`;
         }
 
         if (data.disclaimer) {
-            html += `<div class="mt-3 p-2 bg-light rounded text-center text-muted" style="font-size: 0.75rem;">
+            html += `<div class="mt-2 text-center text-muted" style="font-size: 0.7rem; opacity: 0.7;">
                 <i class="ri-information-line"></i> ${data.disclaimer}
             </div>`;
         }

@@ -155,6 +155,24 @@
         from { opacity: 0; transform: translateY(15px); }
         to { opacity: 1; transform: translateY(0); }
     }
+    .suggestion-chip {
+        background: white;
+        border: 1px solid #dee2e6;
+        padding: 6px 14px;
+        border-radius: 18px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-block;
+        margin: 4px;
+        color: #007bff;
+    }
+    .suggestion-chip:hover {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+        box-shadow: 0 2px 6px rgba(0, 123, 255, 0.2);
+    }
     .hook-button {
         background: #f0f7ff;
         color: #007bff;
@@ -319,6 +337,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 if (data.data && data.data.step1) {
                     renderProgressiveFlow(data.data);
+                } else if (data.data && data.data.answer) {
+                    renderStandardAnswer(data.data);
                 } else {
                     const aiResponse = data.answer || data.analysis || data.message || JSON.stringify(data);
                     appendMessage('ai', aiResponse);
@@ -349,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="${icon} ${role === 'ai' ? 'fs-5' : ''}"></i>
                 </div>
                 <div class="message-bubble p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
-                    ${typeof text === 'string' ? text.replace(/\n/g, '<br>') : text}
+                    ${typeof text === 'string' ? simpleMarkdown(text) : text}
                 </div>
             </div>
         `;
@@ -357,6 +377,42 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
         return div;
     }
+
+    function simpleMarkdown(text) {
+        // Basic Markdown to HTML conversion
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+            .replace(/\n- (.*?)/g, '<br>• $1') // Bullets
+            .replace(/\n/g, '<br>'); // Newlines
+    }
+
+    function renderStandardAnswer(data) {
+        let html = `<div class="standard-answer">
+            <div class="answer-text">${simpleMarkdown(data.answer)}</div>`;
+        
+        if (data.suggested_questions && data.suggested_questions.length > 0) {
+            html += `<div class="mt-3 pt-2 border-top">
+                <div class="small fw-bold text-muted mb-2">Suggested Questions:</div>
+                <div class="d-flex flex-wrap">
+                    ${data.suggested_questions.map(q => `<div class="suggestion-chip" onclick="askSuggestedQuestion('${q.replace(/'/g, "\\'")}')">${q}</div>`).join('')}
+                </div>
+            </div>`;
+        }
+
+        if (data.disclaimer) {
+            html += `<div class="mt-3 p-2 bg-light rounded text-center text-muted" style="font-size: 0.75rem;">
+                <i class="ri-information-line"></i> ${data.disclaimer}
+            </div>`;
+        }
+
+        html += `</div>`;
+        appendMessage('ai', html);
+    }
+
+    window.askSuggestedQuestion = function(question) {
+        chatQuestion.value = question;
+        chatForm.requestSubmit();
+    };
 
     function renderProgressiveFlow(data) {
         const container = appendMessage('ai', '<div id="progressiveFlowContainer"></div>');

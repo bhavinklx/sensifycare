@@ -94,6 +94,26 @@
                             </li>
                         @endcan--}}
                     </ul>
+            @endif
+
+            @if(auth()->user()->can('symptom-list') || auth()->user()->can('symptom-add'))
+                <li class="treeview {{ ($fileName == 'symptom-list' || $fileName == 'symptom-add' || $fileName == 'symptom-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-health-book-line"></i>
+                        <span class="menu-text">Symptoms</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('symptom-list')
+                            <li>
+                                <a href="{{ route("symptom-list") }}" class="{{ ($fileName == 'symptom-list') ? 'active-sub' : '' }}">Symptom List</a>
+                            </li>
+                        @endcan
+                        @can('symptom-add')
+                            <li>
+                                <a href="{{ route("symptom-add") }}" class="{{ ($fileName == 'symptom-add' || $fileName == 'symptom-edit') ? 'active-sub' : '' }}">Add Symptom</a>
+                            </li>
+                        @endcan
+                    </ul>
                 </li>
             @endif
 

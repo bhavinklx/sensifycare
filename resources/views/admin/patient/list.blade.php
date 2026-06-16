@@ -24,9 +24,9 @@
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
                         <h5 class="card-title">Patient List</h5>
-                        @if (auth()->user()->can('patient-add'))
+                        {{--@if (auth()->user()->can('patient-add'))
                             <a href="{{ route("patient-add") }}" class="btn btn-primary ms-auto">Add Blog</a>
-                        @endif
+                        @endif--}}
                     </div>
                     <div class="card-body">
                         <!-- Table starts -->

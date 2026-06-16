@@ -79,7 +79,6 @@
                                         </div>
                                     </form>
                                     <input type="hidden" name="page_image" id="page_image">
-
                                 </div>
 
                                 <!-- Page Fields -->

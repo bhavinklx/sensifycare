@@ -12,6 +12,7 @@ use App\Http\Controllers\Banner\BannerController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Setting\SettingController;
+use App\Http\Controllers\Symptom\SymptomController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -219,6 +220,28 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get("/admin/setting", "edit")->name("setting");
             Route::post("/admin/setting-update", "update")->name("setting-update");
         });
+    });
+
+    //For Symptom
+    Route::controller(SymptomController::class)->group(function (){
+        Route::middleware('can:symptom-add')->group(function () {
+            Route::get("/admin/symptom-add", "create")->name("symptom-add");
+            Route::post("/admin/symptom-insert", "insert")->name("symptom-insert");
+        });
+        Route::middleware('can:symptom-edit')->group(function () {
+            Route::get("/admin/symptom-edit/{id}", "edit")->name("symptom-edit");
+            Route::post("/admin/symptom-update", "update")->name("symptom-update");
+        });
+        Route::middleware('can:symptom-list')->group(function () {
+            Route::get("/admin/symptom-list", "view")->name("symptom-list");
+            Route::get("/admin/symptom-load-table", "load_table")->name("symptom-load-table");
+        });
+        Route::middleware('can:symptom-delete')->group(function () {
+            Route::post("/admin/symptom-delete", "delete")->name("symptom-delete");
+        });
+        Route::post("/admin/symptom-change-status", "change_status")->name("symptom-change-status");
+        Route::post("/admin/symptom-update-order", "update_order")->name("symptom-update-order");
+        Route::post('/admin/symptom-image-upload', 'uploadImage')->name('symptom-image-upload');
     });
 });
 

@@ -35,6 +35,7 @@ class Patient extends Authenticatable
         "patient_postal_code",
         "patient_order",
         "patient_status",
+        "patient_otp",
     ];
 
     protected $hidden = [

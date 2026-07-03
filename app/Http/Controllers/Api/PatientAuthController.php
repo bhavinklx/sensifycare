@@ -74,4 +74,91 @@ class PatientAuthController extends Controller
             'message' => 'Logout successful'
         ], 200);
     }
+
+    /**
+     * Send OTP to Patient Mobile Number
+     */
+    public function sendOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_phone' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $patient = Patient::where('patient_phone', $request->patient_phone)->first();
+
+        if (!$patient) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mobile number not registered.',
+            ], 404);
+        }
+
+        // Generate a 6-digit OTP (for production, integrate an SMS gateway here)
+        $otp = rand(100000, 999999);
+        
+        $patient->patient_otp = $otp;
+        $patient->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP sent successfully',
+            'data' => [
+                'patient_phone' => $patient->patient_phone,
+                // In production, do not return the OTP in the response
+                'otp' => $otp
+            ]
+        ], 200);
+    }
+
+    /**
+     * Verify OTP and Login
+     */
+    public function verifyOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_phone' => 'required|string',
+            'otp' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $patient = Patient::where('patient_phone', $request->patient_phone)->first();
+
+        if (!$patient || $patient->patient_otp != $request->otp) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid mobile number or OTP.',
+            ], 401);
+        }
+
+        // Clear OTP after successful verification
+        $patient->patient_otp = null;
+        $patient->save();
+
+        // Generate token
+        $token = $patient->createToken('patientToken')->plainTextToken;
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP verified successfully. Login successful.',
+            'data' => [
+                'patient' => $patient,
+                'token' => $token,
+            ]
+        ], 200);
+    }
 }

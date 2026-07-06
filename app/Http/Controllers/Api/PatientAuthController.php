@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
+use App\Models\UserDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -148,6 +149,23 @@ class PatientAuthController extends Controller
         // Clear OTP after successful verification
         $patient->patient_otp = null;
         $patient->save();
+
+        // Save device details
+        if ($request->has('push_notification_id')) {
+            UserDevice::updateOrCreate(
+                [
+                    'user_id' => $patient->patient_id,
+                    'user_type' => 'patient',
+                    'push_notification_id' => $request->push_notification_id,
+                ],
+                [
+                    'app_version' => $request->app_version,
+                    'os_version' => $request->os_version,
+                    'device_name' => $request->device_name,
+                    'device_type' => $request->device_type,
+                ]
+            );
+        }
 
         // Generate token
         $token = $patient->createToken('patientToken')->plainTextToken;

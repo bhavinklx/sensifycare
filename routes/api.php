@@ -14,6 +14,7 @@ Route::post('/analyze-report-upload', [DashboardController::class, 'uploadReport
  * Patient Auth Routes
  */
 Route::post('patient-login', [PatientAuthController::class, 'login']);
+Route::post('patient-signup', [PatientAuthController::class, 'signup']);
 Route::post('patient-send-otp', [PatientAuthController::class, 'sendOtp']);
 Route::post('patient-verify-otp', [PatientAuthController::class, 'verifyOtp']);
 

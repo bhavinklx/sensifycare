@@ -23,6 +23,7 @@ class Patient extends Authenticatable
         "patient_gender",
         "patient_email",
         "patient_phone",
+        "patient_dob",
         "patient_password",
         "patient_marital_status",
         "patient_occupation",

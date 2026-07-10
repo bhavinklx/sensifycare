@@ -11,57 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PatientAuthController extends Controller
 {
-    /**
-     * Patient Login via Mobile Number
-     */
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'patient_phone' => 'required|string',
-            'patient_password' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $patient = Patient::where('patient_phone', $request->patient_phone)->first();
-
-        if (!$patient || !Hash::check($request->patient_password, $patient->patient_password)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid mobile number or password.',
-            ], 401);
-        }
-
-        // Generate token
-        $token = $patient->createToken('patientToken')->plainTextToken;
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Login successful',
-            'data' => [
-                'patient' => $patient,
-                'token' => $token,
-            ]
-        ], 200);
-    }
-
-    /**
-     * Patient Profile (Protected)
-     */
-    public function profile(Request $request)
-    {
-        return response()->json([
-            'status' => true,
-            'message' => 'Patient profile retrieved',
-            'data' => $request->user()
-        ], 200);
-    }
 
     /**
      * Patient Logout
@@ -96,18 +45,10 @@ class PatientAuthController extends Controller
         $patient = Patient::where('patient_phone', $request->patient_phone)->first();
 
         if (!$patient) {
-            // Create user as per previous request
-            $patient = new Patient();
-            $patient->patient_uid = uniqid('PT_');
-            $patient->patient_phone = $request->patient_phone;
-            $patient->patient_fname = 'Guest';
-            $patient->patient_lname = 'User';
-            $patient->patient_email = $request->patient_phone . '@example.com';
-            $patient->patient_age = 0;
-            $patient->patient_gender = 'other';
-            $patient->patient_blood_group = 'Unknown';
-            $patient->patient_password = Hash::make(uniqid());
-            $patient->save();
+            return response()->json([
+                'status' => false,
+                'message' => 'Mobile number not found.',
+            ], 404);
         }
 
         // Generate a 6-digit OTP (for production, integrate an SMS gateway here)

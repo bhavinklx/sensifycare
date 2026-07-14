@@ -77,8 +77,7 @@ class PatientAuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:patient,patient_email',
             'mobile' => 'required|string|unique:patient,patient_phone',
-            'dob' => 'required|date',
-            'gender' => 'required|in:male,female,other'
+            'dob' => 'required|date'
         ]);
 
         if ($validator->fails()) {
@@ -102,7 +101,7 @@ class PatientAuthController extends Controller
         $patient->patient_phone = $request->mobile;
         $patient->patient_dob = $request->dob;
         $patient->patient_age = $age;
-        $patient->patient_gender = $request->gender;
+        //$patient->patient_gender = $request->gender;
         $patient->patient_blood_group = 'Unknown'; // Default or nullable in schema? It's required in schema, so setting Unknown.
         $patient->patient_password = Hash::make(uniqid());
         

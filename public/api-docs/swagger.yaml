@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Patient API
+  title: Sensify Care API
   version: 1.0.0
-  description: API for patient operations
+  description: API for sensify care operations
 servers:
   - url: http://localhost
     description: Local server

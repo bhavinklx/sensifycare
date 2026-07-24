@@ -172,6 +172,84 @@ paths:
           description: Invalid input parameters
         '401':
           description: Unauthorized
+  /api/patient-symptoms:
+    get:
+      summary: List Active Symptoms
+      description: Retrieve list of all active symptoms in the system.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Symptoms retrieved successfully
+        '401':
+          description: Unauthorized
+  /api/patient-symptoms/selected:
+    get:
+      summary: Get Selected Patient Symptoms
+      description: Retrieve the symptoms currently selected by the authenticated patient.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Selected symptoms retrieved successfully
+        '401':
+          description: Unauthorized
+  /api/patient-symptoms/add:
+    post:
+      summary: Add Patient Symptoms
+      description: Add new symptoms to the patient's list without removing existing ones.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symptom_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                patient_other_symptoms:
+                  type: string
+                  example: "Mild fever and coughing"
+      responses:
+        '200':
+          description: Symptoms added successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+  /api/patient-symptoms/sync:
+    post:
+      summary: Sync Patient Symptoms
+      description: Replace and synchronize patient symptoms.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symptom_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [3, 4]
+                patient_other_symptoms:
+                  type: string
+                  example: "Headache"
+      responses:
+        '200':
+          description: Symptoms saved successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
   /api/patient-logout:
     post:
       summary: Patient Logout

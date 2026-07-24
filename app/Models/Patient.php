@@ -37,6 +37,7 @@ class Patient extends Authenticatable
         "patient_order",
         "patient_status",
         "patient_otp",
+        "patient_other_symptoms",
     ];
 
     protected $hidden = [
@@ -52,5 +53,10 @@ class Patient extends Authenticatable
     public function getAuthPassword()
     {
         return $this->patient_password;
+    }
+
+    public function symptoms()
+    {
+        return $this->belongsToMany(Symptom::class, 'patient_symptom', 'patient_id', 'symptom_id');
     }
 }

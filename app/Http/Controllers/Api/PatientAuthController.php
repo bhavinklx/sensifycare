@@ -180,4 +180,126 @@ class PatientAuthController extends Controller
             ]
         ], 200);
     }
+
+    /**
+     * Get Authenticated Patient Profile
+     */
+    public function getProfile(Request $request)
+    {
+        $patient = $request->user();
+        $patientData = $patient->toArray();
+        $patientData['patient_image_url'] = $patient->patient_image ? asset('uploads/patient/' . $patient->patient_image) : null;
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profile retrieved successfully',
+            'data' => $patientData
+        ], 200);
+    }
+
+    /**
+     * Update Patient Profile
+     */
+    public function updateProfile(Request $request)
+    {
+        /** @var Patient $patient */
+        $patient = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'nullable|string|max:100',
+            'last_name' => 'nullable|string|max:100',
+            'email' => 'nullable|email|unique:patient,patient_email,' . $patient->patient_id . ',patient_id',
+            'phone' => 'nullable|string|unique:patient,patient_phone,' . $patient->patient_id . ',patient_id',
+            'dob' => 'nullable|date',
+            'gender' => 'nullable|string|max:20',
+            'marital_status' => 'nullable|string|max:30',
+            'occupation' => 'nullable|string|max:100',
+            'blood_group' => 'nullable|string|max:10',
+            'blood_pressure' => 'nullable|string|max:20',
+            'sugar_level' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
+            'patient_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        if ($request->hasFile('patient_image')) {
+            // Delete old image if exists
+            if ($patient->patient_image && file_exists(public_path('uploads/patient/' . $patient->patient_image))) {
+                @unlink(public_path('uploads/patient/' . $patient->patient_image));
+            }
+            
+            $image = $request->file('patient_image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/patient'), $imageName);
+            $patient->patient_image = $imageName;
+        }
+
+        if ($request->has('first_name')) {
+            $patient->patient_fname = $request->first_name;
+        }
+        if ($request->has('last_name')) {
+            $patient->patient_lname = $request->last_name;
+        }
+        if ($request->has('email')) {
+            $patient->patient_email = $request->email;
+        }
+        if ($request->has('phone')) {
+            $patient->patient_phone = $request->phone;
+        }
+        if ($request->has('dob')) {
+            $patient->patient_dob = $request->dob;
+            $patient->patient_age = \Carbon\Carbon::parse($request->dob)->age;
+        }
+        if ($request->has('gender')) {
+            $patient->patient_gender = $request->gender;
+        }
+        if ($request->has('marital_status')) {
+            $patient->patient_marital_status = $request->marital_status;
+        }
+        if ($request->has('occupation')) {
+            $patient->patient_occupation = $request->occupation;
+        }
+        if ($request->has('blood_group')) {
+            $patient->patient_blood_group = $request->blood_group;
+        }
+        if ($request->has('blood_pressure')) {
+            $patient->patient_blood_pressure = $request->blood_pressure;
+        }
+        if ($request->has('sugar_level')) {
+            $patient->patient_sugar_level = $request->sugar_level;
+        }
+        if ($request->has('address')) {
+            $patient->patient_address = $request->address;
+        }
+        if ($request->has('city')) {
+            $patient->patient_city = $request->city;
+        }
+        if ($request->has('state')) {
+            $patient->patient_state = $request->state;
+        }
+        if ($request->has('postal_code')) {
+            $patient->patient_postal_code = $request->postal_code;
+        }
+
+        $patient->save();
+
+        $patientData = $patient->toArray();
+        $patientData['patient_image_url'] = $patient->patient_image ? asset('uploads/patient/' . $patient->patient_image) : null;
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profile updated successfully',
+            'data' => $patientData
+        ], 200);
+    }
 }

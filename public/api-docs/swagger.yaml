@@ -101,6 +101,77 @@ paths:
           description: Successful response
         '401':
           description: Unauthorized
+  /api/patient-profile/update:
+    post:
+      summary: Update Patient Profile
+      description: Update profile details for the authenticated patient, including optional image upload.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: "John"
+                last_name:
+                  type: string
+                  example: "Doe"
+                email:
+                  type: string
+                  format: email
+                  example: "john.doe@example.com"
+                phone:
+                  type: string
+                  example: "9876543210"
+                dob:
+                  type: string
+                  format: date
+                  example: "1990-05-15"
+                gender:
+                  type: string
+                  example: "Male"
+                marital_status:
+                  type: string
+                  example: "Single"
+                occupation:
+                  type: string
+                  example: "Software Engineer"
+                blood_group:
+                  type: string
+                  example: "O+"
+                blood_pressure:
+                  type: string
+                  example: "120/80"
+                sugar_level:
+                  type: string
+                  example: "95"
+                address:
+                  type: string
+                  example: "123 Main St"
+                city:
+                  type: string
+                  example: "New York"
+                state:
+                  type: string
+                  example: "NY"
+                postal_code:
+                  type: string
+                  example: "10001"
+                patient_image:
+                  type: string
+                  format: binary
+                  description: Patient profile photo upload file
+      responses:
+        '200':
+          description: Profile updated successfully
+        '400':
+          description: Invalid input parameters
+        '401':
+          description: Unauthorized
   /api/patient-logout:
     post:
       summary: Patient Logout

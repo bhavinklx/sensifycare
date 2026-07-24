@@ -23,6 +23,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('patient-logout', [PatientAuthController::class, 'logout']);
     
+    // Profile API
+    Route::get('patient-profile', [PatientAuthController::class, 'getProfile']);
+    Route::post('patient-profile/update', [PatientAuthController::class, 'updateProfile']);
+    
     // Symptoms API
     Route::get('patient-symptoms', [PatientSymptomController::class, 'index']);
     Route::post('patient-symptoms', [PatientSymptomController::class, 'save']);

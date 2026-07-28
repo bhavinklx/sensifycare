@@ -117,6 +117,48 @@
                 </li>
             @endif
 
+            @if(auth()->user()->can('health-parameter-list') || auth()->user()->can('health-parameter-add'))
+                <li class="treeview {{ ($fileName == 'health-parameter-list' || $fileName == 'health-parameter-add' || $fileName == 'health-parameter-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-heart-pulse-line"></i>
+                        <span class="menu-text">Health Parameters</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('health-parameter-list')
+                            <li>
+                                <a href="{{ route("health-parameter-list") }}" class="{{ ($fileName == 'health-parameter-list') ? 'active-sub' : '' }}">Health Parameter List</a>
+                            </li>
+                        @endcan
+                        @can('health-parameter-add')
+                            <li>
+                                <a href="{{ route("health-parameter-add") }}" class="{{ ($fileName == 'health-parameter-add' || $fileName == 'health-parameter-edit') ? 'active-sub' : '' }}">Add Health Parameter</a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('qa-list') || auth()->user()->can('qa-add'))
+                <li class="treeview {{ ($fileName == 'qa-list' || $fileName == 'qa-add' || $fileName == 'qa-edit') ? 'active current-page' : '' }}">
+                    <a href="javascript: void (0)">
+                        <i class="ri-question-answer-line"></i>
+                        <span class="menu-text">Question Answers</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @can('qa-list')
+                            <li>
+                                <a href="{{ route("qa-list") }}" class="{{ ($fileName == 'qa-list') ? 'active-sub' : '' }}">Question List</a>
+                            </li>
+                        @endcan
+                        @can('qa-add')
+                            <li>
+                                <a href="{{ route("qa-add") }}" class="{{ ($fileName == 'qa-add' || $fileName == 'qa-edit') ? 'active-sub' : '' }}">Add Questions</a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endif
+
             @if(auth()->user()->can('banner-list') || auth()->user()->can('banner-add'))
                 <li class="treeview {{ ($fileName == 'banner-list' || $fileName == 'banner-add' || $fileName == 'banner-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">

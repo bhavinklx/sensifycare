@@ -13,6 +13,8 @@ use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Setting\SettingController;
 use App\Http\Controllers\Symptom\SymptomController;
+use App\Http\Controllers\QuestionAnswer\QuestionAnswerController;
+use App\Http\Controllers\HealthParameter\HealthParameterController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -242,6 +244,46 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/symptom-change-status", "change_status")->name("symptom-change-status");
         Route::post("/admin/symptom-update-order", "update_order")->name("symptom-update-order");
         Route::post('/admin/symptom-image-upload', 'uploadImage')->name('symptom-image-upload');
+    });
+
+    //For Question Answer
+    Route::controller(QuestionAnswerController::class)->group(function (){
+        // Route::middleware('can:qa-add')->group(function () {
+            Route::get("/admin/qa-add", "create")->name("qa-add");
+            Route::post("/admin/qa-insert", "insert")->name("qa-insert");
+        // });
+        // Route::middleware('can:qa-edit')->group(function () {
+            Route::get("/admin/qa-edit/{id}", "edit")->name("qa-edit");
+            Route::post("/admin/qa-update", "update")->name("qa-update");
+        // });
+        // Route::middleware('can:qa-list')->group(function () {
+            Route::get("/admin/qa-list", "view")->name("qa-list");
+            Route::get("/admin/qa-load-table", "load_table")->name("qa-load-table");
+        // });
+        // Route::middleware('can:qa-delete')->group(function () {
+            Route::post("/admin/qa-delete", "delete")->name("qa-delete");
+        // });
+    });
+
+    //For Health Parameter
+    Route::controller(HealthParameterController::class)->group(function (){
+        Route::middleware('can:health-parameter-add')->group(function () {
+            Route::get("/admin/health-parameter-add", "create")->name("health-parameter-add");
+            Route::post("/admin/health-parameter-insert", "insert")->name("health-parameter-insert");
+        });
+        Route::middleware('can:health-parameter-edit')->group(function () {
+            Route::get("/admin/health-parameter-edit/{id}", "edit")->name("health-parameter-edit");
+            Route::post("/admin/health-parameter-update", "update")->name("health-parameter-update");
+        });
+        Route::middleware('can:health-parameter-list')->group(function () {
+            Route::get("/admin/health-parameter-list", "view")->name("health-parameter-list");
+            Route::get("/admin/health-parameter-load-table", "load_table")->name("health-parameter-load-table");
+        });
+        Route::middleware('can:health-parameter-delete')->group(function () {
+            Route::post("/admin/health-parameter-delete", "delete")->name("health-parameter-delete");
+        });
+        Route::post("/admin/health-parameter-change-status", "change_status")->name("health-parameter-change-status");
+        Route::post("/admin/health-parameter-update-order", "update_order")->name("health-parameter-update-order");
     });
 });
 

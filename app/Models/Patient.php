@@ -59,4 +59,9 @@ class Patient extends Authenticatable
     {
         return $this->belongsToMany(Symptom::class, 'patient_symptom', 'patient_id', 'symptom_id');
     }
+
+    public function healthParameters()
+    {
+        return $this->hasMany(PatientHealthParameter::class, 'patient_id', 'patient_id');
+    }
 }

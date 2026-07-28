@@ -183,6 +183,33 @@ paths:
           description: Symptoms retrieved successfully
         '401':
           description: Unauthorized
+    post:
+      summary: Sync Patient Symptoms (Direct)
+      description: Replace and synchronize patient symptoms.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symptom_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [3, 4]
+                patient_other_symptoms:
+                  type: string
+                  example: "Headache"
+      responses:
+        '200':
+          description: Symptoms saved successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
   /api/patient-symptoms/selected:
     get:
       summary: Get Selected Patient Symptoms
@@ -222,10 +249,20 @@ paths:
           description: Unauthorized
         '422':
           description: Validation error
-  /api/patient-symptoms/sync:
+  /api/patient-health-parameters:
+    get:
+      summary: Get Active Health Parameters
+      description: Retrieve the list of active health parameters with their configuration options.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Health parameters retrieved successfully
+        '401':
+          description: Unauthorized
     post:
-      summary: Sync Patient Symptoms
-      description: Replace and synchronize patient symptoms.
+      summary: Save Patient Health Parameters
+      description: Save or update the authenticated patient's responses to health parameters.
       security:
         - bearerAuth: []
       requestBody:
@@ -234,22 +271,43 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - answers
               properties:
-                symptom_ids:
+                answers:
                   type: array
                   items:
-                    type: integer
-                  example: [3, 4]
-                patient_other_symptoms:
-                  type: string
-                  example: "Headache"
+                    type: object
+                    required:
+                      - health_parameter_id
+                      - answer
+                    properties:
+                      health_parameter_id:
+                        type: integer
+                        example: 1
+                      answer:
+                        type: string
+                        example: "Yes"
       responses:
         '200':
-          description: Symptoms saved successfully
+          description: Health parameters saved successfully
         '401':
           description: Unauthorized
         '422':
           description: Validation error
+        '500':
+          description: Failed to save health parameters
+  /api/patient-health-parameters/selected:
+    get:
+      summary: Get Patient Selected Health Parameters
+      description: Retrieve the authenticated patient's previously saved health parameter answers.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Saved health parameters retrieved successfully
+        '401':
+          description: Unauthorized
   /api/patient-logout:
     post:
       summary: Patient Logout

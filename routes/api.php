@@ -33,7 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('patient-symptoms/selected', [PatientSymptomController::class, 'selected']);
     Route::post('patient-symptoms', [PatientSymptomController::class, 'save']);
     Route::post('patient-symptoms/add', [PatientSymptomController::class, 'add']);
-    Route::post('patient-symptoms/sync', [PatientSymptomController::class, 'save']);
     
     // Health Parameters API
     Route::get('patient-health-parameters', [PatientHealthParameterController::class, 'index']);

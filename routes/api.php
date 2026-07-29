@@ -5,8 +5,6 @@ use App\Http\Controllers\Dashboard\DashboardController;
 
 
 use App\Http\Controllers\Api\PatientAuthController;
-use App\Http\Controllers\Api\PatientSymptomController;
-use App\Http\Controllers\Api\PatientHealthParameterController;
 
 Route::post('/analyze-report', [DashboardController::class, 'analyzeReport'])->name("analyze-report");
 Route::post('/analyze-report-upload', [DashboardController::class, 'uploadReport'])->name("analyze-report-upload");
@@ -27,15 +25,4 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile API
     Route::get('patient-profile', [PatientAuthController::class, 'getProfile']);
     Route::post('patient-profile/update', [PatientAuthController::class, 'updateProfile']);
-    
-    // Symptoms API
-    Route::get('patient-symptoms', [PatientSymptomController::class, 'index']);
-    Route::get('patient-symptoms/selected', [PatientSymptomController::class, 'selected']);
-    Route::post('patient-symptoms', [PatientSymptomController::class, 'save']);
-    Route::post('patient-symptoms/add', [PatientSymptomController::class, 'add']);
-    
-    // Health Parameters API
-    Route::get('patient-health-parameters', [PatientHealthParameterController::class, 'index']);
-    Route::get('patient-health-parameters/selected', [PatientHealthParameterController::class, 'selected']);
-    Route::post('patient-health-parameters', [PatientHealthParameterController::class, 'save']);
 });

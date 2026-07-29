@@ -38,6 +38,16 @@ class Patient extends Authenticatable
         "patient_status",
         "patient_otp",
         "patient_other_symptoms",
+        "preferred_language",
+        "height_cm",
+        "weight_kg",
+        "profile_step",
+        "is_profile_complete",
+        "symptoms",
+    ];
+
+    protected $casts = [
+        'symptoms' => 'array',
     ];
 
     protected $hidden = [

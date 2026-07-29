@@ -12,7 +12,7 @@ paths:
   /api/patient-signup:
     post:
       summary: Register a new patient
-      description: Create a new patient record by providing name, email, mobile, and date of birth.
+      description: Create a new patient record by providing name, email, phone, and date of birth.
       requestBody:
         required: true
         content:
@@ -20,25 +20,25 @@ paths:
             schema:
               type: object
               required:
-                - name
+                - patient_name
                 - email
-                - mobile
-                - dob
+                - patient_phone
+                - date_of_birth
               properties:
-                name:
+                patient_name:
                   type: string
-                  example: "John Doe"
+                  example: "Rahul Sharma"
                 email:
                   type: string
                   format: email
-                  example: "john.doe@example.com"
-                mobile:
+                  example: "rahul@email.com"
+                patient_phone:
                   type: string
                   example: "9876543210"
-                dob:
+                date_of_birth:
                   type: string
                   format: date
-                  example: "1990-05-15"
+                  example: "1992-05-14"
       responses:
         '200':
           description: Patient successfully registered
@@ -104,7 +104,7 @@ paths:
   /api/patient-profile/update:
     post:
       summary: Update Patient Profile
-      description: Update profile details for the authenticated patient, including optional image upload.
+      description: Update profile details for the authenticated patient based on the step. One API handles basic, health, symptoms, and edit steps.
       security:
         - bearerAuth: []
       requestBody:
@@ -113,54 +113,77 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - profile_step
               properties:
+                profile_step:
+                  type: string
+                  enum: [basic, health, symptoms, edit]
+                  example: "basic"
                 first_name:
                   type: string
-                  example: "John"
+                  example: "Rahul"
                 last_name:
                   type: string
-                  example: "Doe"
-                email:
-                  type: string
-                  format: email
-                  example: "john.doe@example.com"
-                phone:
-                  type: string
-                  example: "9876543210"
+                  example: "Sharma"
                 dob:
                   type: string
                   format: date
-                  example: "1990-05-15"
+                  example: "1992-05-14"
                 gender:
                   type: string
+                  enum: [Male, Female, Other]
                   example: "Male"
-                marital_status:
-                  type: string
-                  example: "Single"
-                occupation:
-                  type: string
-                  example: "Software Engineer"
-                blood_group:
-                  type: string
-                  example: "O+"
-                blood_pressure:
-                  type: string
-                  example: "120/80"
-                sugar_level:
-                  type: string
-                  example: "95"
-                address:
-                  type: string
-                  example: "123 Main St"
+                height_cm:
+                  type: integer
+                  example: 175
+                weight_kg:
+                  type: integer
+                  example: 72
                 city:
                   type: string
-                  example: "New York"
-                state:
+                  example: "Ahmedabad"
+                preferred_language:
                   type: string
-                  example: "NY"
-                postal_code:
+                  enum: [English, Hindi, Gujarati, Marathi, Tamil]
+                  example: "English"
+                average_sleep:
                   type: string
-                  example: "10001"
+                  example: "6 - 7 hours"
+                physical_activity:
+                  type: string
+                  example: "3 - 4 days / week"
+                smoking:
+                  type: string
+                  example: "Never"
+                alcohol:
+                  type: string
+                  example: "Never"
+                water_intake:
+                  type: string
+                  example: "1.5 - 2 L"
+                diet_type:
+                  type: string
+                  example: "Vegetarian"
+                stress_level:
+                  type: string
+                  example: "Moderate"
+                fasting:
+                  type: string
+                  example: "Occasionally"
+                work_type:
+                  type: string
+                  example: "Regular (Day)"
+                menstrual_cycle:
+                  type: string
+                  example: "Not Applicable"
+                symptoms:
+                  type: string
+                  description: JSON string array of symptom IDs
+                  example: '["fatigue","headache"]'
+                other_symptoms:
+                  type: string
+                  example: "Neck pain"
                 patient_image:
                   type: string
                   format: binary
@@ -170,142 +193,6 @@ paths:
           description: Profile updated successfully
         '400':
           description: Invalid input parameters
-        '401':
-          description: Unauthorized
-  /api/patient-symptoms:
-    get:
-      summary: List Active Symptoms
-      description: Retrieve list of all active symptoms in the system.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Symptoms retrieved successfully
-        '401':
-          description: Unauthorized
-    post:
-      summary: Sync Patient Symptoms (Direct)
-      description: Replace and synchronize patient symptoms.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                symptom_ids:
-                  type: array
-                  items:
-                    type: integer
-                  example: [3, 4]
-                patient_other_symptoms:
-                  type: string
-                  example: "Headache"
-      responses:
-        '200':
-          description: Symptoms saved successfully
-        '401':
-          description: Unauthorized
-        '422':
-          description: Validation error
-  /api/patient-symptoms/selected:
-    get:
-      summary: Get Selected Patient Symptoms
-      description: Retrieve the symptoms currently selected by the authenticated patient.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Selected symptoms retrieved successfully
-        '401':
-          description: Unauthorized
-  /api/patient-symptoms/add:
-    post:
-      summary: Add Patient Symptoms
-      description: Add new symptoms to the patient's list without removing existing ones.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                symptom_ids:
-                  type: array
-                  items:
-                    type: integer
-                  example: [1, 2]
-                patient_other_symptoms:
-                  type: string
-                  example: "Mild fever and coughing"
-      responses:
-        '200':
-          description: Symptoms added successfully
-        '401':
-          description: Unauthorized
-        '422':
-          description: Validation error
-  /api/patient-health-parameters:
-    get:
-      summary: Get Active Health Parameters
-      description: Retrieve the list of active health parameters with their configuration options.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Health parameters retrieved successfully
-        '401':
-          description: Unauthorized
-    post:
-      summary: Save Patient Health Parameters
-      description: Save or update the authenticated patient's responses to health parameters.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - answers
-              properties:
-                answers:
-                  type: array
-                  items:
-                    type: object
-                    required:
-                      - health_parameter_id
-                      - answer
-                    properties:
-                      health_parameter_id:
-                        type: integer
-                        example: 1
-                      answer:
-                        type: string
-                        example: "Yes"
-      responses:
-        '200':
-          description: Health parameters saved successfully
-        '401':
-          description: Unauthorized
-        '422':
-          description: Validation error
-        '500':
-          description: Failed to save health parameters
-  /api/patient-health-parameters/selected:
-    get:
-      summary: Get Patient Selected Health Parameters
-      description: Retrieve the authenticated patient's previously saved health parameter answers.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Saved health parameters retrieved successfully
         '401':
           description: Unauthorized
   /api/patient-logout:

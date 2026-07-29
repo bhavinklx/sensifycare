@@ -15,6 +15,7 @@ class Symptom extends Model
         "symptom_name",
         "symptom_desc",
         "symptom_image",
+        "symptom_emoji",
         "symptom_order",
         "symptom_status",
         "created_at",

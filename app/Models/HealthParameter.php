@@ -17,10 +17,12 @@ class HealthParameter extends Model
         'health_parameter_name',
         'health_parameter_question',
         'health_parameter_show_type',
+        'health_parameter_emoji',
         'health_parameter_option1',
         'health_parameter_option2',
         'health_parameter_option3',
         'health_parameter_option4',
+        'health_parameter_option5',
         'health_parameter_order',
         'health_parameter_status',
     ];
@@ -32,11 +34,12 @@ class HealthParameter extends Model
 
     public function getOptionsArrayAttribute()
     {
-        return array_filter([
+        return array_values(array_filter([
             $this->health_parameter_option1,
             $this->health_parameter_option2,
             $this->health_parameter_option3,
             $this->health_parameter_option4,
-        ]);
+            $this->health_parameter_option5,
+        ]));
     }
 }

@@ -13,7 +13,6 @@ use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Setting\SettingController;
 use App\Http\Controllers\Symptom\SymptomController;
-use App\Http\Controllers\QuestionAnswer\QuestionAnswerController;
 use App\Http\Controllers\HealthParameter\HealthParameterController;
 
 Route::get('/clear-cache', function () {
@@ -246,24 +245,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/admin/symptom-image-upload', 'uploadImage')->name('symptom-image-upload');
     });
 
-    //For Question Answer
-    Route::controller(QuestionAnswerController::class)->group(function (){
-        // Route::middleware('can:qa-add')->group(function () {
-            Route::get("/admin/qa-add", "create")->name("qa-add");
-            Route::post("/admin/qa-insert", "insert")->name("qa-insert");
-        // });
-        // Route::middleware('can:qa-edit')->group(function () {
-            Route::get("/admin/qa-edit/{id}", "edit")->name("qa-edit");
-            Route::post("/admin/qa-update", "update")->name("qa-update");
-        // });
-        // Route::middleware('can:qa-list')->group(function () {
-            Route::get("/admin/qa-list", "view")->name("qa-list");
-            Route::get("/admin/qa-load-table", "load_table")->name("qa-load-table");
-        // });
-        // Route::middleware('can:qa-delete')->group(function () {
-            Route::post("/admin/qa-delete", "delete")->name("qa-delete");
-        // });
-    });
 
     //For Health Parameter
     Route::controller(HealthParameterController::class)->group(function (){

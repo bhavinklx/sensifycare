@@ -156,6 +156,13 @@ class ArticleController extends Controller
             ], 404);
         }
 
+        $bcategory = Bcategory::find($blog->bcategory_id);
+
+        // Calculate read time
+        $words = str_word_count(strip_tags($blog->blog_desc ?: ''));
+        $readTimeMin = max(1, ceil($words / 200));
+        $readTime = $readTimeMin . ' min read';
+
         $article = [
             'article_id' => $blog->blog_id,
             'title' => $blog->blog_title,
@@ -164,6 +171,10 @@ class ArticleController extends Controller
             'image_url' => $blog->blog_image ? asset('uploads/blog/' . $blog->blog_image) : '',
             'short_description' => $blog->blog_short_desc,
             'description' => $blog->blog_desc,
+            'category_name' => $bcategory ? $bcategory->bcategory_title : '',
+            'author' => 'SensifyCare Health Team',
+            'read_time' => $readTime,
+            'label' => $blog->blog_popular_status == '1' ? 'Popular' : 'Essential Read',
             'created_at' => $blog->created_at,
         ];
 

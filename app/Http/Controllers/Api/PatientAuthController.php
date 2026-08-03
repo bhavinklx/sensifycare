@@ -249,6 +249,8 @@ class PatientAuthController extends Controller
                 'height_cm' => 'nullable|integer',
                 'weight_kg' => 'nullable|integer',
                 'patient_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'symptoms' => 'nullable',
+                'other_symptoms' => 'nullable|string',
             ];
             
             $allParams = HealthParameter::active()->get();
@@ -328,8 +330,32 @@ class PatientAuthController extends Controller
             if (is_string($symptomsInput)) {
                 $symptomsInput = json_decode($symptomsInput, true) ?: [];
             }
-            $integerIds = array_map('intval', $symptomsInput);
-            $patient->symptoms = $integerIds;
+            
+            $activeSymptoms = Symptom::where('symptom_status', '1')->get();
+            $slugToIdMap = [];
+            foreach ($activeSymptoms as $symptom) {
+                $slugToIdMap[$this->getSymptomKey($symptom->symptom_name)] = $symptom->symptom_id;
+            }
+
+            $integerIds = [];
+            $savedSlugs = [];
+            foreach ($symptomsInput as $inputSymptom) {
+                if (is_numeric($inputSymptom)) {
+                    $id = (int)$inputSymptom;
+                    $integerIds[] = $id;
+                    foreach ($slugToIdMap as $slug => $sId) {
+                        if ($sId === $id) {
+                            $savedSlugs[] = $slug;
+                            break;
+                        }
+                    }
+                } elseif (isset($slugToIdMap[$inputSymptom])) {
+                    $integerIds[] = $slugToIdMap[$inputSymptom];
+                    $savedSlugs[] = $inputSymptom;
+                }
+            }
+
+            $patient->symptoms = $savedSlugs;
             $patient->other_symptoms = $request->input('other_symptoms');
             $patient->is_profile_complete = true;
             $patient->save();
@@ -348,6 +374,46 @@ class PatientAuthController extends Controller
             if ($request->has('height_cm')) $patient->height_cm = $request->height_cm;
             if ($request->has('weight_kg')) $patient->weight_kg = $request->weight_kg;
             $patient->save();
+
+            // Symptoms if present in edit request
+            if ($request->has('symptoms')) {
+                $symptomsInput = $request->input('symptoms', '[]');
+                if (is_string($symptomsInput)) {
+                    $symptomsInput = json_decode($symptomsInput, true) ?: [];
+                }
+                
+                $activeSymptoms = Symptom::where('symptom_status', '1')->get();
+                $slugToIdMap = [];
+                foreach ($activeSymptoms as $symptom) {
+                    $slugToIdMap[$this->getSymptomKey($symptom->symptom_name)] = $symptom->symptom_id;
+                }
+
+                $integerIds = [];
+                $savedSlugs = [];
+                foreach ($symptomsInput as $inputSymptom) {
+                    if (is_numeric($inputSymptom)) {
+                        $id = (int)$inputSymptom;
+                        $integerIds[] = $id;
+                        foreach ($slugToIdMap as $slug => $sId) {
+                            if ($sId === $id) {
+                                $savedSlugs[] = $slug;
+                                break;
+                            }
+                        }
+                    } elseif (isset($slugToIdMap[$inputSymptom])) {
+                        $integerIds[] = $slugToIdMap[$inputSymptom];
+                        $savedSlugs[] = $inputSymptom;
+                    }
+                }
+
+                $patient->symptoms = $savedSlugs;
+                $patient->save();
+                $patient->symptoms()->sync($integerIds);
+            }
+            if ($request->has('other_symptoms')) {
+                $patient->other_symptoms = $request->input('other_symptoms');
+                $patient->save();
+            }
 
             // Health parameters if present in edit request
             $allParams = HealthParameter::active()->get();
@@ -439,7 +505,7 @@ class PatientAuthController extends Controller
 
         $symptomConfig = $activeSymptoms->map(function ($symptom) {
             return [
-                'id' => $symptom->symptom_id,
+                'id' => $this->getSymptomKey($symptom->symptom_name),
                 'title' => $symptom->symptom_name,
                 'description' => $symptom->symptom_desc,
                 'emoji' => $symptom->symptom_emoji ?: '❓',

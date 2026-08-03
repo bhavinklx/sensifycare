@@ -400,6 +400,18 @@ paths:
                       description:
                         type: string
                         example: "<p>Full details here...</p>"
+                      category_name:
+                        type: string
+                        example: "Nutrition"
+                      author:
+                        type: string
+                        example: "SensifyCare Health Team"
+                      read_time:
+                        type: string
+                        example: "4 min read"
+                      label:
+                        type: string
+                        example: "Essential Read"
                       created_at:
                         type: string
                         example: "2026-07-31 09:56:55"

@@ -212,6 +212,28 @@ paths:
       description: Retrieve a list of all active articles/blogs.
       security:
         - bearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          description: Filter articles by category slug (e.g. nutrition, lab-tests). Use 'all' or omit to retrieve all.
+          required: false
+          schema:
+            type: string
+            example: "nutrition"
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: per_page
+          in: query
+          description: Number of articles per page
+          required: false
+          schema:
+            type: integer
+            example: 10
       responses:
         '200':
           description: Successful response
@@ -227,31 +249,103 @@ paths:
                     type: string
                     example: "Articles fetched successfully"
                   data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        article_id:
-                          type: integer
-                          example: 1
-                        title:
-                          type: string
-                          example: "How to maintain a healthy lifestyle"
-                        slug:
-                          type: string
-                          example: "how-to-maintain-a-healthy-lifestyle"
-                        date:
-                          type: string
-                          example: "2026-07-31"
-                        image_url:
-                          type: string
-                          example: "http://domain.com/uploads/blog/image.jpg"
-                        short_description:
-                          type: string
-                          example: "Tips and tricks for healthy habits."
-                        created_at:
-                          type: string
-                          example: "2026-07-31 09:56:55"
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            category_id:
+                              type: integer
+                              example: 8
+                            title:
+                              type: string
+                              example: "Nutrition"
+                            slug:
+                              type: string
+                              example: "nutrition"
+                      featured_article:
+                        type: object
+                        nullable: true
+                        properties:
+                          article_id:
+                            type: integer
+                            example: 1
+                          title:
+                            type: string
+                            example: "What Your CBC Report Actually Tells You"
+                          slug:
+                            type: string
+                            example: "what-your-cbc-report-actually-tells-you"
+                          date:
+                            type: string
+                            example: "2026-07-31"
+                          image_url:
+                            type: string
+                            example: "http://domain.com/uploads/blog/image.jpg"
+                          short_description:
+                            type: string
+                            example: "Haemoglobin, WBC, platelets — understand every column..."
+                          category_name:
+                            type: string
+                            example: "Lab Tests"
+                          read_time:
+                            type: string
+                            example: "4 min read"
+                          created_at:
+                            type: string
+                            example: "2026-07-31 09:56:55"
+                      articles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            article_id:
+                              type: integer
+                              example: 1
+                            title:
+                              type: string
+                              example: "How to maintain a healthy lifestyle"
+                            slug:
+                              type: string
+                              example: "how-to-maintain-a-healthy-lifestyle"
+                            date:
+                              type: string
+                              example: "2026-07-31"
+                            image_url:
+                              type: string
+                              example: "http://domain.com/uploads/blog/image.jpg"
+                            short_description:
+                              type: string
+                              example: "Tips and tricks for healthy habits."
+                            category_name:
+                              type: string
+                              example: "Nutrition"
+                            label:
+                              type: string
+                              example: "Essential Read"
+                            read_time:
+                              type: string
+                              example: "4 min"
+                            created_at:
+                              type: string
+                              example: "2026-07-31 09:56:55"
+                      pagination:
+                        type: object
+                        properties:
+                          current_page:
+                            type: integer
+                            example: 1
+                          last_page:
+                            type: integer
+                            example: 3
+                          per_page:
+                            type: integer
+                            example: 10
+                          total:
+                            type: integer
+                            example: 30
         '401':
           description: Unauthorized
   /api/articles/{id}:

@@ -26,6 +26,11 @@ class PatientReport extends Model
         'formatted_upload_date',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function patient()
     {
         return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');

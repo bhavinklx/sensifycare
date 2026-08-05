@@ -399,19 +399,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (data.answer.explanation) {
                 answerHtml += `<div class="explanation-section mb-3">
-                    <div class="fw-bold text-secondary small text-uppercase mb-1"><i class="ri-lightbulb-line me-1"></i> Explanation</div>
+                    <div class="fw-bold text-secondary small mb-1"><i class="ri-lightbulb-line me-1"></i> Explanation</div>
                     <div class="text-muted small">${simpleMarkdown(trimSafe(data.answer.explanation))}</div>
                 </div>`;
             }
             if (data.answer.practical_advice) {
                 answerHtml += `<div class="advice-section mb-3">
-                    <div class="fw-bold text-success small text-uppercase mb-1"><i class="ri-heart-pulse-line me-1"></i> Practical Advice</div>
+                    <div class="fw-bold text-success small mb-1"><i class="ri-heart-pulse-line me-1"></i> Practical Advice</div>
                     <div class="text-muted small">${simpleMarkdown(trimSafe(data.answer.practical_advice))}</div>
                 </div>`;
             }
             if (data.answer.when_to_consult_doctor) {
                 answerHtml += `<div class="consultation-section mb-3">
-                    <div class="fw-bold text-danger small text-uppercase mb-1"><i class="ri-hospital-line me-1"></i> When to Consult a Doctor</div>
+                    <div class="fw-bold text-danger small mb-1"><i class="ri-hospital-line me-1"></i> When to Consult a Doctor</div>
                     <div class="text-muted small">${simpleMarkdown(trimSafe(data.answer.when_to_consult_doctor))}</div>
                 </div>`;
             }

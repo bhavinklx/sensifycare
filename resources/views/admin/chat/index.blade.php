@@ -388,8 +388,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderStandardAnswer(data) {
+        let answerHtml = '';
+        const trimSafe = (str) => typeof str === 'string' ? str.trim() : (str ? String(str) : '');
+
+        if (typeof data.answer === 'string') {
+            answerHtml = simpleMarkdown(data.answer.trim());
+        } else if (typeof data.answer === 'object' && data.answer !== null) {
+            if (data.answer.direct_answer) {
+                answerHtml += `<div class="direct-answer fw-bold mb-3 text-dark fs-6">${simpleMarkdown(trimSafe(data.answer.direct_answer))}</div>`;
+            }
+            if (data.answer.explanation) {
+                answerHtml += `<div class="explanation-section mb-3">
+                    <div class="fw-bold text-secondary small text-uppercase mb-1"><i class="ri-lightbulb-line me-1"></i> Explanation</div>
+                    <div class="text-muted small">${simpleMarkdown(trimSafe(data.answer.explanation))}</div>
+                </div>`;
+            }
+            if (data.answer.practical_advice) {
+                answerHtml += `<div class="advice-section mb-3">
+                    <div class="fw-bold text-success small text-uppercase mb-1"><i class="ri-heart-pulse-line me-1"></i> Practical Advice</div>
+                    <div class="text-muted small">${simpleMarkdown(trimSafe(data.answer.practical_advice))}</div>
+                </div>`;
+            }
+            if (data.answer.when_to_consult_doctor) {
+                answerHtml += `<div class="consultation-section mb-3">
+                    <div class="fw-bold text-danger small text-uppercase mb-1"><i class="ri-hospital-line me-1"></i> When to Consult a Doctor</div>
+                    <div class="text-muted small">${simpleMarkdown(trimSafe(data.answer.when_to_consult_doctor))}</div>
+                </div>`;
+            }
+            if (answerHtml === '') {
+                answerHtml = simpleMarkdown(JSON.stringify(data.answer));
+            }
+        } else {
+            answerHtml = simpleMarkdown(trimSafe(data.answer));
+        }
+
         let html = `<div class="standard-answer">
-            <div class="answer-text lh-base">${simpleMarkdown(data.answer.trim())}</div>`;
+            <div class="answer-text lh-base">${answerHtml}</div>`;
         
         if (data.suggested_questions && data.suggested_questions.length > 0) {
             html += `<div class="mt-2 pt-2 border-top border-light">

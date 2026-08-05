@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 
 use App\Http\Controllers\Api\PatientAuthController;
 use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Api\PatientReportController;
 
 /**
  * Dashboard Routes
@@ -39,4 +40,10 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::get('articles', [ArticleController::class, 'index']);
     Route::get('articles/{id}', [ArticleController::class, 'show']);
+
+    /**
+     * Report Upload Routes
+     */
+    Route::post('patient-reports/upload', [PatientReportController::class, 'upload']);
+    Route::get('patient-reports/recent', [PatientReportController::class, 'recent']);
 });

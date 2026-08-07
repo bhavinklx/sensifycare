@@ -19,6 +19,11 @@ class PatientReport extends Model
         'file_path',
         'file_size',
         'status',
+        'ocr_data',
+    ];
+
+    protected $casts = [
+        'ocr_data' => 'array',
     ];
 
     protected $appends = [

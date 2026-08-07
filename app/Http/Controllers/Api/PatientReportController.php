@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PatientReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class PatientReportController extends Controller
 {
@@ -37,18 +38,44 @@ class PatientReportController extends Controller
             // Move file to public/uploads/report
             $file->move(public_path('uploads/report'), $filename);
 
-            // Create patient report record
+            // Create patient report record initially in Processing status
             $report = PatientReport::create([
                 'patient_id' => $patient->patient_id,
                 'file_name' => $originalName,
                 'file_path' => $filename,
                 'file_size' => $fileSize,
-                'status' => 'Processed',
+                'status' => 'Processing',
             ]);
+
+            try {
+                // Call the Sensify Care OCR extraction API
+                $response = Http::timeout(60)->post('http://api.sensifycare.com/nodeapp/extract-data', [
+                    'file_url' => asset('uploads/report/' . $filename),
+                    'language' => $patient->preferred_language ?: 'en'
+                ]);
+
+                if ($response->successful()) {
+                    $report->update([
+                        'status' => 'Processed',
+                        'ocr_data' => $response->json(),
+                    ]);
+                } else {
+                    $report->update([
+                        'status' => 'Failed',
+                    ]);
+                }
+            } catch (\Exception $e) {
+                $report->update([
+                    'status' => 'Failed',
+                ]);
+            }
+
+            // Refresh model instance to get updated status and ocr_data attributes
+            $report->refresh();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Report uploaded successfully',
+                'message' => 'Report uploaded and processed successfully',
                 'data' => $report
             ], 201);
         }

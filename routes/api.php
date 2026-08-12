@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
     /**
      * Report Upload Routes
      */
+    Route::get('patient-reports', [PatientReportController::class, 'index']);
     Route::post('patient-reports/upload', [PatientReportController::class, 'upload']);
     Route::get('patient-reports/recent', [PatientReportController::class, 'recent']);
+    Route::post('patient-reports/analyze', [PatientReportController::class, 'analyze']);
 });

@@ -20,6 +20,13 @@ class PatientReport extends Model
         'file_size',
         'status',
         'ocr_data',
+        'report_title',
+        'score',
+        'markers_count',
+        'abnormal_count',
+        'ok_count',
+        'pages_count',
+        'report_quality',
     ];
 
     protected $casts = [

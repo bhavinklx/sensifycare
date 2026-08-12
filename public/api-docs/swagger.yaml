@@ -419,6 +419,99 @@ paths:
           description: Unauthorized
         '404':
           description: Article not found
+  /api/patient-reports:
+    get:
+      summary: Get Patient Reports List
+      description: Retrieve all reports uploaded by the authenticated patient along with aggregated statistics for the "My Reports" screen.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Reports list fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      stats:
+                        type: object
+                        properties:
+                          total_reports:
+                            type: integer
+                            example: 5
+                          total_abnormal:
+                            type: integer
+                            example: 9
+                          total_markers_ok:
+                            type: integer
+                            example: 87
+                      reports:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            patient_report_id:
+                              type: integer
+                              example: 1
+                            patient_id:
+                              type: integer
+                              example: 1
+                            file_name:
+                              type: string
+                              example: "blood_report.pdf"
+                            file_path:
+                              type: string
+                              example: "http://localhost/uploads/report/REP-1722868841_blood_report.pdf"
+                            file_size:
+                              type: integer
+                              example: 2516582
+                            status:
+                              type: string
+                              example: "Processed"
+                            ocr_data:
+                              type: object
+                              nullable: true
+                              example:
+                                blood_group: "O+"
+                                hemoglobin: "14.5 g/dL"
+                            formatted_file_size:
+                              type: string
+                              example: "2.4 MB"
+                            formatted_upload_date:
+                              type: string
+                              example: "Aug 05, 2026"
+                            report_title:
+                              type: string
+                              example: "Max Healthcare – Blood Report"
+                            score:
+                              type: integer
+                              example: 82
+                            markers_count:
+                              type: integer
+                              example: 28
+                            abnormal_count:
+                              type: integer
+                              example: 2
+                            ok_count:
+                              type: integer
+                              example: 26
+                            pages_count:
+                              type: integer
+                              example: 12
+                            report_quality:
+                              type: string
+                              example: "good"
+        '401':
+          description: Unauthorized
   /api/patient-reports/upload:
     post:
       summary: Upload Patient Report
@@ -451,7 +544,7 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: "Report uploaded successfully"
+                    example: "Report uploaded and processed successfully"
                   data:
                     type: object
                     properties:
@@ -473,12 +566,40 @@ paths:
                       status:
                         type: string
                         example: "Processed"
+                      ocr_data:
+                        type: object
+                        nullable: true
+                        description: OCR extracted data from the report file
+                        example:
+                          blood_group: "O+"
+                          hemoglobin: "14.5 g/dL"
                       formatted_file_size:
                         type: string
                         example: "2.4 MB"
                       formatted_upload_date:
                         type: string
                         example: "Aug 05, 2026"
+                      report_title:
+                        type: string
+                        example: "Max Healthcare – Blood Report"
+                      score:
+                        type: integer
+                        example: 82
+                      markers_count:
+                        type: integer
+                        example: 28
+                      abnormal_count:
+                        type: integer
+                        example: 2
+                      ok_count:
+                        type: integer
+                        example: 26
+                      pages_count:
+                        type: integer
+                        example: 12
+                      report_quality:
+                        type: string
+                        example: "good"
         '400':
           description: File upload failed
         '401':
@@ -527,14 +648,106 @@ paths:
                       status:
                         type: string
                         example: "Processed"
+                      ocr_data:
+                        type: object
+                        nullable: true
+                        description: OCR extracted data from the report file
+                        example:
+                          blood_group: "O+"
+                          hemoglobin: "14.5 g/dL"
                       formatted_file_size:
                         type: string
                         example: "2.4 MB"
                       formatted_upload_date:
                         type: string
                         example: "Aug 05, 2026"
+                      report_title:
+                        type: string
+                        example: "Max Healthcare – Blood Report"
+                      score:
+                        type: integer
+                        example: 82
+                      markers_count:
+                        type: integer
+                        example: 28
+                      abnormal_count:
+                        type: integer
+                        example: 2
+                      ok_count:
+                        type: integer
+                        example: 26
+                      pages_count:
+                        type: integer
+                        example: 12
+                      report_quality:
+                        type: string
+                        example: "good"
         '401':
           description: Unauthorized
+  /api/patient-reports/analyze:
+    post:
+      summary: Analyze Patient Report
+      description: Analyze a specific medical report or the most recent one using the Sensify Care AI Agent.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [file, text]
+                  description: Optional type of analysis. Defaults to 'file' if patient_report_id or file_url is provided, otherwise 'text'.
+                  example: "file"
+                patient_report_id:
+                  type: integer
+                  description: Optional ID of the specific report to analyze (only used when type is 'file'). If not provided but type is 'file', the most recent report is used.
+                  example: 1
+                file_url:
+                  type: string
+                  description: Optional URL of the report file to analyze (alternative to patient_report_id when type is 'file').
+                  example: "https://www.sensifycare.com/uploads/report/REP-1722868841_blood_report.pdf"
+                question:
+                  type: string
+                  description: Optional question or query to ask the AI Agent.
+                  example: "What does this mean?"
+                text:
+                  type: string
+                  description: Alternative key to pass the question/query (maps to question).
+                  example: "Explain the hemoglobin levels."
+                language:
+                  type: string
+                  description: Optional language code for the analysis output (defaults to the patient's preferred language or 'en').
+                  example: "en"
+      responses:
+        '200':
+          description: Report analyzed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Report analyzed successfully"
+                  data:
+                    type: object
+                    description: The AI analysis result object from the agent
+                    example:
+                      status: "success"
+                      analysis: "Based on the uploaded report, your hemoglobin is normal..."
+        '401':
+          description: Unauthorized
+        '404':
+          description: Report not found
+        '422':
+          description: Validation error
 components:
   securitySchemes:
     bearerAuth:

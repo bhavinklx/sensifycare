@@ -11,19 +11,37 @@ use Illuminate\Support\Facades\Http;
 class PatientReportController extends Controller
 {
     /**
-     * Get list of all reports for the authenticated patient with stats
+     * Get list of reports for the authenticated patient with stats, pagination and status filter
+     * Query params: status (all|Processing|Processed|Failed, default: all), page, per_page (default: 10)
      */
     public function index(Request $request)
     {
         $patient = $request->user();
 
-        $reports = PatientReport::where('patient_id', $patient->patient_id)
-            ->orderBy('patient_report_id', 'desc')
-            ->get();
+        $status = $request->input('status', 'all');
+        if (!in_array($status, ['all', 'Processing', 'Processed', 'Failed'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid status filter. Allowed values: all, Processing, Processed, Failed',
+            ], 422);
+        }
 
-        $totalReports = $reports->count();
-        $totalAbnormal = $reports->sum('abnormal_count');
-        $totalMarkersOk = $reports->sum('ok_count');
+        $perPage = (int) $request->input('per_page', 10);
+
+        $query = PatientReport::where('patient_id', $patient->patient_id)
+            ->orderBy('patient_report_id', 'desc');
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $reports = $query->paginate($perPage);
+
+        $allReports = PatientReport::where('patient_id', $patient->patient_id)->get();
+
+        $totalReports = $allReports->count();
+        $totalAbnormal = $allReports->sum('abnormal_count');
+        $totalMarkersOk = $allReports->sum('ok_count');
 
         return response()->json([
             'success' => true,

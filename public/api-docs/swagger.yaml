@@ -422,9 +422,32 @@ paths:
   /api/patient-reports:
     get:
       summary: Get Patient Reports List
-      description: Retrieve all reports uploaded by the authenticated patient along with aggregated statistics for the "My Reports" screen.
+      description: Retrieve reports uploaded by the authenticated patient with pagination and an optional status filter, along with aggregated statistics for the "My Reports" screen. Stats always reflect all reports of the patient, regardless of the status filter.
       security:
         - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Filter reports by status. Defaults to `all`.
+          schema:
+            type: string
+            enum: [all, Processing, Processed, Failed]
+            default: all
+        - name: page
+          in: query
+          required: false
+          description: Page number.
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          description: Number of items per page.
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
           description: Successful response
@@ -455,63 +478,104 @@ paths:
                             type: integer
                             example: 87
                       reports:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            patient_report_id:
-                              type: integer
-                              example: 1
-                            patient_id:
-                              type: integer
-                              example: 1
-                            file_name:
-                              type: string
-                              example: "blood_report.pdf"
-                            file_path:
-                              type: string
-                              example: "http://localhost/uploads/report/REP-1722868841_blood_report.pdf"
-                            file_size:
-                              type: integer
-                              example: 2516582
-                            status:
-                              type: string
-                              example: "Processed"
-                            ocr_data:
+                        type: object
+                        description: Laravel paginator object; list items are inside `data`.
+                        properties:
+                          current_page:
+                            type: integer
+                            example: 1
+                          data:
+                            type: array
+                            items:
                               type: object
-                              nullable: true
-                              example:
-                                blood_group: "O+"
-                                hemoglobin: "14.5 g/dL"
-                            formatted_file_size:
-                              type: string
-                              example: "2.4 MB"
-                            formatted_upload_date:
-                              type: string
-                              example: "Aug 05, 2026"
-                            report_title:
-                              type: string
-                              example: "Max Healthcare – Blood Report"
-                            score:
-                              type: integer
-                              example: 82
-                            markers_count:
-                              type: integer
-                              example: 28
-                            abnormal_count:
-                              type: integer
-                              example: 2
-                            ok_count:
-                              type: integer
-                              example: 26
-                            pages_count:
-                              type: integer
-                              example: 12
-                            report_quality:
-                              type: string
-                              example: "good"
+                              properties:
+                                patient_report_id:
+                                  type: integer
+                                  example: 1
+                                patient_id:
+                                  type: integer
+                                  example: 1
+                                file_name:
+                                  type: string
+                                  example: "blood_report.pdf"
+                                file_path:
+                                  type: string
+                                  example: "http://localhost/uploads/report/REP-1722868841_blood_report.pdf"
+                                file_size:
+                                  type: integer
+                                  example: 2516582
+                                status:
+                                  type: string
+                                  example: "Processed"
+                                ocr_data:
+                                  type: object
+                                  nullable: true
+                                  example:
+                                    blood_group: "O+"
+                                    hemoglobin: "14.5 g/dL"
+                                formatted_file_size:
+                                  type: string
+                                  example: "2.4 MB"
+                                formatted_upload_date:
+                                  type: string
+                                  example: "Aug 05, 2026"
+                                report_title:
+                                  type: string
+                                  example: "Max Healthcare – Blood Report"
+                                score:
+                                  type: integer
+                                  example: 82
+                                markers_count:
+                                  type: integer
+                                  example: 28
+                                abnormal_count:
+                                  type: integer
+                                  example: 2
+                                ok_count:
+                                  type: integer
+                                  example: 26
+                                pages_count:
+                                  type: integer
+                                  example: 12
+                                report_quality:
+                                  type: string
+                                  example: "good"
+                          first_page_url:
+                            type: string
+                            example: "http://localhost/api/patient-reports?page=1"
+                          from:
+                            type: integer
+                            example: 1
+                          last_page:
+                            type: integer
+                            example: 1
+                          last_page_url:
+                            type: string
+                            example: "http://localhost/api/patient-reports?page=1"
+                          next_page_url:
+                            type: string
+                            nullable: true
+                            example: null
+                          path:
+                            type: string
+                            example: "http://localhost/api/patient-reports"
+                          per_page:
+                            type: integer
+                            example: 10
+                          prev_page_url:
+                            type: string
+                            nullable: true
+                            example: null
+                          to:
+                            type: integer
+                            example: 2
+                          total:
+                            type: integer
+                            example: 2
         '401':
           description: Unauthorized
+        '422':
+          description: Invalid status filter
   /api/patient-reports/upload:
     post:
       summary: Upload Patient Report

@@ -56,9 +56,12 @@ class PatientAuthController extends Controller
 
         // Generate a 6-digit OTP (for production, integrate an SMS gateway here)
         $otp = rand(100000, 999999);
-        
+
         $patient->patient_otp = $otp;
         $patient->save();
+
+        // Send OTP via SMS gateway
+        $this->sendSMS($patient->patient_phone, $otp . " is your one-time verification code for Sensify Care. OMNETS");
 
         return response()->json([
             'status' => true,
@@ -107,11 +110,14 @@ class PatientAuthController extends Controller
         $patient->patient_gender = 'other'; // default
         $patient->patient_blood_group = 'Unknown';
         $patient->patient_password = Hash::make(uniqid());
-        
+
         // Generate OTP
         $otp = rand(100000, 999999);
         $patient->patient_otp = $otp;
         $patient->save();
+
+        // Send OTP via SMS gateway
+        $this->sendSMS($patient->patient_phone, $otp . " is your one-time verification code for Sensify Care. OMNETS");
 
         return response()->json([
             'status' => true,
@@ -190,7 +196,7 @@ class PatientAuthController extends Controller
     public function getProfile(Request $request)
     {
         $patient = $request->user();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Profile fetched successfully',
@@ -252,7 +258,7 @@ class PatientAuthController extends Controller
                 'symptoms' => 'nullable',
                 'other_symptoms' => 'nullable|string',
             ];
-            
+
             $allParams = HealthParameter::active()->get();
             foreach ($allParams as $param) {
                 $key = $this->getHealthParameterKey($param->health_parameter_name);
@@ -304,7 +310,7 @@ class PatientAuthController extends Controller
             foreach ($allParams as $param) {
                 $key = $this->getHealthParameterKey($param->health_parameter_name);
                 $paramId = $param->health_parameter_id;
-                
+
                 $answer = null;
                 if ($request->has($key)) {
                     $answer = $request->input($key);
@@ -330,7 +336,7 @@ class PatientAuthController extends Controller
             if (is_string($symptomsInput)) {
                 $symptomsInput = json_decode($symptomsInput, true) ?: [];
             }
-            
+
             $activeSymptoms = Symptom::where('symptom_status', '1')->get();
             $slugToIdMap = [];
             foreach ($activeSymptoms as $symptom) {
@@ -338,41 +344,38 @@ class PatientAuthController extends Controller
             }
 
             $integerIds = [];
-            $savedSlugs = [];
             foreach ($symptomsInput as $inputSymptom) {
                 if (is_numeric($inputSymptom)) {
-                    $id = (int)$inputSymptom;
-                    $integerIds[] = $id;
-                    foreach ($slugToIdMap as $slug => $sId) {
-                        if ($sId === $id) {
-                            $savedSlugs[] = $slug;
-                            break;
-                        }
-                    }
+                    $integerIds[] = (int) $inputSymptom;
                 } elseif (isset($slugToIdMap[$inputSymptom])) {
                     $integerIds[] = $slugToIdMap[$inputSymptom];
-                    $savedSlugs[] = $inputSymptom;
                 }
             }
 
-            $patient->symptoms = $savedSlugs;
             $patient->other_symptoms = $request->input('other_symptoms');
             $patient->is_profile_complete = true;
             $patient->save();
 
             $patient->symptoms()->sync($integerIds);
         } elseif ($step === 'edit') {
-            if ($request->has('first_name')) $patient->patient_fname = $request->first_name;
-            if ($request->has('last_name')) $patient->patient_lname = $request->last_name;
-            if ($request->has('email')) $patient->patient_email = $request->email;
-            if ($request->has('patient_phone')) $patient->patient_phone = $request->patient_phone;
+            if ($request->has('first_name'))
+                $patient->patient_fname = $request->first_name;
+            if ($request->has('last_name'))
+                $patient->patient_lname = $request->last_name;
+            if ($request->has('email'))
+                $patient->patient_email = $request->email;
+            if ($request->has('patient_phone'))
+                $patient->patient_phone = $request->patient_phone;
             if ($request->has('dob')) {
                 $patient->patient_dob = $request->dob;
                 $patient->patient_age = \Carbon\Carbon::parse($request->dob)->age;
             }
-            if ($request->has('city')) $patient->patient_city = $request->city;
-            if ($request->has('height_cm')) $patient->height_cm = $request->height_cm;
-            if ($request->has('weight_kg')) $patient->weight_kg = $request->weight_kg;
+            if ($request->has('city'))
+                $patient->patient_city = $request->city;
+            if ($request->has('height_cm'))
+                $patient->height_cm = $request->height_cm;
+            if ($request->has('weight_kg'))
+                $patient->weight_kg = $request->weight_kg;
             $patient->save();
 
             // Symptoms if present in edit request
@@ -381,7 +384,7 @@ class PatientAuthController extends Controller
                 if (is_string($symptomsInput)) {
                     $symptomsInput = json_decode($symptomsInput, true) ?: [];
                 }
-                
+
                 $activeSymptoms = Symptom::where('symptom_status', '1')->get();
                 $slugToIdMap = [];
                 foreach ($activeSymptoms as $symptom) {
@@ -389,25 +392,14 @@ class PatientAuthController extends Controller
                 }
 
                 $integerIds = [];
-                $savedSlugs = [];
                 foreach ($symptomsInput as $inputSymptom) {
                     if (is_numeric($inputSymptom)) {
-                        $id = (int)$inputSymptom;
-                        $integerIds[] = $id;
-                        foreach ($slugToIdMap as $slug => $sId) {
-                            if ($sId === $id) {
-                                $savedSlugs[] = $slug;
-                                break;
-                            }
-                        }
+                        $integerIds[] = (int) $inputSymptom;
                     } elseif (isset($slugToIdMap[$inputSymptom])) {
                         $integerIds[] = $slugToIdMap[$inputSymptom];
-                        $savedSlugs[] = $inputSymptom;
                     }
                 }
 
-                $patient->symptoms = $savedSlugs;
-                $patient->save();
                 $patient->symptoms()->sync($integerIds);
             }
             if ($request->has('other_symptoms')) {
@@ -420,7 +412,7 @@ class PatientAuthController extends Controller
             foreach ($allParams as $param) {
                 $key = $this->getHealthParameterKey($param->health_parameter_name);
                 $paramId = $param->health_parameter_id;
-                
+
                 $answer = null;
                 if ($request->has($key)) {
                     $answer = $request->input($key);
@@ -446,6 +438,25 @@ class PatientAuthController extends Controller
             'success' => true,
             'message' => 'Profile updated successfully',
             'data' => $this->formatPatientProfileResponse($patient)
+        ], 200);
+    }
+
+    /**
+     * Delete Patient Account (Soft Delete)
+     */
+    public function deleteAccount(Request $request)
+    {
+        $patient = $request->user();
+
+        // Revoke all tokens
+        $patient->tokens()->delete();
+
+        // Soft delete the patient
+        $patient->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account deleted successfully.'
         ], 200);
     }
 
@@ -483,9 +494,9 @@ class PatientAuthController extends Controller
         foreach ($allHealthParameters as $param) {
             $key = $this->getHealthParameterKey($param->health_parameter_name);
             $emoji = $param->health_parameter_emoji ?: '❓';
-            
-            $selectedAnswer = isset($healthAnswers[$param->health_parameter_id]) 
-                ? $healthAnswers[$param->health_parameter_id]->health_parameter_answer 
+
+            $selectedAnswer = isset($healthAnswers[$param->health_parameter_id])
+                ? $healthAnswers[$param->health_parameter_id]->health_parameter_answer
                 : null;
 
             $responseFields[$key] = $selectedAnswer;
@@ -531,17 +542,36 @@ class PatientAuthController extends Controller
         // Merge health parameters top-level fields dynamically
         $profileData = array_merge($profileData, $responseFields);
 
+        $patientSymptomsSlugs = $patient->symptoms()->get()->map(function ($symptom) {
+            return $this->getSymptomKey($symptom->symptom_name);
+        })->toArray();
+
         $profileData = array_merge($profileData, [
             'health_options' => $healthOptions,
-            'symptoms' => $patient->symptoms ?: [],
+            'symptoms' => $patientSymptomsSlugs,
             'other_symptoms' => $patient->other_symptoms ?: '',
             'symptom_options' => $symptomConfig,
 
             'patient_image' => $patient->patient_image ? asset('uploads/patient/' . $patient->patient_image) : '',
             'profile_step' => $patient->profile_step ?: 'basic',
-            'is_profile_complete' => (bool)$patient->is_profile_complete,
+            'is_profile_complete' => (bool) $patient->is_profile_complete,
         ]);
 
         return $profileData;
+    }
+
+    /**
+     * Send SMS via Omnet Solution gateway
+     */
+    private function sendSMS($mobileNumber, $message)
+    {
+        $authKey = "23a1a991572963a7d9a64c436a3dfd";
+        $senderId = "OMNETS";
+        $message = urlencode($message);
+
+        $url = "http://sms1.omnetsolution.com/rest/services/sendSMS/sendGroupSms?AUTH_KEY=$authKey&message=$message&senderId=$senderId&routeId=1&mobileNos=$mobileNumber&smsContentType=english";
+        $data = @file_get_contents($url);
+
+        return true;
     }
 }

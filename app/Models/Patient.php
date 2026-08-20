@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, SoftDeletes;
 
     protected $table = "patient";
     protected $primaryKey = "patient_id";
@@ -43,11 +44,9 @@ class Patient extends Authenticatable
         "weight_kg",
         "profile_step",
         "is_profile_complete",
-        "symptoms",
     ];
 
     protected $casts = [
-        'symptoms' => 'array',
     ];
 
     protected $hidden = [

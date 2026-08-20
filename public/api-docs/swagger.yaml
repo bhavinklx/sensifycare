@@ -195,6 +195,17 @@ paths:
           description: Invalid input parameters
         '401':
           description: Unauthorized
+  /api/patient-profile/delete:
+    delete:
+      summary: Delete Patient Account
+      description: Soft delete the authenticated patient's account and revoke all their tokens.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Account deleted successfully
+        '401':
+          description: Unauthorized
   /api/patient-logout:
     post:
       summary: Patient Logout
@@ -206,6 +217,35 @@ paths:
           description: Logged out successfully
         '401':
           description: Unauthorized
+  /api/pages:
+    get:
+      summary: Get Pages List
+      description: Retrieve a list of active static pages with only page title and description.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Pages fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: "Privacy Policy"
+                        description:
+                          type: string
+                          example: "<p>Your privacy is important...</p>"
   /api/articles:
     get:
       summary: Get Articles List

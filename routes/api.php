@@ -7,8 +7,12 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Api\PatientAuthController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\PatientReportController;
+use App\Http\Controllers\Api\PageController;
 
 /**
+ * Public Routes
+ */
+Route::get('pages', [PageController::class, 'index']);
  * Dashboard Routes
  */
 Route::post('/analyze-report', [DashboardController::class, 'analyzeReport'])->name("analyze-report");
@@ -34,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::get('patient-profile', [PatientAuthController::class, 'getProfile']);
     Route::post('patient-profile/update', [PatientAuthController::class, 'updateProfile']);
+    Route::delete('patient-profile/delete', [PatientAuthController::class, 'deleteAccount']);
 
     /**
      * Article Routes

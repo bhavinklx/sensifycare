@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PageController;
  * Public Routes
  */
 Route::get('pages', [PageController::class, 'index']);
+/**
  * Dashboard Routes
  */
 Route::post('/analyze-report', [DashboardController::class, 'analyzeReport'])->name("analyze-report");

@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('patient-profile', [PatientAuthController::class, 'getProfile']);
     Route::post('patient-profile/update', [PatientAuthController::class, 'updateProfile']);
     Route::delete('patient-profile/delete', [PatientAuthController::class, 'deleteAccount']);
+    Route::get('patient-dashboard', [PatientAuthController::class, 'getDashboard']);
 
     /**
      * Article Routes

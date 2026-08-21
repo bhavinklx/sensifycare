@@ -66,7 +66,17 @@ class Patient extends Authenticatable
 
     public function symptoms()
     {
-        return $this->belongsToMany(Symptom::class, 'patient_symptom', 'patient_id', 'symptom_id');
+        return $this->belongsToMany(Symptom::class, 'patient_symptom', 'patient_id', 'symptom_id')->withTimestamps();
+    }
+
+    public function getOtherSymptomsAttribute()
+    {
+        return $this->attributes['patient_other_symptoms'] ?? '';
+    }
+
+    public function setOtherSymptomsAttribute($value)
+    {
+        $this->attributes['patient_other_symptoms'] = $value;
     }
 
     public function healthParameters()

@@ -246,6 +246,106 @@ paths:
                         description:
                           type: string
                           example: "<p>Your privacy is important...</p>"
+  /api/patient-dashboard:
+    get:
+      summary: Get Patient Dashboard
+      description: Retrieve the patient's unified dashboard data including health score breakdown and key insights.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Dashboard fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      health_score:
+                        type: object
+                        properties:
+                          score:
+                            type: integer
+                            example: 78
+                          label:
+                            type: string
+                            example: "Good"
+                          text:
+                            type: string
+                            example: "You're on the right track! A few improvements can boost your score."
+                          breakdown:
+                            type: object
+                            properties:
+                              lab_report:
+                                type: object
+                                properties:
+                                  title:
+                                    type: string
+                                    example: "Lab Report Analysis"
+                                  score:
+                                    type: integer
+                                    example: 82
+                                  subtitle:
+                                    type: string
+                                    example: "5 reports analysed, most markers normal"
+                              lifestyle:
+                                type: object
+                                properties:
+                                  title:
+                                    type: string
+                                    example: "Lifestyle & Habits"
+                                  score:
+                                    type: integer
+                                    example: 70
+                                  subtitle:
+                                    type: string
+                                    example: "Sleep & stress need improvement"
+                              symptoms:
+                                type: object
+                                properties:
+                                  title:
+                                    type: string
+                                    example: "Symptom Profile"
+                                  score:
+                                    type: integer
+                                    example: 100
+                                  subtitle:
+                                    type: string
+                                    example: "No symptoms reported, looking great!"
+                              profile:
+                                type: object
+                                properties:
+                                  title:
+                                    type: string
+                                    example: "Profile Completeness"
+                                  score:
+                                    type: integer
+                                    example: 95
+                                  subtitle:
+                                    type: string
+                                    example: "Almost complete — add profile image"
+                      key_insights:
+                        type: object
+                        properties:
+                          reports_count:
+                            type: integer
+                            example: 5
+                          risk_status_count:
+                            type: integer
+                            example: 3
+                          healthy_habits_score:
+                            type: string
+                            example: "6/10"
+        '401':
+          description: Unauthorized
   /api/articles:
     get:
       summary: Get Articles List

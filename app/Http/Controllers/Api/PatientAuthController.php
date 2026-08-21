@@ -8,6 +8,7 @@ use App\Models\UserDevice;
 use App\Models\PatientHealthParameter;
 use App\Models\HealthParameter;
 use App\Models\Symptom;
+use App\Models\PatientReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -457,6 +458,208 @@ class PatientAuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Account deleted successfully.'
+        ], 200);
+    }
+
+    /**
+     * Get unified dashboard preventive health metrics.
+     */
+    public function getDashboard(Request $request)
+    {
+        $patient = $request->user();
+
+        // 1. Lab Report Analysis Pillar
+        $latestReport = PatientReport::where('patient_id', $patient->patient_id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $labReportScore = 100;
+        $labReportSubtitle = "No reports analyzed. Upload a report to begin.";
+        if ($latestReport) {
+            $totalMarkers = (int)$latestReport->markers_count;
+            $abnormalMarkers = (int)$latestReport->abnormal_count;
+            
+            if ($totalMarkers > 0) {
+                $okMarkers = (int)$latestReport->ok_count;
+                $labReportScore = (int)round(($okMarkers / $totalMarkers) * 100);
+                $labReportScore = max(10, min(100, $labReportScore));
+            } else {
+                $labReportScore = 100;
+            }
+
+            $totalReportsCount = PatientReport::where('patient_id', $patient->patient_id)->count();
+            if ($abnormalMarkers > 0) {
+                $labReportSubtitle = "$totalReportsCount " . ($totalReportsCount === 1 ? "report" : "reports") . " analyzed, $abnormalMarkers abnormal " . ($abnormalMarkers === 1 ? "marker" : "markers") . " detected";
+            } else {
+                $labReportSubtitle = "$totalReportsCount " . ($totalReportsCount === 1 ? "report" : "reports") . " analyzed, most markers normal";
+            }
+        }
+
+        // 2. Lifestyle & Habits Pillar
+        $activeParams = HealthParameter::active()->orderBy('health_parameter_order')->get();
+        $healthAnswers = PatientHealthParameter::where('patient_id', $patient->patient_id)
+            ->get()
+            ->keyBy('health_parameter_id');
+
+        $lifestylePoints = 0;
+        $needsImprovement = [];
+        foreach ($activeParams as $param) {
+            $key = $this->getHealthParameterKey($param->health_parameter_name);
+            $selectedAnswer = isset($healthAnswers[$param->health_parameter_id]) 
+                ? $healthAnswers[$param->health_parameter_id]->health_parameter_answer 
+                : null;
+
+            $isHealthy = false;
+            if ($selectedAnswer !== null) {
+                switch ($key) {
+                    case 'average_sleep':
+                        if (in_array($selectedAnswer, ['7 - 8 hours', 'More than 8 hours'])) $isHealthy = true;
+                        break;
+                    case 'physical_activity':
+                        if (in_array($selectedAnswer, ['3 - 4 days / week', '5 - 6 days / week', 'Daily'])) $isHealthy = true;
+                        break;
+                    case 'smoking':
+                        if ($selectedAnswer === 'Never') $isHealthy = true;
+                        break;
+                    case 'alcohol':
+                        if (in_array($selectedAnswer, ['Never', 'Occasionally'])) $isHealthy = true;
+                        break;
+                    case 'water_intake':
+                        if (in_array($selectedAnswer, ['2 - 3 L', 'More than 3 L'])) $isHealthy = true;
+                        break;
+                    case 'diet_type':
+                        if (in_array($selectedAnswer, ['Vegetarian', 'Vegan', 'Eggetarian', 'Mixed'])) $isHealthy = true;
+                        break;
+                    case 'stress_level':
+                        if (in_array($selectedAnswer, ['Low', 'Moderate'])) $isHealthy = true;
+                        break;
+                    case 'menstrual_cycle':
+                        if (in_array($selectedAnswer, ['Regular', 'Not Applicable'])) $isHealthy = true;
+                        break;
+                    case 'fasting':
+                    case 'work_type':
+                        // Fasting and Work Type answers are considered fine as long as they are completed
+                        $isHealthy = true;
+                        break;
+                }
+            }
+
+            if ($isHealthy) {
+                $lifestylePoints += 10;
+            } else {
+                // If not healthy or unanswered, mark for improvement
+                $needsImprovement[] = str_replace('Average ', '', str_replace(' Level', '', $param->health_parameter_name));
+            }
+        }
+        $lifestyleScore = $lifestylePoints;
+        
+        $lifestyleSubtitle = "Great lifestyle habits!";
+        if ($lifestyleScore < 100 && !empty($needsImprovement)) {
+            // Pick top 2 improvements to display in subtitle
+            $topImprovements = array_slice($needsImprovement, 0, 2);
+            $lifestyleSubtitle = implode(' & ', $topImprovements) . " need improvement";
+        }
+
+        // 3. Symptom Profile Pillar
+        $symptomsCount = $patient->symptoms()->count();
+        $hasOtherSymptoms = !empty($patient->other_symptoms);
+
+        if ($symptomsCount === 0 && !$hasOtherSymptoms) {
+            $symptomScore = 100;
+            $symptomSubtitle = "No symptoms reported, looking great!";
+        } else {
+            $symptomScore = 0;
+            $symptomSubtitle = "$symptomsCount " . ($symptomsCount === 1 ? "symptom" : "symptoms") . " reported, monitoring needed";
+        }
+
+        // 4. Profile Completeness Pillar
+        $profileFields = [
+            'patient_fname' => 15,
+            'patient_lname' => 15,
+            'patient_dob' => 15,
+            'patient_gender' => 10,
+            'height_cm' => 15,
+            'weight_kg' => 15,
+            'patient_city' => 10,
+            'patient_image' => 5,
+        ];
+
+        $completenessScore = 0;
+        $missingFields = [];
+        foreach ($profileFields as $field => $pct) {
+            if (!empty($patient->$field)) {
+                $completenessScore += $pct;
+            } else {
+                $missingFields[] = $field;
+            }
+        }
+
+        $profileSubtitle = "Profile fully complete";
+        if ($completenessScore < 100 && !empty($missingFields)) {
+            // Suggest adding a missing field
+            $firstMissing = $missingFields[0];
+            $friendlyName = str_replace(['patient_', '_cm', '_kg'], ['', '', ''], $firstMissing);
+            $friendlyName = str_replace('_', ' ', $friendlyName);
+            $profileSubtitle = "Almost complete — add $friendlyName";
+        }
+
+        // Calculate Total Health Score (Average of 4 pillars)
+        $totalHealthScore = (int)round(($labReportScore + $lifestyleScore + $symptomScore + $completenessScore) / 4);
+
+        // Map health score to quality label
+        if ($totalHealthScore >= 80) {
+            $label = "Good";
+            $text = "You're on the right track! A few improvements can boost your score.";
+        } elseif ($totalHealthScore >= 50) {
+            $label = "Fair";
+            $text = "Your health parameters are average. Making lifestyle changes can help improve them.";
+        } else {
+            $label = "Poor";
+            $text = "Your score indicates attention is needed. We recommend consulting a healthcare provider.";
+        }
+
+        // Calculate Key Insights
+        $totalReportsCount = PatientReport::where('patient_id', $patient->patient_id)->count();
+        $totalAbnormal = (int)PatientReport::where('patient_id', $patient->patient_id)->sum('abnormal_count');
+        $healthyHabitsCount = (int)($lifestyleScore / 10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dashboard fetched successfully',
+            'data' => [
+                'health_score' => [
+                    'score' => $totalHealthScore,
+                    'label' => $label,
+                    'text' => $text,
+                    'breakdown' => [
+                        'lab_report' => [
+                            'title' => 'Lab Report Analysis',
+                            'score' => $labReportScore,
+                            'subtitle' => $labReportSubtitle
+                        ],
+                        'lifestyle' => [
+                            'title' => 'Lifestyle & Habits',
+                            'score' => $lifestyleScore,
+                            'subtitle' => $lifestyleSubtitle
+                        ],
+                        'symptoms' => [
+                            'title' => 'Symptom Profile',
+                            'score' => $symptomScore,
+                            'subtitle' => $symptomSubtitle
+                        ],
+                        'profile' => [
+                            'title' => 'Profile Completeness',
+                            'score' => $completenessScore,
+                            'subtitle' => $profileSubtitle
+                        ]
+                    ]
+                ],
+                'key_insights' => [
+                    'reports_count' => $totalReportsCount,
+                    'risk_status_count' => $totalAbnormal,
+                    'healthy_habits_score' => "{$healthyHabitsCount}/10"
+                ]
+            ]
         ], 200);
     }
 

@@ -9,12 +9,15 @@ use App\Models\PatientHealthParameter;
 use App\Models\HealthParameter;
 use App\Models\Symptom;
 use App\Models\PatientReport;
+use App\Models\PatientReminder;
+use App\Traits\GeneratesDynamicReminders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class PatientAuthController extends Controller
 {
+    use GeneratesDynamicReminders;
 
     /**
      * Patient Logout
@@ -623,6 +626,19 @@ class PatientAuthController extends Controller
         $totalAbnormal = (int)PatientReport::where('patient_id', $patient->patient_id)->sum('abnormal_count');
         $healthyHabitsCount = (int)($lifestyleScore / 10);
 
+        // Fetch top 2 pending upcoming reminders
+        $pendingCustom = PatientReminder::where('patient_id', $patient->patient_id)
+            ->where('is_completed', false)
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->toArray();
+
+        $automated = $this->getDynamicAutomatedReminders($patient);
+
+        // Merge and take top 2
+        $allPending = array_merge($automated, $pendingCustom);
+        $upcomingReminders = array_slice($allPending, 0, 2);
+
         return response()->json([
             'success' => true,
             'message' => 'Dashboard fetched successfully',
@@ -658,7 +674,8 @@ class PatientAuthController extends Controller
                     'reports_count' => $totalReportsCount,
                     'risk_status_count' => $totalAbnormal,
                     'healthy_habits_score' => "{$healthyHabitsCount}/10"
-                ]
+                ],
+                'upcoming_reminders' => $upcomingReminders
             ]
         ], 200);
     }

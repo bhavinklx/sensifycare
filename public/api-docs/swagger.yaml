@@ -346,6 +346,117 @@ paths:
                             example: "6/10"
         '401':
           description: Unauthorized
+  /api/patient-notification-settings:
+    get:
+      summary: Get Notification Settings
+      description: Retrieve the patient's notification preferences. Automatically initializes settings if they do not exist.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Notification settings fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      patient_notification_setting_id:
+                        type: integer
+                        example: 1
+                      patient_id:
+                        type: integer
+                        example: 1
+                      abnormal_marker_alert:
+                        type: boolean
+                        example: true
+                      report_ready:
+                        type: boolean
+                        example: true
+                      ai_health_insights:
+                        type: boolean
+                        example: true
+                      lab_test_reminders:
+                        type: boolean
+                        example: true
+                      weekly_health_digest:
+                        type: boolean
+                        example: true
+                      health_tips_articles:
+                        type: boolean
+                        example: false
+                      app_updates:
+                        type: boolean
+                        example: false
+                      offers_promotions:
+                        type: boolean
+                        example: false
+        '401':
+          description: Unauthorized
+    post:
+      summary: Update Notification Settings
+      description: Update specific notification preferences.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                abnormal_marker_alert:
+                  type: boolean
+                  example: false
+                report_ready:
+                  type: boolean
+                  example: true
+                ai_health_insights:
+                  type: boolean
+                  example: true
+                lab_test_reminders:
+                  type: boolean
+                  example: true
+                weekly_health_digest:
+                  type: boolean
+                  example: true
+                health_tips_articles:
+                  type: boolean
+                  example: false
+                app_updates:
+                  type: boolean
+                  example: true
+                offers_promotions:
+                  type: boolean
+                  example: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Notification settings updated successfully"
+                  data:
+                    type: object
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
   /api/articles:
     get:
       summary: Get Articles List

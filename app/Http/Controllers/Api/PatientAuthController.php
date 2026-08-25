@@ -14,6 +14,7 @@ use App\Traits\GeneratesDynamicReminders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class PatientAuthController extends Controller
 {
@@ -790,7 +791,12 @@ class PatientAuthController extends Controller
         $message = urlencode($message);
 
         $url = "http://sms1.omnetsolution.com/rest/services/sendSMS/sendGroupSms?AUTH_KEY=$authKey&message=$message&senderId=$senderId&routeId=1&mobileNos=$mobileNumber&smsContentType=english";
-        $data = @file_get_contents($url);
+        
+        try {
+            Http::timeout(5)->get($url);
+        } catch (\Throwable $e) {
+            // Suppress errors to prevent blocking flow
+        }
 
         return true;
     }

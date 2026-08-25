@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\PatientAuthController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\PatientReportController;
 use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PatientReminderController;
+use App\Http\Controllers\Api\PatientNotificationSettingController;
 
 /**
  * Public Routes
@@ -41,6 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('patient-profile/update', [PatientAuthController::class, 'updateProfile']);
     Route::delete('patient-profile/delete', [PatientAuthController::class, 'deleteAccount']);
     Route::get('patient-dashboard', [PatientAuthController::class, 'getDashboard']);
+    Route::get('patient-reminders', [PatientReminderController::class, 'index']);
+    Route::post('patient-reminders', [PatientReminderController::class, 'store']);
+    Route::post('patient-reminders/{id}/toggle', [PatientReminderController::class, 'toggle']);
+    Route::delete('patient-reminders/{id}', [PatientReminderController::class, 'destroy']);
+    Route::get('patient-notification-settings', [PatientNotificationSettingController::class, 'show']);
+    Route::post('patient-notification-settings', [PatientNotificationSettingController::class, 'update']);
 
     /**
      * Article Routes

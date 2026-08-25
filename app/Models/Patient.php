@@ -83,4 +83,14 @@ class Patient extends Authenticatable
     {
         return $this->hasMany(PatientHealthParameter::class, 'patient_id', 'patient_id');
     }
+
+    public function reminders()
+    {
+        return $this->hasMany(PatientReminder::class, 'patient_id', 'patient_id');
+    }
+
+    public function notificationSetting()
+    {
+        return $this->hasOne(PatientNotificationSetting::class, 'patient_id', 'patient_id');
+    }
 }

@@ -470,6 +470,23 @@ class PatientAuthController extends Controller
     {
         $patient = $request->user();
 
+        // Save device details if provided
+        if ($request->has('push_notification_id')) {
+            UserDevice::updateOrCreate(
+                [
+                    'user_id' => $patient->patient_id,
+                    'user_type' => 'patient',
+                    'push_notification_id' => $request->push_notification_id,
+                ],
+                [
+                    'app_version' => $request->app_version,
+                    'os_version' => $request->os_version,
+                    'device_name' => $request->device_name,
+                    'device_type' => $request->device_type,
+                ]
+            );
+        }
+
         // 1. Lab Report Analysis Pillar
         $latestReport = PatientReport::where('patient_id', $patient->patient_id)
             ->orderBy('created_at', 'desc')

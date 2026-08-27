@@ -247,11 +247,33 @@ paths:
                           type: string
                           example: "<p>Your privacy is important...</p>"
   /api/patient-dashboard:
-    get:
+    post:
       summary: Get Patient Dashboard
-      description: Retrieve the patient's unified dashboard data including health score breakdown and key insights.
+      description: Retrieve the patient's unified dashboard data including health score breakdown and key insights. Updates device tracking info if provided.
       security:
         - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                push_notification_id:
+                  type: string
+                  example: "fcm-token-123"
+                app_version:
+                  type: string
+                  example: "1.0.0"
+                os_version:
+                  type: string
+                  example: "15.0"
+                device_name:
+                  type: string
+                  example: "iPhone 13"
+                device_type:
+                  type: string
+                  example: "ios"
       responses:
         '200':
           description: Successful response
@@ -1063,6 +1085,103 @@ paths:
           description: Report not found
         '422':
           description: Validation error
+  /api/patient-notifications:
+    get:
+      summary: Get Patient Notifications
+      description: Retrieve a paginated list of notifications for the authenticated patient.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Notifications fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            patient_notification_id:
+                              type: integer
+                              example: 1
+                            patient_id:
+                              type: integer
+                              example: 12
+                            title:
+                              type: string
+                              example: "Report Ready"
+                            body:
+                              type: string
+                              example: "Your blood test is processed."
+                            is_read:
+                              type: boolean
+                              example: false
+                            created_at:
+                              type: string
+                              example: "2026-08-27T10:00:00.000000Z"
+                      per_page:
+                        type: integer
+                        example: 15
+                      total:
+                        type: integer
+                        example: 1
+        '401':
+          description: Unauthorized
+  /api/patient-notifications/{id}/mark-read:
+    post:
+      summary: Mark Notification as Read
+      description: Marks a specific notification as read.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the notification
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Notification marked as read successfully"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Notification not found
 components:
   securitySchemes:
     bearerAuth:

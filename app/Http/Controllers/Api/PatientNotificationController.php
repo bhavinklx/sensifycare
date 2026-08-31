@@ -69,15 +69,26 @@ class PatientNotificationController extends Controller
         $request->validate([
             'title' => 'required|string',
             'body' => 'required|string',
+            'fcm_token' => 'nullable|string',
         ]);
 
         $notificationService = new NotificationService();
-        $success = $notificationService->sendToPatient(
-            $patient->patient_id,
-            $request->input('title'),
-            $request->input('body'),
-            $request->input('data', null)
-        );
+        
+        if ($request->has('fcm_token') && !empty($request->input('fcm_token'))) {
+            $success = $notificationService->sendToToken(
+                $request->input('fcm_token'),
+                $request->input('title'),
+                $request->input('body'),
+                $request->input('data', null)
+            );
+        } else {
+            $success = $notificationService->sendToPatient(
+                $patient->patient_id,
+                $request->input('title'),
+                $request->input('body'),
+                $request->input('data', null)
+            );
+        }
 
         if ($success) {
             return response()->json([

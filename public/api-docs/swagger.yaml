@@ -1204,6 +1204,10 @@ paths:
                 body:
                   type: string
                   example: "This is a test notification body."
+                fcm_token:
+                  type: string
+                  description: Optional FCM token to send directly to a specific device, bypassing the database devices.
+                  example: "fcm_token_string_here"
       responses:
         '200':
           description: Successful response

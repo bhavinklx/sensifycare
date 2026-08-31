@@ -79,4 +79,46 @@ class NotificationService
             return false;
         }
     }
+
+    /**
+     * Send FCM Push Notification to a specific token (Useful for testing)
+     */
+    public function sendToToken($fcmToken, $title, $body, $data = null)
+    {
+        try {
+            $client = new GoogleClient();
+            $client->setAuthConfig(base_path('sensify-care-f25e9c3aa06c.json'));
+            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+            $client->fetchAccessTokenWithAssertion();
+            
+            $token = $client->getAccessToken();
+            $accessToken = $token['access_token'];
+
+            $projectId = 'sensify-care';
+
+            $payload = [
+                'message' => [
+                    'token' => $fcmToken,
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
+                    ],
+                    'data' => $data ? (array) $data : (object)[],
+                ]
+            ];
+
+            $response = Http::withToken($accessToken)
+                ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
+
+            if ($response->failed()) {
+                Log::error("FCM Send Failed: " . $response->body());
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("NotificationService Error (sendToToken): " . $e->getMessage());
+            return false;
+        }
+    }
 }

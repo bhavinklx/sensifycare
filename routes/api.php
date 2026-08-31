@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('patient-notification-settings', [PatientNotificationSettingController::class, 'update']);
     Route::get('patient-notifications', [PatientNotificationController::class, 'index']);
     Route::post('patient-notifications/{id}/mark-read', [PatientNotificationController::class, 'markAsRead']);
+    Route::post('patient-notifications/test', [PatientNotificationController::class, 'sendTest']);
 
     /**
      * Article Routes

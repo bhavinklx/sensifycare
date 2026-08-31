@@ -1182,6 +1182,46 @@ paths:
           description: Unauthorized
         '404':
           description: Notification not found
+  /api/patient-notifications/test:
+    post:
+      summary: Send Test Notification
+      description: Sends a test push notification to the authenticated patient's registered device.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - body
+              properties:
+                title:
+                  type: string
+                  example: "Test Title"
+                body:
+                  type: string
+                  example: "This is a test notification body."
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Test notification sent successfully"
+        '400':
+          description: Failed to send notification
+        '401':
+          description: Unauthorized
 components:
   securitySchemes:
     bearerAuth:

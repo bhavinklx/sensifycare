@@ -314,23 +314,24 @@ class PatientAuthController extends Controller
                 $key = $this->getHealthParameterKey($param->health_parameter_name);
                 $paramId = $param->health_parameter_id;
 
-                $answer = null;
-                if ($request->has($key)) {
-                    $answer = $request->input($key);
-                } elseif ($request->has($paramId)) {
-                    $answer = $request->input($paramId);
-                }
+                if ($request->has($key) || $request->has($paramId)) {
+                    $answer = $request->has($key) ? $request->input($key) : $request->input($paramId);
 
-                if ($answer !== null) {
-                    PatientHealthParameter::updateOrCreate(
-                        [
-                            'patient_id' => $patient->patient_id,
-                            'health_parameter_id' => $paramId,
-                        ],
-                        [
-                            'health_parameter_answer' => $answer,
-                        ]
-                    );
+                    if ($answer !== null && $answer !== '') {
+                        PatientHealthParameter::updateOrCreate(
+                            [
+                                'patient_id' => $patient->patient_id,
+                                'health_parameter_id' => $paramId,
+                            ],
+                            [
+                                'health_parameter_answer' => $answer,
+                            ]
+                        );
+                    } else {
+                        PatientHealthParameter::where('patient_id', $patient->patient_id)
+                            ->where('health_parameter_id', $paramId)
+                            ->delete();
+                    }
                 }
             }
             $patient->save();
@@ -416,23 +417,24 @@ class PatientAuthController extends Controller
                 $key = $this->getHealthParameterKey($param->health_parameter_name);
                 $paramId = $param->health_parameter_id;
 
-                $answer = null;
-                if ($request->has($key)) {
-                    $answer = $request->input($key);
-                } elseif ($request->has($paramId)) {
-                    $answer = $request->input($paramId);
-                }
+                if ($request->has($key) || $request->has($paramId)) {
+                    $answer = $request->has($key) ? $request->input($key) : $request->input($paramId);
 
-                if ($answer !== null) {
-                    PatientHealthParameter::updateOrCreate(
-                        [
-                            'patient_id' => $patient->patient_id,
-                            'health_parameter_id' => $paramId,
-                        ],
-                        [
-                            'health_parameter_answer' => $answer,
-                        ]
-                    );
+                    if ($answer !== null && $answer !== '') {
+                        PatientHealthParameter::updateOrCreate(
+                            [
+                                'patient_id' => $patient->patient_id,
+                                'health_parameter_id' => $paramId,
+                            ],
+                            [
+                                'health_parameter_answer' => $answer,
+                            ]
+                        );
+                    } else {
+                        PatientHealthParameter::where('patient_id', $patient->patient_id)
+                            ->where('health_parameter_id', $paramId)
+                            ->delete();
+                    }
                 }
             }
         }

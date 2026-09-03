@@ -104,7 +104,7 @@ paths:
   /api/patient-profile/update:
     post:
       summary: Update Patient Profile
-      description: Update profile details for the authenticated patient based on the step. One API handles basic, health, symptoms, and edit steps.
+      description: Update profile details for the authenticated patient based on the step. One API handles basic, health, symptoms, and edit steps. Note: For health parameters (like average_sleep, smoking), passing `null` or an empty string `""` will unselect and delete that parameter from the user's profile.
       security:
         - bearerAuth: []
       requestBody:
@@ -1038,27 +1038,35 @@ paths:
                   type: string
                   enum: [file, text]
                   description: Optional type of analysis. Defaults to 'file' if patient_report_id or file_url is provided, otherwise 'text'.
-                  example: "file"
                 patient_report_id:
                   type: integer
                   description: Optional ID of the specific report to analyze (only used when type is 'file'). If not provided but type is 'file', the most recent report is used.
-                  example: 1
                 file_url:
                   type: string
                   description: Optional URL of the report file to analyze (alternative to patient_report_id when type is 'file').
-                  example: "https://www.sensifycare.com/uploads/report/REP-1722868841_blood_report.pdf"
                 question:
                   type: string
                   description: Optional question or query to ask the AI Agent.
-                  example: "What does this mean?"
                 text:
                   type: string
                   description: Alternative key to pass the question/query (maps to question).
-                  example: "Explain the hemoglobin levels."
                 language:
                   type: string
                   description: Optional language code for the analysis output (defaults to the patient's preferred language or 'en').
-                  example: "en"
+            examples:
+              FileAnalysis:
+                summary: File Analysis
+                value:
+                  type: "file"
+                  patient_report_id: 1
+                  question: "Are my hemoglobin levels normal?"
+                  language: "en"
+              TextAnalysis:
+                summary: Text Analysis
+                value:
+                  type: "text"
+                  text: "Explain the hemoglobin levels."
+                  language: "en"
       responses:
         '200':
           description: Report analyzed successfully
@@ -1069,16 +1077,28 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "Report analyzed successfully"
                   data:
                     type: object
                     description: The AI analysis result object from the agent
-                    example:
+              examples:
+                FileAnalysisResponse:
+                  summary: File Analysis Response
+                  value:
+                    success: true
+                    message: "Report analyzed successfully"
+                    data:
                       status: "success"
                       analysis: "Based on the uploaded report, your hemoglobin is normal..."
+                TextAnalysisResponse:
+                  summary: Text Analysis Response
+                  value:
+                    success: true
+                    message: "Report analyzed successfully"
+                    data:
+                      status: "success"
+                      analysis: "Hemoglobin is a protein in your red blood cells that carries oxygen to your body's organs and tissues..."
         '401':
           description: Unauthorized
         '404':

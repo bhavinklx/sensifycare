@@ -103,6 +103,7 @@ class PatientReportController extends Controller
 
                 if ($response->successful()) {
                     $ocrResult = $response->json();
+                    $ocrResult = $ocrResult['data'] ?? [];
                     
                     $reportTitle = $ocrResult['report_title'] ?? $ocrResult['lab_name'] ?? str_replace(['.pdf', '.png', '.jpg', '.jpeg', '.xlsx', '.xls'], '', $originalName);
                     $score = $ocrResult['score'] ?? null;

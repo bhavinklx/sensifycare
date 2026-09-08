@@ -104,7 +104,8 @@ paths:
   /api/patient-profile/update:
     post:
       summary: Update Patient Profile
-      description: Update profile details for the authenticated patient based on the step. One API handles basic, health, symptoms, and edit steps. Note: For health parameters (like average_sleep, smoking), passing `null` or an empty string `""` will unselect and delete that parameter from the user's profile.
+      description: >
+        Update profile details for the authenticated patient based on the step. One API handles basic, health, symptoms, and edit steps. Note: For health parameters (like average_sleep, smoking), passing `null` or an empty string `""` will unselect and delete that parameter from the user's profile.
       security:
         - bearerAuth: []
       requestBody:

@@ -361,12 +361,51 @@ paths:
                           reports_count:
                             type: integer
                             example: 5
+                          lab_reports_list:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: "Complete Blood Count"
+                                date:
+                                  type: string
+                                  example: "May 10"
+                                status:
+                                  type: string
+                                  example: "Normal"
                           risk_status_count:
                             type: integer
                             example: 3
+                          risk_areas_list:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: "Cardiovascular Risk"
+                                severity:
+                                  type: string
+                                  example: "Moderate"
+                                description:
+                                  type: string
+                                  example: "Elevated LDL cholesterol. Reduce saturated fat intake."
                           healthy_habits_score:
                             type: string
                             example: "6/10"
+                          healthy_habits_list:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: "Regular Sleep Schedule"
+                                is_completed:
+                                  type: boolean
+                                  example: true
         '401':
           description: Unauthorized
   /api/patient-notification-settings:

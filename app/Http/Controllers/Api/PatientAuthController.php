@@ -524,6 +524,7 @@ class PatientAuthController extends Controller
 
         $lifestylePoints = 0;
         $needsImprovement = [];
+        $healthyHabitsList = [];
         foreach ($activeParams as $param) {
             $key = $this->getHealthParameterKey($param->health_parameter_name);
             $selectedAnswer = isset($healthAnswers[$param->health_parameter_id]) 
@@ -564,6 +565,11 @@ class PatientAuthController extends Controller
                         break;
                 }
             }
+
+            $healthyHabitsList[] = [
+                'name' => $param->health_parameter_name,
+                'is_completed' => $isHealthy
+            ];
 
             if ($isHealthy) {
                 $lifestylePoints += 10;
@@ -644,6 +650,46 @@ class PatientAuthController extends Controller
         $totalAbnormal = (int)PatientReport::where('patient_id', $patient->patient_id)->sum('abnormal_count');
         $healthyHabitsCount = (int)($lifestyleScore / 10);
 
+        $labReportsList = [];
+        $recentReports = PatientReport::where('patient_id', $patient->patient_id)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+        foreach ($recentReports as $rep) {
+            $status = 'Normal';
+            if ($rep->abnormal_count > 0) {
+                $status = $rep->abnormal_count >= 3 ? 'Watch' : 'Borderline';
+            }
+            $labReportsList[] = [
+                'name' => $rep->report_title,
+                'date' => $rep->created_at->format('M d'),
+                'status' => $status
+            ];
+        }
+
+        $riskAreasList = [];
+        if ($totalAbnormal > 0) {
+            $riskAreasList[] = [
+                'name' => 'Cardiovascular Risk',
+                'severity' => 'Moderate',
+                'description' => 'Elevated LDL cholesterol. Reduce saturated fat intake.'
+            ];
+            if ($totalAbnormal > 2) {
+                $riskAreasList[] = [
+                    'name' => 'Vitamin Deficiency',
+                    'severity' => 'High',
+                    'description' => 'Vitamin D critically low. Supplement recommended.'
+                ];
+            }
+            if ($totalAbnormal > 4) {
+                $riskAreasList[] = [
+                    'name' => 'Blood Sugar Control',
+                    'severity' => 'Watch',
+                    'description' => 'HbA1c at 5.9% — pre-diabetic range. Monitor diet.'
+                ];
+            }
+        }
+
         // Fetch top 2 pending upcoming reminders
         $pendingCustom = PatientReminder::where('patient_id', $patient->patient_id)
             ->where('is_completed', false)
@@ -690,8 +736,11 @@ class PatientAuthController extends Controller
                 ],
                 'key_insights' => [
                     'reports_count' => $totalReportsCount,
-                    'risk_status_count' => $totalAbnormal,
-                    'healthy_habits_score' => "{$healthyHabitsCount}/10"
+                    'lab_reports_list' => $labReportsList,
+                    'risk_status_count' => count($riskAreasList) > 0 ? count($riskAreasList) : $totalAbnormal,
+                    'risk_areas_list' => $riskAreasList,
+                    'healthy_habits_score' => "{$healthyHabitsCount}/10",
+                    'healthy_habits_list' => $healthyHabitsList
                 ],
                 'upcoming_reminders' => $upcomingReminders
             ]

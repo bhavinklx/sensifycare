@@ -824,6 +824,7 @@ class PatientAuthController extends Controller
             'weight_kg' => $patient->weight_kg,
             'city' => $patient->patient_city,
             'preferred_language' => $patient->preferred_language,
+            'created_at' => $patient->created_at ? $patient->created_at->format('Y-m-d H:i:s') : null,
         ];
 
         // Merge health parameters top-level fields dynamically

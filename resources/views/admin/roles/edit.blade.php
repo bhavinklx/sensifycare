@@ -34,41 +34,101 @@
                                 <div class="invalid-feedback" id="msg_name"></div>
                             </div>
 
-                            <!-- Row starts -->
-                            <div class="row gx-3">
-                                <label class="form-label" for="name">Permission</label>
-                                <div class="row ps-lg-4">
-                                    <div class="col-lg-2 form-check ps-lg-4" style="margin: 3px 0 0 0; display: inline-block;">
-                                        <input class="form-check-input" type="checkbox" id="checkall" name="checkall">
-                                        <label class="form-check-label" for="checkall">Check All</label>
+                            <!-- Permission Section starts -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Permissions</label>
+
+                                <!-- Top Row: Check All & Column Quick Toggles -->
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkall">
+                                            <label class="form-check-label fw-bold" for="checkall">
+                                                Check All
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12">
-                                    <hr class="my-2">
-                                </div>
-                                <div class="row ps-lg-4">
-                                    @if ($permission && count($permission) > 0)
-                                        @foreach ($permission as $key => $value)
-                                            <div class="col-lg-2 form-check" style="margin: 3px 0 0 0; display: inline-block;">
-                                                <input class="form-check-input check_class" type="checkbox" id="permission{{ $value->id }}" name="permission[]" value="{{ $value->name }}" {{ in_array($value->id, $rolePermissions) ? 'checked="checked"' : '' }}>
-                                                <label class="form-check-label" for="permission{{ $value->id }}">{{ $value->name }}</label>
+                                    @foreach ($actionKeys as $actKey => $actLabel)
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input col-action-check" type="checkbox" id="col_check_{{ $actKey }}" data-action="{{ $actKey }}">
+                                                <label class="form-check-label fw-semibold" for="col_check_{{ $actKey }}">
+                                                    {{ $actLabel }}
+                                                </label>
                                             </div>
-                                        @endforeach
-                                    @endif
-                                    <div class="invalid-feedback ps-lg-0" id="msg_permission"></div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                                <div class="col-sm-12">
-                                    <div class="d-flex gap-2 justify-content-end">
-                                        <a href="{{ route("role-list") }}" class="btn btn-outline-secondary">
-                                            Cancel
-                                        </a>
-                                        <button type="submit" name="submit" class="btn btn-primary">
-                                            Update Role
-                                        </button>
+
+                                <!-- Header Row: Column Labels -->
+                                <div class="row align-items-center mb-2">
+                                    <div class="col-4">
+                                        <span class="fw-bold">Module</span>
                                     </div>
+                                    @foreach ($actionKeys as $actKey => $actLabel)
+                                        <div class="col">
+                                            <span class="fw-bold">{{ $actLabel }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <!-- Divider Line -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <hr class="my-2">
+                                    </div>
+                                </div>
+
+                                <!-- Module Rows -->
+                                @if ($groupedPermissions && count($groupedPermissions) > 0)
+                                    @foreach ($groupedPermissions as $modSlug => $moduleData)
+                                        <div class="row align-items-center mb-2">
+                                            <div class="col-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input row-module-check" 
+                                                           type="checkbox" 
+                                                           id="mod_check_{{ $modSlug }}" 
+                                                           data-module="{{ $modSlug }}">
+                                                    <label class="form-check-label" for="mod_check_{{ $modSlug }}">
+                                                        {{ $moduleData['label'] }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            @foreach ($actionKeys as $actKey => $actLabel)
+                                                <div class="col">
+                                                    @if (isset($moduleData['actions'][$actKey]))
+                                                        @php $perm = $moduleData['actions'][$actKey]; @endphp
+                                                        <div class="form-check">
+                                                            <input class="form-check-input check_class permission-check" 
+                                                                   type="checkbox" 
+                                                                   id="permission{{ $perm->id }}" 
+                                                                   name="permission[]" 
+                                                                   value="{{ $perm->name }}"
+                                                                   data-module="{{ $modSlug }}"
+                                                                   data-action="{{ $actKey }}"
+                                                                   {{ (isset($rolePermissions) && in_array($perm->id, $rolePermissions)) ? 'checked="checked"' : '' }}>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                <div class="invalid-feedback d-block" id="msg_permission"></div>
+                            </div>
+                            <!-- Permission Section ends -->
+
+                            <div class="col-sm-12">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="{{ route("role-list") }}" class="btn btn-outline-secondary">
+                                        Cancel
+                                    </a>
+                                    <button type="submit" name="submit" class="btn btn-primary">
+                                        Update Role
+                                    </button>
                                 </div>
                             </div>
-                            <!-- Row ends -->
                         </div>
                     </div>
                 </div>
@@ -82,15 +142,60 @@
 @section('page-js')
     <script type="text/javascript">
         $(document).ready(function(){
-            $("#checkall").click(function(){
-                if(this.checked){
-                    $(".check_class").attr("checked",true);
-                    $(".check_class").parent().addClass("checked");
-                }else{
-                    $(".check_class").attr("checked",false);
-                    $(".check_class").parent().removeClass("checked");
-                }
+            // Function to synchronize row, column and master checkboxes
+            function syncCheckboxes() {
+                // 1. Sync Row checkboxes
+                $('.row-module-check').each(function() {
+                    let module = $(this).data('module');
+                    let rowPerms = $('.permission-check[data-module="' + module + '"]');
+                    let checkedRowPerms = rowPerms.filter(':checked');
+                    $(this).prop('checked', rowPerms.length > 0 && rowPerms.length === checkedRowPerms.length);
+                });
+
+                // 2. Sync Column checkboxes
+                $('.col-action-check').each(function() {
+                    let action = $(this).data('action');
+                    let colPerms = $('.permission-check[data-action="' + action + '"]');
+                    let checkedColPerms = colPerms.filter(':checked');
+                    $(this).prop('checked', colPerms.length > 0 && colPerms.length === checkedColPerms.length);
+                });
+
+                // 3. Sync Master Check All
+                let totalPerms = $('.permission-check').length;
+                let checkedPerms = $('.permission-check:checked').length;
+                $('#checkall').prop('checked', totalPerms > 0 && totalPerms === checkedPerms);
+            }
+
+            // Master "Check All"
+            $('#checkall').on('change', function() {
+                let isChecked = $(this).is(':checked');
+                $('.permission-check').prop('checked', isChecked);
+                $('.row-module-check').prop('checked', isChecked);
+                $('.col-action-check').prop('checked', isChecked);
             });
+
+            // Column-wise Checkbox (e.g. Add, Edit, Delete, View)
+            $('.col-action-check').on('change', function() {
+                let action = $(this).data('action');
+                let isChecked = $(this).is(':checked');
+                $('.permission-check[data-action="' + action + '"]').prop('checked', isChecked);
+                syncCheckboxes();
+            });
+
+            // Row-wise Checkbox (e.g. Module row)
+            $('.row-module-check').on('change', function() {
+                let module = $(this).data('module');
+                let isChecked = $(this).is(':checked');
+                $('.permission-check[data-module="' + module + '"]').prop('checked', isChecked);
+                syncCheckboxes();
+            });
+
+            // Individual Permission Checkbox
+            $(document).on('change', '.permission-check', function() {
+                syncCheckboxes();
+            });
+
+            syncCheckboxes();
             $("#status_msg").hide();
             $("#alert_msg").hide();
         });

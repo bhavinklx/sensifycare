@@ -183,9 +183,11 @@ class BlogController extends Controller
     {
         return $request->validate([
             "bcategory_id"              => "required|not_in:0",
+            "blog_type"                 => "required|in:image,video",
             "blog_title"                => 'required|string|max:255',
             "blog_slug"                 => 'required|string|max:255',
-            "blog_date"                 => "required"
+            "blog_date"                 => "required",
+            "blog_video_url"            => "nullable|string|max:500"
         ]);
     }
 
@@ -212,9 +214,12 @@ class BlogController extends Controller
         }
 
         $blog->fill([
+            'bcategory_id'              => $request->bcategory_id,
+            'blog_type'                 => $request->blog_type ?? 'image',
             'blog_title'                => $request->blog_title,
             'blog_slug'                 => $request->blog_slug,
             'blog_date'                 => date('Y-m-d',strtotime($request->blog_date)),
+            'blog_video_url'            => $request->blog_video_url,
             'blog_short_desc'           => addslashes($request->blog_short_desc),
             'blog_desc'                 => $request->blog_desc,
             'blog_meta_title'           => $request->blog_meta_title,

@@ -13,10 +13,12 @@ class Blog extends Model
     protected $fillable = [
         "blog_id",
         "bcategory_id",
+        "blog_type",
         "blog_title",
         "blog_slug",
         "blog_date",
         "blog_image",
+        "blog_video_url",
         "blog_short_desc",
         "blog_desc",
         "blog_meta_title",

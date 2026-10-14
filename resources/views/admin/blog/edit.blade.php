@@ -31,9 +31,9 @@
                         <div class="card-body">
                             <!-- Row starts -->
                             <div class="row gx-3">
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-6 col-lg-6 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="roles">Category</label>
+                                        <label class="form-label" for="bcategory_id">Category</label>
                                         <select class="form-select" id="bcategory_id" name="bcategory_id">
                                             <option value="0">Select as Parent</option>
                                             @foreach($bcategoryDetail as $bcategory)
@@ -43,21 +43,31 @@
                                         <div class="invalid-feedback" id="msg_bcategory_id"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-6 col-sm-6">
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
                                     <div class="mb-3">
                                         <label class="form-label" for="blog_date">Blog Date</label>
                                         <input type="text" class="form-control" id="blog_date" name="blog_date" placeholder="Select Blog Date" value="{{ date('d-m-Y', strtotime($blogDetail->blog_date)) }}">
                                         <div class="invalid-feedback" id="msg_blog_date"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="blog_type">Blog Type</label>
+                                        <select class="form-select" id="blog_type" name="blog_type">
+                                            <option value="image" {{ (old('blog_type', $blogDetail->blog_type ?? 'image') == 'image') ? 'selected="selected"' : '' }}>Image</option>
+                                            <option value="video" {{ (old('blog_type', $blogDetail->blog_type ?? '') == 'video') ? 'selected="selected"' : '' }}>Video</option>
+                                        </select>
+                                        <div class="invalid-feedback" id="msg_blog_type"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-6 col-lg-6 col-sm-6">
                                     <div class="mb-3">
                                         <label class="form-label" for="blog_title">Blog Title</label>
                                         <input type="text" class="form-control" id="blog_title" name="blog_title" placeholder="Enter Blog Title" value="{{ $blogDetail->blog_title }}">
                                         <div class="invalid-feedback" id="msg_blog_title"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-6 col-lg-6 col-sm-6">
                                     <div class="mb-3">
                                         <label class="form-label" for="blog_slug">Blog Slug</label>
                                         <input type="text" class="form-control" id="blog_slug" name="blog_slug" placeholder="Enter Blog Slug" value="{{ $blogDetail->blog_slug }}">
@@ -67,8 +77,8 @@
                             </div>
 
                             <div class="row g-3">
-                                <!-- Page Image -->
-                                <div class="col-lg-6">
+                                <!-- Blog Image Wrapper -->
+                                <div class="col-lg-6 {{ (old('blog_type', $blogDetail->blog_type ?? 'image') == 'video') ? 'd-none' : '' }}" id="blog_image_wrapper">
                                     <form class="dropzone" id="image-upload" method="POST" action="{{ route('blog-image-upload') }}" enctype="multipart/form-data">
                                         @csrf
                                         <label class="form-label">Blog Image</label>
@@ -81,6 +91,15 @@
                                         </div>
                                     </form>
                                     <input type="hidden" name="blog_image" id="blog_image">
+                                </div>
+
+                                <!-- Blog Video Wrapper -->
+                                <div class="col-lg-6 {{ (old('blog_type', $blogDetail->blog_type ?? 'image') != 'video') ? 'd-none' : '' }}" id="blog_video_wrapper">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="blog_video_url">Video URL</label>
+                                        <input type="text" class="form-control" id="blog_video_url" name="blog_video_url" placeholder="Enter Video URL" value="{{ $blogDetail->blog_video_url }}">
+                                        <div class="invalid-feedback" id="msg_blog_video_url"></div>
+                                    </div>
                                 </div>
 
                                 <!-- Page Fields -->
@@ -247,5 +266,21 @@
                 });
             }
         });
+
+        function toggleBlogType() {
+            var selectedType = $('#blog_type').val();
+            if (selectedType === 'video') {
+                $('#blog_image_wrapper').addClass('d-none');
+                $('#blog_video_wrapper').removeClass('d-none');
+            } else {
+                $('#blog_image_wrapper').removeClass('d-none');
+                $('#blog_video_wrapper').addClass('d-none');
+            }
+        }
+
+        $('#blog_type').on('change', function() {
+            toggleBlogType();
+        });
+        toggleBlogType();
     </script>
 @endsection

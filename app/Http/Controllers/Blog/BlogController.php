@@ -187,6 +187,7 @@ class BlogController extends Controller
             "blog_title"                => 'required|string|max:255',
             "blog_slug"                 => 'required|string|max:255',
             "blog_date"                 => "required",
+            "blog_image"                => "nullable|string|max:255",
             "blog_video_url"            => "nullable|string|max:500"
         ]);
     }
@@ -194,15 +195,25 @@ class BlogController extends Controller
     private function saveUpdateData(Blog $blog, Request $request, $isUpdate = false)
     {
         if ($request->hasFile('blog_image')) {
-            if ($isUpdate) {
+            if ($isUpdate && $blog->blog_image) {
                 $this->deleteFile($blog->blog_image);
             }
-            $blog->blog_image           = $this->uploadFile($request->file('blog_image'));
-        }
-
-        //Dropzone async upload
-        if ($request->blog_image) {
-            $blog->blog_image           = $request->blog_image; // filename string
+            $blog->blog_image           = $this->storeImage($request->file('blog_image'));
+        } else {
+            // Dropzone async upload
+            if ($request->filled('blog_image')) {
+                // If update and new image is different from existing image, delete old file
+                if ($isUpdate && $blog->blog_image && $blog->blog_image != $request->blog_image) {
+                    $this->deleteFile($blog->blog_image);
+                }
+                $blog->blog_image       = $request->blog_image;
+            } else {
+                // If blog_image was removed / emptied
+                if ($isUpdate && $blog->blog_image) {
+                    $this->deleteFile($blog->blog_image);
+                }
+                $blog->blog_image       = null;
+            }
         }
         
         if ($isUpdate) {
@@ -246,6 +257,15 @@ class BlogController extends Controller
         ]);
     }
 
+    public function deleteImage(Request $request)
+    {
+        if ($request->filename) {
+            $this->deleteFile($request->filename);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 400);
+    }
+
     protected function storeImage($file)
     {
         $filename = 'IMG-' . time() . '.' . $file->getClientOriginalExtension();
@@ -259,4 +279,52 @@ class BlogController extends Controller
             @unlink(public_path('/uploads/blog/'.$filename));
         }
     }
+
+    public function uploadEditorImage(Request $request)
+    {
+        $file = $request->file('upload') ?? $request->file('file') ?? $request->file('image');
+        $funcNum = $request->input('CKEditorFuncNum');
+
+        if ($file && $file->isValid()) {
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            if (!in_array($extension, $allowedExtensions)) {
+                $errorMessage = 'Invalid image type. Allowed: jpg, jpeg, png, webp, gif, svg';
+                if ($funcNum) {
+                    $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '', '{$errorMessage}');</script>";
+                    return response($response)->header('Content-Type', 'text/html; charset=utf-8');
+                }
+                return response()->json(['uploaded' => 0, 'error' => ['message' => $errorMessage]], 400);
+            }
+
+            $filename = 'EDITOR-' . time() . '_' . Str::random(8) . '.' . $extension;
+            $destinationPath = public_path('uploads/editor');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            $file->move($destinationPath, $filename);
+            $url = asset('uploads/editor/' . $filename);
+
+            if ($funcNum) {
+                $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '{$url}', '');</script>";
+                return response($response)->header('Content-Type', 'text/html; charset=utf-8');
+            }
+
+            return response()->json([
+                'uploaded' => 1,
+                'fileName' => $filename,
+                'url'      => $url,
+            ]);
+        }
+
+        $errorMessage = 'No image uploaded or upload failed.';
+        if ($funcNum) {
+            $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '', '{$errorMessage}');</script>";
+            return response($response)->header('Content-Type', 'text/html; charset=utf-8');
+        }
+
+        return response()->json(['uploaded' => 0, 'error' => ['message' => $errorMessage]], 400);
+    }
 }
+

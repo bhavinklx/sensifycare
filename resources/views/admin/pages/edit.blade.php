@@ -99,18 +99,19 @@
                                 <!-- Page Image -->
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        <label class="form-label">Page Image</label>
-                                        <div class="dropzone dz-clickable" id="image-upload">
+                                        <label class="form-label" for="image-upload">Page Image</label>
+                                        <div class="dropzone" id="image-upload">
                                             <div class="dz-message">
                                                 <button type="button" class="dz-button">
                                                     Click here to upload your photo
                                                 </button>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="page_image" id="page_image"
+                                            value="{{ $pagesDetail->page_image ?? '' }}">
+                                        <div class="invalid-feedback" id="msg_page_image"></div>
                                     </div>
                                 </div>
-                                <input type="hidden" name="page_image" id="page_image"
-                                    value="{{ $pagesDetail->page_image ?? '' }}">
 
                                 <!-- Page Fields -->
                                 <div class="col-lg-6">
@@ -143,11 +144,21 @@
                             </div>
 
                             <div class="col-sm-12 mb-3">
-                                <div class="mb-3">
-                                    <label class="form-label" for="page_desc">Description</label>
-                                    <input type="text" class="form-control" id="page_desc" name="page_desc" placeholder="Enter Meta Title" value="{{ $pagesDetail->page_desc }}">
-                                    <div class="invalid-feedback" id="msg_page_meta_title"></div>
-                                </div>
+                                <label for="page_desc" class="form-label">Description</label>
+                                <textarea id="page_desc" name="page_desc">{{ $pagesDetail->page_desc }}</textarea>
+                                <script type="text/javascript">
+                                    CKEDITOR.replace( 'page_desc',
+                                        {
+                                            filebrowserBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html') }}',
+                                            filebrowserImageBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html?Type=Images') }}',
+                                            filebrowserFlashBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html?Type=Flash') }}',
+                                            filebrowserUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                            filebrowserImageUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                            filebrowserFlashUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                            enterMode: CKEDITOR.ENTER_P,
+                                        }
+                                    );
+                                </script>
                             </div>
 
                             <div class="row g-3">
@@ -240,6 +251,10 @@
 
         $('#pagesFrm').submit(function(e) {
             e.preventDefault();
+            for (instance in CKEDITOR.instances) {
+                CKEDITOR.instances[instance].updateElement();
+                CKEDITOR.config.allowedContent = true;
+            }
 
             $('#loading-wrapper').fadeIn(200);
             let formData = new FormData(this);
@@ -269,25 +284,43 @@
             });
         });
 
+        // Dropzone image upload
         Dropzone.autoDiscover = false;
+        if (Dropzone.instances.length > 0) {
+            Dropzone.instances.forEach(function(dz) {
+                if (dz.element && dz.element.id === 'image-upload') {
+                    dz.destroy();
+                }
+            });
+        }
+
         let existingImage = "{{ $pagesDetail->page_image ?? '' }}";
         let dz = new Dropzone("#image-upload", {
             url: "{{ route('pages-image-upload') }}",
+            paramName: "file",
             maxFiles: 1,
             acceptedFiles: ".jpg,.jpeg,.png,.webp",
             addRemoveLinks: true,
+            dictDefaultMessage: "Click here to upload your photo",
+            dictRemoveFile: "Remove file",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
             init: function() {
                 let myDropzone = this;
 
-                //PRELOAD EXISTING IMAGE
+                this.on("maxfilesexceeded", function(file) {
+                    myDropzone.removeAllFiles();
+                    myDropzone.addFile(file);
+                });
+
+                // PRELOAD EXISTING IMAGE
                 if (existingImage) {
                     let mockFile = {
                         name: existingImage,
                         size: 12345,
-                        accepted: true
+                        accepted: true,
+                        serverFileName: existingImage
                     };
 
                     myDropzone.emit("addedfile", mockFile);
@@ -299,17 +332,40 @@
                     myDropzone.emit("complete", mockFile);
 
                     myDropzone.files.push(mockFile);
-                    document.getElementById('page_image').value = existingImage;
+                    $('#page_image').val(existingImage);
                 }
 
                 // Upload new image
-                myDropzone.on("success", function(file, response) {
-                    document.getElementById('page_image').value = response.filename;
+                this.on("success", function(file, response) {
+                    file.serverFileName = response.filename;
+                    $('#page_image').val(response.filename);
+                    $('#msg_page_image').html('');
+                    $('#page_image').removeClass('is-invalid');
                 });
 
                 // Remove image
-                myDropzone.on("removedfile", function() {
-                    document.getElementById('page_image').value = "";
+                this.on("removedfile", function(file) {
+                    let removedName = file.serverFileName || $('#page_image').val();
+                    $('#page_image').val('');
+
+                    if (removedName && removedName !== existingImage) {
+                        $.ajax({
+                            url: "{{ route('pages-image-delete') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                filename: removedName
+                            }
+                        });
+                    }
+                });
+
+                this.on("error", function(file, errorMessage) {
+                    let msg = (typeof errorMessage === 'object' && errorMessage.message) ? errorMessage.message : errorMessage;
+                    if (typeof errorMessage === 'object' && errorMessage.errors && errorMessage.errors.file) {
+                        msg = errorMessage.errors.file[0];
+                    }
+                    $('#msg_page_image').html(msg).show();
                 });
             }
         });

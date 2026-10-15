@@ -78,18 +78,18 @@
                             <div class="row g-3">
                                 <!-- Blog Image Wrapper -->
                                 <div class="col-lg-6" id="blog_image_wrapper">
-                                    <form class="dropzone" id="image-upload" method="POST" action="{{ route('blog-image-upload') }}" enctype="multipart/form-data">
-                                        @csrf
-                                        <label class="form-label">Blog Image</label>
-                                        <div class="dropzone dz-clickable" id="image-upload">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="image-upload">Blog Image</label>
+                                        <div class="dropzone" id="image-upload">
                                             <div class="dz-message">
                                                 <button type="button" class="dz-button">
                                                     Click here to upload your photo
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
-                                    <input type="hidden" name="blog_image" id="blog_image">
+                                        <input type="hidden" name="blog_image" id="blog_image">
+                                        <div class="invalid-feedback" id="msg_blog_image"></div>
+                                    </div>
                                 </div>
 
                                 <!-- Blog Video Wrapper -->
@@ -138,12 +138,11 @@
                                     CKEDITOR.replace( 'blog_desc',
                                         {
                                             filebrowserBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html') }}',
-                                            filebrowserUploadUrl : '{{ url('assets/ckfinder/userfiles') }}',
                                             filebrowserImageBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html?Type=Images') }}',
                                             filebrowserFlashBrowseUrl : '{{ url('assets/ckfinder/ckfinder.html?Type=Flash') }}',
-                                            filebrowserUploadUrl : '{{ url('assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files') }}',
-                                            filebrowserImageUploadUrl : '{{ url('assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images') }}',
-                                            filebrowserFlashUploadUrl : '{{ url('assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash') }}',
+                                            filebrowserUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                            filebrowserImageUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                            filebrowserFlashUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
                                             enterMode: CKEDITOR.ENTER_P,
                                         }
                                     );
@@ -223,18 +222,64 @@
 
         // Dropzone image upload
         Dropzone.autoDiscover = false;
+        if (Dropzone.instances.length > 0) {
+            Dropzone.instances.forEach(function(dz) {
+                if (dz.element && dz.element.id === 'image-upload') {
+                    dz.destroy();
+                }
+            });
+        }
+
         let dz = new Dropzone("#image-upload", {
             url: "{{ route('blog-image-upload') }}",
+            paramName: "file",
             maxFiles: 1,
             acceptedFiles: ".jpg,.jpeg,.png,.webp",
             addRemoveLinks: true,
+            dictDefaultMessage: "Click here to upload your photo",
+            dictRemoveFile: "Remove file",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            }
-        });
+            },
+            init: function() {
+                let myDropzone = this;
 
-        dz.on("success", function(file, response) {
-            document.getElementById('blog_image').value = response.filename;
+                this.on("maxfilesexceeded", function(file) {
+                    myDropzone.removeAllFiles();
+                    myDropzone.addFile(file);
+                });
+
+                this.on("success", function(file, response) {
+                    file.serverFileName = response.filename;
+                    $('#blog_image').val(response.filename);
+                    $('#msg_blog_image').html('');
+                    $('#blog_image').removeClass('is-invalid');
+                });
+
+                this.on("removedfile", function(file) {
+                    let removedName = file.serverFileName || $('#blog_image').val();
+                    $('#blog_image').val('');
+
+                    if (removedName) {
+                        $.ajax({
+                            url: "{{ route('blog-image-delete') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                filename: removedName
+                            }
+                        });
+                    }
+                });
+
+                this.on("error", function(file, errorMessage) {
+                    let msg = (typeof errorMessage === 'object' && errorMessage.message) ? errorMessage.message : errorMessage;
+                    if (typeof errorMessage === 'object' && errorMessage.errors && errorMessage.errors.file) {
+                        msg = errorMessage.errors.file[0];
+                    }
+                    $('#msg_blog_image').html(msg).show();
+                });
+            }
         });
 
         function toggleBlogType() {

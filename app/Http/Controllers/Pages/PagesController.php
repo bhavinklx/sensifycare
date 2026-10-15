@@ -147,7 +147,7 @@ class PagesController extends Controller
     public function delete(Request $request)
     {
         $pages = Pages::findOrFail($request->page_id);
-        $this->deleteFile($pages->blog_image);
+        $this->deleteFile($pages->page_image);
 
         $pages->delete();
         return response('Page deleted successfully.');
@@ -157,7 +157,9 @@ class PagesController extends Controller
     {
         return $request->validate([
             "page_title"                => 'required|string|max:255',
-            "page_slug"                 => 'required|string|max:255'
+            "page_slug"                 => 'required|string|max:255',
+            "page_image"                => 'nullable|string|max:255',
+            "page_desc"                 => 'nullable|string'
         ]);
     }
 
@@ -167,12 +169,22 @@ class PagesController extends Controller
             if ($isUpdate && $pages->page_image) {
                 $this->deleteFile($pages->page_image);
             }
-            $pages->page_image          = $this->uploadImage($request->file('page_image'));
-        }
-
-        //Dropzone async upload
-        if ($request->page_image) {
-            $pages->page_image          = $request->page_image; // filename string
+            $pages->page_image          = $this->storeImage($request->file('page_image'));
+        } else {
+            // Dropzone async upload
+            if ($request->filled('page_image')) {
+                // If update and new image is different from existing image, delete old file
+                if ($isUpdate && $pages->page_image && $pages->page_image != $request->page_image) {
+                    $this->deleteFile($pages->page_image);
+                }
+                $pages->page_image      = $request->page_image;
+            } else {
+                // If page_image was removed / emptied
+                if ($isUpdate && $pages->page_image) {
+                    $this->deleteFile($pages->page_image);
+                }
+                $pages->page_image      = null;
+            }
         }
    
         if ($isUpdate) {
@@ -184,7 +196,7 @@ class PagesController extends Controller
         }
         
         $pages->fill([
-            'page_parent'               => $request->page_parent,
+            'page_parent'               => $request->page_parent ?? '0',
             'page_title'                => $request->page_title,
             'page_slug'                 => $request->page_slug,
             'page_link'                 => $request->page_link,
@@ -192,9 +204,9 @@ class PagesController extends Controller
             'page_meta_title'           => $request->page_meta_title,
             'page_meta_keyword'         => $request->page_meta_keyword,
             'page_meta_desc'            => $request->page_meta_desc,
-            'page_status'               => $request->page_status,
-            'page_header_status'        => $request->page_header_status,
-            'page_footer_status'        => $request->page_footer_status,
+            'page_status'               => $request->page_status ?? '1',
+            'page_header_status'        => $request->page_header_status ?? '0',
+            'page_footer_status'        => $request->page_footer_status ?? '0',
         ]);
 
         $pages->save();
@@ -212,6 +224,15 @@ class PagesController extends Controller
         return response()->json([
             'filename' => $filename
         ]);
+    }
+
+    public function deleteImage(Request $request)
+    {
+        if ($request->filename) {
+            $this->deleteFile($request->filename);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 400);
     }
 
     protected function storeImage($file)

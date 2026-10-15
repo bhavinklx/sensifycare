@@ -100,6 +100,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/pages-change-footer-status", "change_footer_status")->name("pages-change-footer-status");
         Route::post("/admin/pages-update-order", "update_order")->name("pages-update-order");
         Route::post('/admin/pages-image-upload', 'uploadImage')->name('pages-image-upload');
+        Route::post('/admin/pages-image-delete', 'deleteImage')->name('pages-image-delete');
     });
 
     //For Blog Category
@@ -145,6 +146,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("/admin/blog-change-status", "change_status")->name("blog-change-status");
         Route::post("/admin/blog-update-order", "update_order")->name("blog-update-order");
         Route::post('/admin/blog-image-upload', 'uploadImage')->name('blog-image-upload');
+        Route::post('/admin/blog-image-delete', 'deleteImage')->name('blog-image-delete');
+        Route::post('/admin/ckeditor-upload', 'uploadEditorImage')->name('ckeditor-upload');
     });
 
     //For Banner

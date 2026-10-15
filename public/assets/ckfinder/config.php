@@ -61,29 +61,10 @@ Examples:
 ATTENTION: The trailing slash is required.
 */
 
-//$baseUrl = '/ckfinder/userfiles/';
-$baseUrl = 'http://'.$_SERVER['SERVER_NAME'].'/uploads/userfiles/';
-
-/*
-$baseDir : the path to the local directory (in the server) which points to the
-above $baseUrl URL. This is the path used by CKFinder to handle the files in
-the server. Full write permissions must be granted to this directory.
-
-Examples:
-	// You may point it to a directory directly:
-	$baseDir = '/home/login/public_html/ckfinder/files/';
-	$baseDir = 'C:/SiteDir/CKFinder/userfiles/';
-
-	// Or you may let CKFinder discover the path, based on $baseUrl.
-	// WARNING: resolveUrl() *will not work* if $baseUrl does not start with a slash ("/"),
-	// for example if $baseDir is set to  http://example.com/ckfinder/files/
-	$baseDir = resolveUrl($baseUrl);
-
-ATTENTION: The trailing slash is required.
-*/
-
-//$baseDir = resolveUrl($baseUrl);
-$baseDir = $_SERVER['DOCUMENT_ROOT'].'/uploads/userfiles/';
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) ? "https://" : "http://";
+$serverHost = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+$baseUrl = $protocol . $serverHost . '/uploads/userfiles/';
+$baseDir = dirname(__DIR__, 2) . '/uploads/userfiles/';
 
 /*
  * ### Advanced Settings

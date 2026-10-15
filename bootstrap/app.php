@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
             'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'admin/ckeditor-upload',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {

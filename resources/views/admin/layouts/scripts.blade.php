@@ -7,6 +7,11 @@
 
 <!-- Dropzone JS -->
 <script src="{{ url('assets/vendor/dropzone/dropzone.min.js') }}"></script>
+<script type="text/javascript">
+    if (typeof Dropzone !== 'undefined') {
+        Dropzone.autoDiscover = false;
+    }
+</script>
 
 <!-- Quill Editor JS -->
 <script src="{{ url('assets/vendor/quill/quill.min.js') }}"></script>

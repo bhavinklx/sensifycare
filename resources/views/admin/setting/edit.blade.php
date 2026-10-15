@@ -313,6 +313,8 @@
                                                                                         { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
                                                                                         { name: 'paragraph', items : [ 'NumberedList','BulletedList' ] }
                                                                                     ],
+                                                                            filebrowserUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                                                            filebrowserImageUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
                                                                             height:200
                                                                         });
                                                             </script>
@@ -349,6 +351,8 @@
                                                                                         { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
                                                                                         { name: 'paragraph', items : [ 'NumberedList','BulletedList' ] }
                                                                                     ],
+                                                                            filebrowserUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                                                            filebrowserImageUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
                                                                             height:200
                                                                         });
                                                             </script>
@@ -385,6 +389,8 @@
                                                                                         { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
                                                                                         { name: 'paragraph', items : [ 'NumberedList','BulletedList' ] }
                                                                                     ],
+                                                                            filebrowserUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
+                                                                            filebrowserImageUploadUrl : '{{ route('ckeditor-upload', ['_token' => csrf_token()]) }}',
                                                                             height:200
                                                                         });
                                                             </script>

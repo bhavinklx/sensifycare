@@ -138,21 +138,31 @@
                 </li>
             @endif
 
-            @if(auth()->user()->can('qa-list') || auth()->user()->can('qa-add'))
-                <li class="treeview {{ ($fileName == 'qa-list' || $fileName == 'qa-add' || $fileName == 'qa-edit') ? 'active current-page' : '' }}">
+            @if(auth()->user()->can('fcategory-list') || auth()->user()->can('faq-list'))
+                <li class="treeview {{ ($fileName == 'fcategory-list' || $fileName == 'fcategory-add' || $fileName == 'fcategory-edit' || $fileName == 'faq-list' || $fileName == 'faq-add' || $fileName == 'faq-edit') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">
                         <i class="ri-question-answer-line"></i>
-                        <span class="menu-text">Question Answers</span>
+                        <span class="menu-text">FAQs</span>
                     </a>
                     <ul class="treeview-menu">
-                        @can('qa-list')
+                        @can('fcategory-list')
                             <li>
-                                <a href="{{ route("qa-list") }}" class="{{ ($fileName == 'qa-list') ? 'active-sub' : '' }}">Question List</a>
+                                <a href="{{ route("fcategory-list") }}" class="{{ ($fileName == 'fcategory-list') ? 'active-sub' : '' }}">Category List</a>
                             </li>
                         @endcan
-                        @can('qa-add')
+                        @can('fcategory-add')
                             <li>
-                                <a href="{{ route("qa-add") }}" class="{{ ($fileName == 'qa-add' || $fileName == 'qa-edit') ? 'active-sub' : '' }}">Add Questions</a>
+                                <a href="{{ route("fcategory-add") }}" class="{{ ($fileName == 'fcategory-add' || $fileName == 'fcategory-edit') ? 'active-sub' : '' }}">Add Category</a>
+                            </li>
+                        @endcan
+                        @can('faq-list')
+                            <li>
+                                <a href="{{ route("faq-list") }}" class="{{ ($fileName == 'faq-list') ? 'active-sub' : '' }}">FAQ List</a>
+                            </li>
+                        @endcan
+                        @can('faq-add')
+                            <li>
+                                <a href="{{ route("faq-add") }}" class="{{ ($fileName == 'faq-add' || $fileName == 'faq-edit') ? 'active-sub' : '' }}">Add FAQ</a>
                             </li>
                         @endcan
                     </ul>

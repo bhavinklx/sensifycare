@@ -12,6 +12,7 @@ class Bcategory extends Model
 
     protected $fillable = [
         "bcategory_id",
+        "bcategory_parent",
         "bcategory_title",
         "bcategory_slug",
         "bcategory_meta_title",
@@ -21,4 +22,19 @@ class Bcategory extends Model
         "bcategory_status",
         "created_at"
     ];
+
+    public function parentCategory()
+    {
+        return $this->belongsTo(Bcategory::class, 'bcategory_parent', 'bcategory_id');
+    }
+
+    public function subCategories()
+    {
+        return $this->hasMany(Bcategory::class, 'bcategory_parent', 'bcategory_id')->orderBy('bcategory_order');
+    }
+
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'bcategory_id', 'bcategory_id');
+    }
 }

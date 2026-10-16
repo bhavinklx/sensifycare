@@ -30,38 +30,50 @@
                         <div class="card-body">
                             <!-- Row starts -->
                             <div class="row gx-3">
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="email">Category Title</label>
+                                        <label class="form-label" for="bcategory_parent">Parent Category</label>
+                                        <select class="form-select" id="bcategory_parent" name="bcategory_parent">
+                                            <option value="0">None (Main Category)</option>
+                                            @foreach($parentCategories as $parent)
+                                                <option value="{{ $parent->bcategory_id }}">{{ $parent->bcategory_title }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback" id="msg_bcategory_parent"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="bcategory_title">Category Title <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="bcategory_title" name="bcategory_title" placeholder="Enter Category Title">
                                         <div class="invalid-feedback" id="msg_bcategory_title"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="phone">Category Slug</label>
+                                        <label class="form-label" for="bcategory_slug">Category Slug <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="bcategory_slug" name="bcategory_slug" placeholder="Enter Category Slug">
                                         <div class="invalid-feedback" id="msg_bcategory_slug"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
                                     <div class="mb-3">
                                         <label class="form-label" for="bcategory_meta_title">Meta Title</label>
                                         <input type="text" class="form-control" id="bcategory_meta_title" name="bcategory_meta_title" placeholder="Enter Meta Title">
                                         <div class="invalid-feedback" id="msg_bcategory_meta_title"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-3 col-lg-4 col-sm-6">
+                                <div class="col-xxl-6 col-lg-6 col-sm-12">
                                     <div class="mb-3">
                                         <label class="form-label" for="bcategory_meta_keyword">Meta Keyword</label>
-                                        <input type="text" class="form-control" id="bcategory_meta_keyword" name="bcategory_meta_keyword" placeholder="Meta Keyword">
+                                        <textarea class="form-control" id="bcategory_meta_keyword" name="bcategory_meta_keyword" rows="2" placeholder="Enter Meta Keyword"></textarea>
                                         <div class="invalid-feedback" id="msg_bcategory_meta_keyword"></div>
                                     </div>
                                 </div>
-                                <div class="col-xxl-12 col-lg-12 col-sm-6 mt-sm-2">
+                                <div class="col-xxl-6 col-lg-6 col-sm-12">
                                     <div class="mb-3">
                                         <label class="form-label" for="bcategory_meta_desc">Meta Description</label>
-                                        <textarea type="text" class="form-control" id="bcategory_meta_desc" name="bcategory_meta_desc" rows="2"></textarea>
+                                        <textarea class="form-control" id="bcategory_meta_desc" name="bcategory_meta_desc" rows="2" placeholder="Enter Meta Description"></textarea>
                                         <div class="invalid-feedback" id="msg_bcategory_meta_desc"></div>
                                     </div>
                                 </div>

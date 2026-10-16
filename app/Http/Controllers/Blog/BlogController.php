@@ -45,7 +45,12 @@ class BlogController extends Controller
 
     public function create()
     {
-        $bcategoryDetail = Bcategory::where("bcategory_status", "1")->get();
+        $bcategoryDetail = Bcategory::where("bcategory_status", "1")
+            ->where(function($q) {
+                $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
+            })
+            ->orderBy('bcategory_order')
+            ->get();
         return view("admin.blog.create", compact('bcategoryDetail'));
     }
 
@@ -62,9 +67,36 @@ class BlogController extends Controller
     
     public function edit($id)
     {
-        $blogDetail = Blog::find($id);
-        $bcategoryDetail = Bcategory::where("bcategory_status", "1")->get();
-        return view("admin.blog.edit", compact('blogDetail', 'bcategoryDetail'));
+        $blogDetail = Blog::findOrFail($id);
+        $bcategoryDetail = Bcategory::where("bcategory_status", "1")
+            ->where(function($q) {
+                $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
+            })
+            ->orderBy('bcategory_order')
+            ->get();
+
+        $subCategories = [];
+        if (!empty($blogDetail->bcategory_id)) {
+            $subCategories = Bcategory::where('bcategory_status', '1')
+                ->where('bcategory_parent', $blogDetail->bcategory_id)
+                ->orderBy('bcategory_order')
+                ->get();
+        }
+
+        return view("admin.blog.edit", compact('blogDetail', 'bcategoryDetail', 'subCategories'));
+    }
+
+    public function getSubcategories(Request $request)
+    {
+        $categoryId = $request->bcategory_id;
+        $subcategories = [];
+        if (!empty($categoryId)) {
+            $subcategories = Bcategory::where('bcategory_status', '1')
+                ->where('bcategory_parent', $categoryId)
+                ->orderBy('bcategory_order')
+                ->get(['bcategory_id', 'bcategory_title']);
+        }
+        return response()->json($subcategories);
     }
 
     public function update(Request $request)
@@ -85,18 +117,18 @@ class BlogController extends Controller
 
     public function load_table(Request $request)
     {
-        $blogDetail = Blog::orderBy("blog_order");
+        $blogDetail = Blog::with(['category', 'subCategory'])->orderBy("blog_order");
         return DataTables::of($blogDetail)
             ->editColumn("checkbox", function ($blog){
                 return '<div class="form-check m-0"> <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="' . $blog->blog_id . '"> </div>';
             })
             ->editColumn("category", function ($blog){
-                $categoryDetail = Bcategory::get()->toArray();
-                $categoryArray = [];
-                for ($c=0; $c < count($categoryDetail); $c++) {
-                    $categoryArray[$categoryDetail[$c]['bcategory_id']] = $categoryDetail[$c]['bcategory_title'];
+                $catName = $blog->category ? htmlspecialchars($blog->category->bcategory_title) : '--';
+                if ($blog->subCategory) {
+                    $subName = htmlspecialchars($blog->subCategory->bcategory_title);
+                    return '<div><span class="fw-medium">' . $catName . '</span><div class="small text-muted"><i class="ri-corner-down-right-line me-1"></i>' . $subName . '</div></div>';
                 }
-                return $categoryArray[$blog->bcategory_id] ?? "--";
+                return '<span class="fw-medium">' . $catName . '</span>';
             })
             ->editColumn("title", function ($blog){
                 return $blog->blog_title;
@@ -140,7 +172,7 @@ class BlogController extends Controller
                     return $blog->blog_id;
                 }
             ])
-            ->rawColumns(["checkbox", "image", "status", "popular_status", "action"])
+            ->rawColumns(["checkbox", "category", "image", "status", "popular_status", "action"])
             ->make(true);
     }
 
@@ -183,6 +215,7 @@ class BlogController extends Controller
     {
         return $request->validate([
             "bcategory_id"              => "required|not_in:0",
+            "bsubcategory_id"           => "nullable",
             "blog_type"                 => "required|in:image,video",
             "blog_title"                => 'required|string|max:255',
             "blog_slug"                 => 'required|string|max:255',
@@ -226,6 +259,7 @@ class BlogController extends Controller
 
         $blog->fill([
             'bcategory_id'              => $request->bcategory_id,
+            'bsubcategory_id'           => $request->filled('bsubcategory_id') ? (int)$request->bsubcategory_id : 0,
             'blog_type'                 => $request->blog_type ?? 'image',
             'blog_title'                => $request->blog_title,
             'blog_slug'                 => $request->blog_slug,

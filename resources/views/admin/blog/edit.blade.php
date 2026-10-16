@@ -31,16 +31,30 @@
                         <div class="card-body">
                             <!-- Row starts -->
                             <div class="row gx-3">
-                                <div class="col-xxl-6 col-lg-6 col-sm-6">
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="bcategory_id">Category</label>
+                                        <label class="form-label" for="bcategory_id">Category <span class="text-danger">*</span></label>
                                         <select class="form-select" id="bcategory_id" name="bcategory_id">
-                                            <option value="0">Select as Parent</option>
+                                            <option value="">Select Category</option>
                                             @foreach($bcategoryDetail as $bcategory)
                                                 <option value="{{ $bcategory->bcategory_id }}" {{ ($bcategory->bcategory_id == $blogDetail->bcategory_id) ? 'selected="selected"' : '' }}>{{ $bcategory->bcategory_title }}</option>
                                             @endforeach
                                         </select>
                                         <div class="invalid-feedback" id="msg_bcategory_id"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-3 col-lg-3 col-sm-6">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="bsubcategory_id">Subcategory</label>
+                                        <select class="form-select" id="bsubcategory_id" name="bsubcategory_id">
+                                            <option value="0">Select Subcategory</option>
+                                            @if(!empty($subCategories))
+                                                @foreach($subCategories as $subCategory)
+                                                    <option value="{{ $subCategory->bcategory_id }}" {{ ($subCategory->bcategory_id == $blogDetail->bsubcategory_id) ? 'selected="selected"' : '' }}>{{ $subCategory->bcategory_title }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        <div class="invalid-feedback" id="msg_bsubcategory_id"></div>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-lg-3 col-sm-6">
@@ -184,6 +198,27 @@
                     $('#blog_slug').val(response.slug);
                 }
             });
+        });
+
+        // Dynamic Subcategories on Category Change
+        $('#bcategory_id').change(function() {
+            let catId = $(this).val();
+            let subSelect = $('#bsubcategory_id');
+            subSelect.html('<option value="0">Select Subcategory</option>');
+            if (catId && catId != '0') {
+                $.ajax({
+                    url: "{{ route('blog-get-subcategories') }}",
+                    type: "GET",
+                    data: { bcategory_id: catId },
+                    success: function(data) {
+                        if (data && data.length > 0) {
+                            $.each(data, function(idx, item) {
+                                subSelect.append('<option value="' + item.bcategory_id + '">' + item.bcategory_title + '</option>');
+                            });
+                        }
+                    }
+                });
+            }
         });
 
         $('#blogFrm').submit(function(e) {

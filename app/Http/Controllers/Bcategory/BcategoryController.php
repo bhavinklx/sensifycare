@@ -44,7 +44,13 @@ class BcategoryController extends Controller
 
     public function create()
     {
-        return view("admin.bcategory.create");
+        $parentCategories = Bcategory::where('bcategory_status', '1')
+            ->where(function($q) {
+                $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
+            })
+            ->orderBy('bcategory_order')
+            ->get();
+        return view("admin.bcategory.create", compact('parentCategories'));
     }
 
     public function insert(Request $request)
@@ -60,8 +66,15 @@ class BcategoryController extends Controller
 
     public function edit($id)
     {
-        $bcategoryDetail = Bcategory::find($id);
-        return view("admin.bcategory.edit", compact('bcategoryDetail'));
+        $bcategoryDetail = Bcategory::findOrFail($id);
+        $parentCategories = Bcategory::where('bcategory_status', '1')
+            ->where('bcategory_id', '!=', $id)
+            ->where(function($q) {
+                $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
+            })
+            ->orderBy('bcategory_order')
+            ->get();
+        return view("admin.bcategory.edit", compact('bcategoryDetail', 'parentCategories'));
     }
 
     public function update(Request $request)
@@ -82,13 +95,18 @@ class BcategoryController extends Controller
 
     public function load_table(Request $request)
     {
-        $bcategoryDetail = Bcategory::orderBy("bcategory_order")->get();
+        $bcategoryDetail = Bcategory::with('parentCategory')->orderBy("bcategory_order")->get();
         return DataTables::of($bcategoryDetail)
             ->editColumn("checkbox", function ($bcategory){
                 return '<div class="form-check m-0"> <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="' . $bcategory->bcategory_id . '"> </div>';
             })
             ->editColumn("title", function ($bcategory) {
-                return $bcategory->bcategory_title;
+                $title = htmlspecialchars($bcategory->bcategory_title);
+                if ($bcategory->parentCategory) {
+                    $parentTitle = htmlspecialchars($bcategory->parentCategory->bcategory_title);
+                    return $title . '<div class="small text-muted"><span class="badge bg-light text-secondary border"><i class="ri-corner-down-right-line me-1"></i>Subcategory of: ' . $parentTitle . '</span></div>';
+                }
+                return '<span class="fw-semibold">' . $title . '</span>';
             })
             ->editColumn("date", function ($bcategory) {
                 return date('d-m-Y h:i A', strtotime($bcategory->created_at));
@@ -122,7 +140,7 @@ class BcategoryController extends Controller
                     return $bcategory->bcategory_id;
                 }
             ])
-            ->rawColumns(["checkbox", "status", "action"])
+            ->rawColumns(["checkbox", "title", "status", "action"])
             ->make(true);
     }
 
@@ -143,7 +161,6 @@ class BcategoryController extends Controller
 
     public function update_order(Request $request)
     {
-        //print_r($request->order); exit();
         foreach ($request->order as $order) {
             Bcategory::where("bcategory_id", $order["bcategory_id"])->update(["bcategory_order" => $order["position"]]);
         }
@@ -153,36 +170,35 @@ class BcategoryController extends Controller
     public function delete(Request $request)
     {
         Bcategory::where("bcategory_id", $request->bcategory_id)->delete();
+        // Also update any child subcategories to have parent 0
+        Bcategory::where("bcategory_parent", $request->bcategory_id)->update(['bcategory_parent' => 0]);
+        return response()->json(['success' => true]);
     }
 
     private function validateData(Request $request)
     {
         return $request->validate([
-            "bcategory_title"           => 'required|string|max:255',
-            "bcategory_slug"            => 'required|string|max:255'
-        ]);
-
-        return Validator::make($request->all(), [
             "bcategory_title" => 'required|string|max:255',
-            "bcategory_slug" => 'required|string|max:255'
+            "bcategory_slug"  => 'required|string|max:255'
         ]);
     }
-    
+
     private function saveUpdateData(Bcategory $bcategory, Request $request, $isUpdate = false)
     {
         if ($isUpdate) {
-            $bcategory->updated_at      = date('Y-m-d H:i:s');
+            $bcategory->updated_at = date('Y-m-d H:i:s');
         } else {
-            $bcategory->created_at      = date('Y-m-d H:i:s');
+            $bcategory->created_at = date('Y-m-d H:i:s');
         }
 
         $bcategory->fill([
-            'bcategory_title'           => $request->bcategory_title,
-            'bcategory_slug'            => $request->bcategory_slug,
-            'bcategory_meta_title'      => $request->bcategory_meta_title,
-            'bcategory_meta_keyword'    => $request->bcategory_meta_keyword,
-            'bcategory_meta_desc'       => $request->bcategory_meta_desc,
-            'bcategory_status'          => '1' //$request->bcategory_status
+            'bcategory_parent'       => $request->filled('bcategory_parent') ? (int)$request->bcategory_parent : 0,
+            'bcategory_title'        => $request->bcategory_title,
+            'bcategory_slug'         => $request->bcategory_slug,
+            'bcategory_meta_title'   => $request->bcategory_meta_title,
+            'bcategory_meta_keyword' => $request->bcategory_meta_keyword,
+            'bcategory_meta_desc'    => $request->bcategory_meta_desc,
+            'bcategory_status'       => '1'
         ]);
 
         $bcategory->save();

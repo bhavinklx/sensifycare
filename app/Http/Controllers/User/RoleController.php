@@ -45,6 +45,8 @@ class RoleController extends Controller
             'pages' => 'Pages',
             'bcategory' => 'Blog Categories',
             'blog' => 'Blogs',
+            'fcategory' => 'FAQ Categories',
+            'faq' => 'FAQs',
             'setting' => 'Settings',
         ];
 

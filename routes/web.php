@@ -14,6 +14,8 @@ use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Setting\SettingController;
 use App\Http\Controllers\Symptom\SymptomController;
 use App\Http\Controllers\HealthParameter\HealthParameterController;
+use App\Http\Controllers\Fcategory\FcategoryController;
+use App\Http\Controllers\Faq\FaqController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -148,6 +150,50 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/admin/blog-image-upload', 'uploadImage')->name('blog-image-upload');
         Route::post('/admin/blog-image-delete', 'deleteImage')->name('blog-image-delete');
         Route::post('/admin/ckeditor-upload', 'uploadEditorImage')->name('ckeditor-upload');
+        Route::get('/admin/blog-get-subcategories', 'getSubcategories')->name('blog-get-subcategories');
+    });
+
+    //For FAQ Category
+    Route::controller(FcategoryController::class)->group(function (){
+        Route::middleware('can:fcategory-add')->group(function () {
+            Route::get("/admin/fcategory-add", "create")->name("fcategory-add");
+            Route::post("/admin/fcategory-insert", "insert")->name("fcategory-insert");
+        });
+        Route::middleware('can:fcategory-edit')->group(function () {
+            Route::get("/admin/fcategory-edit/{id}", "edit")->name("fcategory-edit");
+            Route::post("/admin/fcategory-update", "update")->name("fcategory-update");
+        });
+        Route::middleware('can:fcategory-list')->group(function () {
+            Route::get("/admin/fcategory-list", "view")->name("fcategory-list");
+            Route::get("/admin/fcategory-load-table", "load_table")->name("fcategory-load-table");
+        });
+        Route::middleware('can:fcategory-delete')->group(function () {
+            Route::post("/admin/fcategory-delete", "delete")->name("fcategory-delete");
+        });
+        Route::get("/admin/fcategory-create-slug", "createSlug")->name("fcategory-create-slug");
+        Route::post("/admin/fcategory-change-status", "change_status")->name("fcategory-change-status");
+        Route::post("/admin/fcategory-update-order", "update_order")->name("fcategory-update-order");
+    });
+
+    //For FAQ
+    Route::controller(FaqController::class)->group(function (){
+        Route::middleware('can:faq-add')->group(function () {
+            Route::get("/admin/faq-add", "create")->name("faq-add");
+            Route::post("/admin/faq-insert", "insert")->name("faq-insert");
+        });
+        Route::middleware('can:faq-edit')->group(function () {
+            Route::get("/admin/faq-edit/{id}", "edit")->name("faq-edit");
+            Route::post("/admin/faq-update", "update")->name("faq-update");
+        });
+        Route::middleware('can:faq-list')->group(function () {
+            Route::get("/admin/faq-list", "view")->name("faq-list");
+            Route::get("/admin/faq-load-table", "load_table")->name("faq-load-table");
+        });
+        Route::middleware('can:faq-delete')->group(function () {
+            Route::post("/admin/faq-delete", "delete")->name("faq-delete");
+        });
+        Route::post("/admin/faq-change-status", "change_status")->name("faq-change-status");
+        Route::post("/admin/faq-update-order", "update_order")->name("faq-update-order");
     });
 
     //For Banner

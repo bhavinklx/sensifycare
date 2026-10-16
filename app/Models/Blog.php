@@ -13,6 +13,7 @@ class Blog extends Model
     protected $fillable = [
         "blog_id",
         "bcategory_id",
+        "bsubcategory_id",
         "blog_type",
         "blog_title",
         "blog_slug",
@@ -29,4 +30,14 @@ class Blog extends Model
         "blog_status",
         "created_at"
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Bcategory::class, 'bcategory_id', 'bcategory_id');
+    }
+
+    public function subCategory()
+    {
+        return $this->belongsTo(Bcategory::class, 'bsubcategory_id', 'bcategory_id');
+    }
 }

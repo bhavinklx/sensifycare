@@ -164,6 +164,59 @@
                                 </script>
                             </div>
 
+                            <hr class="my-4">
+
+                            <!-- FAQ Repeater Container (Two 6-column cards side by side in row) -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="m-0 fw-bold">Frequently Asked Questions (FAQs)</h5>
+                            </div>
+
+                            <div id="faq_repeater_container">
+                                <div class="row gx-3" id="faq_cards_row">
+                                    @php
+                                        $faqItems = ($blogDetail->faq && $blogDetail->faq->items) ? $blogDetail->faq->items : collect();
+                                        if ($faqItems->isEmpty()) {
+                                            $faqItems = collect([
+                                                (object)[
+                                                    'faq_question' => '',
+                                                    'faq_answer'   => '',
+                                                ]
+                                            ]);
+                                        }
+                                    @endphp
+
+                                    @foreach($faqItems as $index => $item)
+                                        <div class="col-xxl-6 col-lg-6 col-sm-12 mb-3 faq-item-col" data-index="{{ $index }}">
+                                            <div class="card border h-100 m-0">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-end align-items-center mb-3">
+                                                        @if($index === 0)
+                                                            <button type="button" class="btn btn-success btn-sm add-faq-btn" title="Add FAQ">
+                                                                <i class="ri-add-line"></i>
+                                                            </button>
+                                                        @else
+                                                            <button type="button" class="btn btn-danger btn-sm remove-faq-btn" title="Remove FAQ">
+                                                                <i class="ri-subtract-line"></i>
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Question</label>
+                                                        <input type="text" class="form-control faq-question-input" name="faqs[{{ $index }}][question]" value="{{ $item->faq_question }}" placeholder="Enter Question">
+                                                        <div class="invalid-feedback"></div>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label class="form-label">Answer</label>
+                                                        <textarea class="form-control faq-answer-input" name="faqs[{{ $index }}][answer]" rows="4" placeholder="Enter Answer">{{ $item->faq_answer }}</textarea>
+                                                        <div class="invalid-feedback"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
                             <div class="row g-3">
                                 <div class="col-sm-12">
                                     <div class="d-flex gap-2 justify-content-end">
@@ -357,5 +410,44 @@
             toggleBlogType();
         });
         toggleBlogType();
+
+        // FAQ Repeater logic
+        let faqIndex = {{ max(count($faqItems) - 1, 0) }};
+
+        $(document).on('click', '.add-faq-btn', function() {
+            faqIndex++;
+            let html = `
+                <div class="col-xxl-6 col-lg-6 col-sm-12 mb-3 faq-item-col" data-index="${faqIndex}">
+                    <div class="card border h-100 m-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end align-items-center mb-3">
+                                <button type="button" class="btn btn-danger btn-sm remove-faq-btn" title="Remove FAQ">
+                                    <i class="ri-subtract-line"></i>
+                                </button>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Question</label>
+                                <input type="text" class="form-control faq-question-input" name="faqs[${faqIndex}][question]" placeholder="Enter Question">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Answer</label>
+                                <textarea class="form-control faq-answer-input" name="faqs[${faqIndex}][answer]" rows="4" placeholder="Enter Answer"></textarea>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#faq_cards_row').append(html);
+            $('#faq_cards_row .faq-item-col:last .faq-question-input').focus();
+        });
+
+        $(document).on('click', '.remove-faq-btn', function() {
+            let col = $(this).closest('.faq-item-col');
+            col.fadeOut(200, function() {
+                $(this).remove();
+            });
+        });
     </script>
 @endsection

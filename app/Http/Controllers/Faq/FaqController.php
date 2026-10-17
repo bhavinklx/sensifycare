@@ -26,7 +26,7 @@ class FaqController extends Controller
 
     public function load_table(Request $request)
     {
-        $query = Faq::with('category')->orderBy('faq_order', 'ASC');
+        $query = Faq::with('category')->whereNull('blog_id')->orderBy('faq_order', 'ASC');
 
         if ($request->filled('fcategory_id') && $request->fcategory_id != 'all') {
             $query->where('fcategory_id', $request->fcategory_id);

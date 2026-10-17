@@ -13,6 +13,7 @@ class Faq extends Model
     protected $fillable = [
         "faq_id",
         "fcategory_id",
+        "blog_id",
         "faq_order",
         "faq_status",
         "created_at",
@@ -22,6 +23,11 @@ class Faq extends Model
     public function category()
     {
         return $this->belongsTo(Fcategory::class, 'fcategory_id', 'fcategory_id');
+    }
+
+    public function blog()
+    {
+        return $this->belongsTo(Blog::class, 'blog_id', 'blog_id');
     }
 
     public function items()

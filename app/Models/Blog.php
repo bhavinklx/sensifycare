@@ -40,4 +40,9 @@ class Blog extends Model
     {
         return $this->belongsTo(Bcategory::class, 'bsubcategory_id', 'bcategory_id');
     }
+
+    public function faq()
+    {
+        return $this->hasOne(Faq::class, 'blog_id', 'blog_id');
+    }
 }

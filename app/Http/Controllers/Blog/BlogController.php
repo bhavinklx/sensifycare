@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bcategory;
 use App\Models\Blog;
+use App\Models\Faq;
+use App\Models\FaqItem;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -67,7 +69,7 @@ class BlogController extends Controller
     
     public function edit($id)
     {
-        $blogDetail = Blog::findOrFail($id);
+        $blogDetail = Blog::with(['faq.items'])->findOrFail($id);
         $bcategoryDetail = Bcategory::where("bcategory_status", "1")
             ->where(function($q) {
                 $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
@@ -207,6 +209,13 @@ class BlogController extends Controller
         $blog = Blog::findOrFail($request->blog_id);
         $this->deleteFile($blog->blog_image);
 
+        // Delete associated FAQs
+        $faq = Faq::where('blog_id', $blog->blog_id)->first();
+        if ($faq) {
+            FaqItem::where('faq_id', $faq->faq_id)->delete();
+            $faq->delete();
+        }
+
         $blog->delete();
         return response('Blog deleted successfully.');
     }
@@ -275,6 +284,58 @@ class BlogController extends Controller
         ]);
 
         $blog->save();
+
+        // Sync FAQs for blog
+        $this->syncBlogFaqs($blog, $request);
+    }
+
+    private function syncBlogFaqs(Blog $blog, Request $request)
+    {
+        $validItems = [];
+        if ($request->has('faqs') && is_array($request->faqs)) {
+            foreach ($request->faqs as $item) {
+                $question = trim($item['question'] ?? '');
+                $answer   = trim($item['answer'] ?? '');
+                if ($question !== '' && $answer !== '') {
+                    $validItems[] = [
+                        'question' => $question,
+                        'answer'   => $answer,
+                    ];
+                }
+            }
+        }
+
+        if (!empty($validItems)) {
+            $faq = Faq::where('blog_id', $blog->blog_id)->first();
+            if (!$faq) {
+                $faq = new Faq();
+                $faq->blog_id      = $blog->blog_id;
+                $faq->fcategory_id = null; // No category when added from blog
+                $faq->faq_order    = 0;
+                $faq->faq_status   = '1';
+                $faq->created_at   = date('Y-m-d H:i:s');
+            }
+            $faq->updated_at = date('Y-m-d H:i:s');
+            $faq->save();
+
+            // Sync child items
+            FaqItem::where('faq_id', $faq->faq_id)->delete();
+            foreach ($validItems as $index => $item) {
+                FaqItem::create([
+                    'faq_id'         => $faq->faq_id,
+                    'faq_question'   => $item['question'],
+                    'faq_answer'     => $item['answer'],
+                    'faq_item_order' => $index + 1,
+                ]);
+            }
+        } else {
+            // Delete existing FAQ and items if all FAQs were cleared
+            $faq = Faq::where('blog_id', $blog->blog_id)->first();
+            if ($faq) {
+                FaqItem::where('faq_id', $faq->faq_id)->delete();
+                $faq->delete();
+            }
+        }
     }
 
     public function uploadImage(Request $request)

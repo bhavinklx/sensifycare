@@ -8,6 +8,9 @@
 <!-- Uploader CSS -->
 <link rel="stylesheet" href="{{ url('assets/vendor/dropzone/dropzone.min.css') }}">
 
+<!-- Date Range CSS -->
+<link rel="stylesheet" href="{{ url('assets/vendor/daterange/daterange.css') }}">
+
 <!-- Quill Editor -->
 <link rel="stylesheet" href="{{ url('assets/vendor/quill/quill.core.css') }}">
 

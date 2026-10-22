@@ -90,21 +90,60 @@ class BcategoryController extends Controller
 
     public function view()
     {
-        return view("admin.bcategory.list");
+        $bcategoryDetail = Bcategory::with('subCategories')
+            ->where(function($q) {
+                $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
+            })
+            ->orderBy('bcategory_order', 'asc')
+            ->get();
+
+        $parentIds = $bcategoryDetail->pluck('bcategory_id');
+        $orphanedSubCategories = Bcategory::whereNotNull('bcategory_parent')
+            ->where('bcategory_parent', '!=', 0)
+            ->whereNotIn('bcategory_parent', $parentIds)
+            ->orderBy('bcategory_order', 'asc')
+            ->get();
+
+        return view("admin.bcategory.list", compact('bcategoryDetail', 'orphanedSubCategories'));
     }
 
     public function load_table(Request $request)
     {
-        $bcategoryDetail = Bcategory::with('parentCategory')->orderBy("bcategory_order")->get();
-        return DataTables::of($bcategoryDetail)
+        $parents = Bcategory::with('subCategories')
+            ->where(function($q) {
+                $q->whereNull('bcategory_parent')->orWhere('bcategory_parent', 0);
+            })
+            ->orderBy("bcategory_order", "asc")
+            ->get();
+
+        $orderedList = collect();
+        foreach ($parents as $parent) {
+            $orderedList->push($parent);
+            if ($parent->subCategories) {
+                foreach ($parent->subCategories as $sub) {
+                    $orderedList->push($sub);
+                }
+            }
+        }
+
+        $parentIds = $parents->pluck('bcategory_id');
+        $orphans = Bcategory::whereNotNull('bcategory_parent')
+            ->where('bcategory_parent', '!=', 0)
+            ->whereNotIn('bcategory_parent', $parentIds)
+            ->orderBy("bcategory_order", "asc")
+            ->get();
+        foreach ($orphans as $orphan) {
+            $orderedList->push($orphan);
+        }
+
+        return DataTables::of($orderedList)
             ->editColumn("checkbox", function ($bcategory){
                 return '<div class="form-check m-0"> <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="' . $bcategory->bcategory_id . '"> </div>';
             })
             ->editColumn("title", function ($bcategory) {
                 $title = htmlspecialchars($bcategory->bcategory_title);
-                if ($bcategory->parentCategory) {
-                    $parentTitle = htmlspecialchars($bcategory->parentCategory->bcategory_title);
-                    return $title . '<div class="small text-muted"><span class="badge bg-light text-secondary border"><i class="ri-corner-down-right-line me-1"></i>Subcategory of: ' . $parentTitle . '</span></div>';
+                if ($bcategory->bcategory_parent && $bcategory->bcategory_parent != 0) {
+                    return '&nbsp; <img src="' . url("assets/images/arrow-01.gif") . '">&nbsp; ' . $title;
                 }
                 return '<span class="fw-semibold">' . $title . '</span>';
             })

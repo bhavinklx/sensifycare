@@ -39,7 +39,7 @@
                                             <input class="form-check-input" type="checkbox" value="" id="checkall" name="checkall">
                                         </div>
                                     </th>
-                                    <th>No.</th>
+                                    <th>UID</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Mobile</th>

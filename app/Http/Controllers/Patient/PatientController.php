@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Patient;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patient;
+use App\Models\HealthParameter;
+use App\Models\PatientHealthParameter;
+use App\Models\PatientReport;
+use App\Models\Symptom;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -55,6 +59,189 @@ class PatientController extends Controller
         return view("admin.patient.list");
     }
 
+    public function detail($id)
+    {
+        $patient = Patient::with([
+            'symptoms',
+            'healthParameters.healthParameter',
+            'reports',
+            'notifications'
+        ])->findOrFail($id);
+
+        // 1. Lab Reports analysis
+        $totalReportsCount = $patient->reports->count();
+        $totalAbnormal = (int) $patient->reports->sum('abnormal_count');
+        $totalOk = (int) $patient->reports->sum('ok_count');
+        $totalMarkers = (int) $patient->reports->sum('markers_count');
+
+        if ($totalMarkers > 0) {
+            $labReportScore = (int) round(($totalOk / $totalMarkers) * 100);
+        } else {
+            $labReportScore = 100;
+        }
+
+        // 2. Lifestyle Habits analysis
+        $activeParams = HealthParameter::active()->orderBy('health_parameter_order')->get();
+        $healthAnswers = $patient->healthParameters->keyBy('health_parameter_id');
+
+        $lifestylePoints = 0;
+        $lifestyleDetails = [];
+        foreach ($activeParams as $param) {
+            $paramName = strtolower(trim($param->health_parameter_name));
+            $userAnswer = isset($healthAnswers[$param->health_parameter_id])
+                ? $healthAnswers[$param->health_parameter_id]->health_parameter_answer
+                : null;
+
+            $isHealthy = false;
+            $statusLabel = 'Needs Attention';
+            $badgeClass = 'bg-danger-subtle text-danger';
+
+            if ($userAnswer !== null) {
+                if (str_contains($paramName, 'sleep')) {
+                    if (in_array($userAnswer, ['7 - 8 hours', 'More than 8 hours'])) {
+                        $isHealthy = true;
+                        $statusLabel = 'Optimal';
+                        $badgeClass = 'bg-success-subtle text-success';
+                    } elseif ($userAnswer == '6 - 7 hours') {
+                        $isHealthy = false;
+                        $statusLabel = 'Moderate';
+                        $badgeClass = 'bg-warning-subtle text-warning';
+                    }
+                } elseif (str_contains($paramName, 'physical')) {
+                    if (in_array($userAnswer, ['3 - 4 days / week', '5 - 6 days / week', 'Daily'])) {
+                        $isHealthy = true;
+                        $statusLabel = 'Active';
+                        $badgeClass = 'bg-success-subtle text-success';
+                    } elseif ($userAnswer == '1 - 2 days / week') {
+                        $statusLabel = 'Moderate';
+                        $badgeClass = 'bg-warning-subtle text-warning';
+                    }
+                } elseif (str_contains($paramName, 'smoking')) {
+                    if ($userAnswer === 'Never') {
+                        $isHealthy = true;
+                        $statusLabel = 'Non-Smoker';
+                        $badgeClass = 'bg-success-subtle text-success';
+                    }
+                } elseif (str_contains($paramName, 'alcohol')) {
+                    if (in_array($userAnswer, ['Never', 'Occasionally'])) {
+                        $isHealthy = true;
+                        $statusLabel = $userAnswer === 'Never' ? 'Non-Drinker' : 'Moderate';
+                        $badgeClass = 'bg-success-subtle text-success';
+                    }
+                } elseif (str_contains($paramName, 'water')) {
+                    if (in_array($userAnswer, ['2 - 3 L', 'More than 3 L'])) {
+                        $isHealthy = true;
+                        $statusLabel = 'Well Hydrated';
+                        $badgeClass = 'bg-success-subtle text-success';
+                    } elseif ($userAnswer == '1.5 - 2 L') {
+                        $statusLabel = 'Fair';
+                        $badgeClass = 'bg-warning-subtle text-warning';
+                    }
+                } elseif (str_contains($paramName, 'diet')) {
+                    if (in_array($userAnswer, ['Vegetarian', 'Vegan', 'Eggetarian', 'Mixed'])) {
+                        $isHealthy = true;
+                        $statusLabel = 'Healthy Diet';
+                        $badgeClass = 'bg-success-subtle text-success';
+                    }
+                } elseif (str_contains($paramName, 'stress')) {
+                    if (in_array($userAnswer, ['Low', 'Moderate'])) {
+                        $isHealthy = true;
+                        $statusLabel = $userAnswer . ' Stress';
+                        $badgeClass = $userAnswer == 'Low' ? 'bg-success-subtle text-success' : 'bg-info-subtle text-info';
+                    }
+                } elseif (str_contains($paramName, 'menstrual')) {
+                    if (in_array($userAnswer, ['Regular', 'Not Applicable'])) {
+                        $isHealthy = true;
+                        $statusLabel = $userAnswer;
+                        $badgeClass = 'bg-secondary-subtle text-secondary';
+                    }
+                } else {
+                    $isHealthy = true;
+                    $statusLabel = 'Reported';
+                    $badgeClass = 'bg-secondary-subtle text-secondary';
+                }
+            } else {
+                $statusLabel = 'Not Answered';
+                $badgeClass = 'bg-secondary-subtle text-secondary';
+            }
+
+            if ($isHealthy) {
+                $lifestylePoints += 10;
+            }
+
+            $lifestyleDetails[] = [
+                'name' => $param->health_parameter_name,
+                'emoji' => $param->health_parameter_emoji ?? '🩺',
+                'question' => $param->health_parameter_question,
+                'answer' => $userAnswer ?? 'Not provided',
+                'is_healthy' => $isHealthy,
+                'status_label' => $statusLabel,
+                'badge_class' => $badgeClass
+            ];
+        }
+        $lifestyleScore = $lifestylePoints;
+
+        // 3. Symptoms Pillar
+        $symptomsCount = $patient->symptoms->count();
+        $hasOtherSymptoms = !empty($patient->patient_other_symptoms);
+        if ($symptomsCount === 0 && !$hasOtherSymptoms) {
+            $symptomScore = 100;
+        } else {
+            $symptomScore = 0;
+        }
+
+        // 4. Completeness Pillar
+        $profileFields = [
+            'patient_fname' => 15,
+            'patient_lname' => 15,
+            'patient_dob' => 15,
+            'patient_gender' => 10,
+            'height_cm' => 15,
+            'weight_kg' => 15,
+            'patient_city' => 10,
+            'patient_image' => 5,
+        ];
+        $completenessScore = 0;
+        foreach ($profileFields as $field => $pct) {
+            if (!empty($patient->$field)) {
+                $completenessScore += $pct;
+            }
+        }
+
+        // Health Score Average
+        $totalHealthScore = (int) round(($labReportScore + $lifestyleScore + $symptomScore + $completenessScore) / 4);
+        if ($totalHealthScore >= 80) {
+            $scoreLabel = 'Good';
+            $scoreBadge = 'bg-success-subtle text-success border border-success';
+            $scoreColor = 'success';
+        } elseif ($totalHealthScore >= 50) {
+            $scoreLabel = 'Fair';
+            $scoreBadge = 'bg-warning-subtle text-warning border border-warning';
+            $scoreColor = 'warning';
+        } else {
+            $scoreLabel = 'Needs Attention';
+            $scoreBadge = 'bg-danger-subtle text-danger border border-danger';
+            $scoreColor = 'danger';
+        }
+
+        return view('admin.patient.view', compact(
+            'patient',
+            'totalReportsCount',
+            'totalAbnormal',
+            'totalOk',
+            'totalMarkers',
+            'labReportScore',
+            'lifestyleScore',
+            'symptomScore',
+            'completenessScore',
+            'totalHealthScore',
+            'scoreLabel',
+            'scoreBadge',
+            'scoreColor',
+            'lifestyleDetails'
+        ));
+    }
+
     public function load_table(Request $request)
     {
         $patientDetail = Patient::orderBy("patient_order");
@@ -66,7 +253,7 @@ class PatientController extends Controller
                 return $patient->patient_uid;
             })
             ->editColumn("title", function ($patient){
-                return $patient->patient_fname . ' ' . $patient->patient_lname;
+                return '<a href="'.route('patient-view', ['id' => $patient->patient_id]).'" class="text-primary fw-medium text-decoration-none" data-bs-toggle="tooltip" title="View Patient Profile">'.e($patient->patient_fname . ' ' . $patient->patient_lname).'</a>';
             })
             ->editColumn("email", function ($patient){
                 return $patient->patient_email;
@@ -99,6 +286,7 @@ class PatientController extends Controller
             })
             ->editColumn("action", function ($patient){
                 $action = '<div class="d-inline-flex gap-1">';
+                $action.= '<a href="'.route("patient-view", ['id' => $patient->patient_id]).'" class="btn btn-outline-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Patient Profile"> <i class="ri-eye-line"></i> </a>';
                 if (auth()->user()->can('patient-delete')) {
                     $action.= '<button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(' . $patient->patient_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Patient"> <i class="ri-delete-bin-line"></i> </button>';
                 }
@@ -119,7 +307,7 @@ class PatientController extends Controller
                     return $patient->patient_id;
                 }
             ])
-            ->rawColumns(["checkbox", "gender", "image", "status", "action"])
+            ->rawColumns(["checkbox", "title", "gender", "image", "status", "action"])
             ->make(true);
     }
 

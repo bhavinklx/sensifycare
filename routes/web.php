@@ -231,6 +231,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::middleware('can:patient-list')->group(function () {
             Route::get("/admin/patient-list", "view")->name("patient-list");
             Route::get("/admin/patient-load-table", "load_table")->name("patient-load-table");
+            Route::get("/admin/patient-view/{id}", "detail")->name("patient-view");
         });
         Route::middleware('can:patient-delete')->group(function () {
             Route::post("/admin/patient-delete", "delete")->name("patient-delete");

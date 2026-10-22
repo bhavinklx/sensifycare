@@ -1,5 +1,5 @@
 @php
-    $fileName = request()->route()->getName();
+    $fileName = request()->route() ? request()->route()->getName() : '';
 @endphp
 
 <!-- Sidebar wrapper starts -->
@@ -56,7 +56,7 @@
             @endif
 
             @if(auth()->user()->can('patient-list') || auth()->user()->can('patient-add'))
-                <li class="treeview {{ ($fileName == 'patient-list' || $fileName == 'patient-add' || $fileName == 'patient-edit') ? 'active current-page' : '' }}">
+                <li class="treeview {{ ($fileName == 'patient-list' || $fileName == 'patient-add' || $fileName == 'patient-edit' || $fileName == 'patient-view') ? 'active current-page' : '' }}">
                     <a href="javascript: void (0)">
                         <i class="ri-heart-pulse-line"></i>
                         <span class="menu-text">Patients</span>
@@ -64,7 +64,7 @@
                     <ul class="treeview-menu">
                         @can('patient-list')
                             <li>
-                                <a href="{{ route("patient-list") }}" class="{{ ($fileName == 'patient-list') ? 'active-sub' : '' }}">Patient List</a>
+                                <a href="{{ route("patient-list") }}" class="{{ ($fileName == 'patient-list' || $fileName == 'patient-view') ? 'active-sub' : '' }}">Patient List</a>
                             </li>
                         @endcan
                         {{--@can('patient-add')

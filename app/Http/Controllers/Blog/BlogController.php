@@ -272,15 +272,15 @@ class BlogController extends Controller
             'blog_type'                 => $request->blog_type ?? 'image',
             'blog_title'                => $request->blog_title,
             'blog_slug'                 => $request->blog_slug,
-            'blog_date'                 => date('Y-m-d',strtotime($request->blog_date)),
+            'blog_date'                 => date('Y-m-d', strtotime(str_replace('/', '-', $request->blog_date))),
             'blog_video_url'            => $request->blog_video_url,
             'blog_short_desc'           => addslashes($request->blog_short_desc),
             'blog_desc'                 => $request->blog_desc,
             'blog_meta_title'           => $request->blog_meta_title,
             'blog_meta_keyword'         => $request->blog_meta_keyword,
             'blog_meta_desc'            => $request->blog_meta_desc,
-            'blog_canonical'            => $request->blog_canonical,
-            'blog_status'               => '1'
+            'blog_canonical'            => $request->blog_canonical
+            /*'blog_status'             => '1'*/
         ]);
 
         $blog->save();

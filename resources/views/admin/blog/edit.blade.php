@@ -59,8 +59,13 @@
                                 </div>
                                 <div class="col-xxl-3 col-lg-3 col-sm-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="blog_date">Blog Date</label>
-                                        <input type="text" class="form-control" id="blog_date" name="blog_date" placeholder="Select Blog Date" value="{{ date('d-m-Y', strtotime($blogDetail->blog_date)) }}">
+                                        <label class="form-label" for="blog_date">Blog Date <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" id="blog_date" name="blog_date" class="form-control datepicker" value="{{ !empty($blogDetail->blog_date) ? date('d-m-Y', strtotime($blogDetail->blog_date)) : date('d-m-Y') }}" placeholder="DD-MM-YYYY" autocomplete="off">
+                                            <span class="input-group-text" style="cursor: pointer;">
+                                                <i class="ri-calendar-todo-line"></i>
+                                            </span>
+                                        </div>
                                         <div class="invalid-feedback" id="msg_blog_date"></div>
                                     </div>
                                 </div>
@@ -410,6 +415,28 @@
             toggleBlogType();
         });
         toggleBlogType();
+
+        // Blog Datepicker initialization based on theme
+        if ($.fn.daterangepicker) {
+            let initialDate = $('#blog_date').val();
+            $('#blog_date').daterangepicker({
+                singleDatePicker: true,
+                startDate: initialDate ? moment(initialDate, 'DD-MM-YYYY') : moment().startOf('hour'),
+                endDate: moment().startOf('hour').add(32, 'hour'),
+                locale: {
+                    format: 'DD-MM-YYYY',
+                },
+            });
+
+            $('.input-group:has(#blog_date) .input-group-text').on('click', function() {
+                let picker = $('#blog_date').data('daterangepicker');
+                if (picker) {
+                    picker.show();
+                } else {
+                    $('#blog_date').trigger('focus');
+                }
+            });
+        }
 
         // FAQ Repeater logic
         let faqIndex = {{ max(count($faqItems) - 1, 0) }};

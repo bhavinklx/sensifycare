@@ -1,5 +1,6 @@
 <script src="{{ url('assets/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url('assets/js/moment.min.js') }}"></script>
+<script src="{{ url('assets/vendor/daterange/daterange.js') }}"></script>
 
 <!-- Overlay Scroll JS -->
 <script src="{{ url('assets/vendor/overlay-scroll/jquery.overlayScrollbars.min.js') }}"></script>

@@ -45,7 +45,116 @@
                                     <th>Action</th>
                                 </tr>
                                 </thead>
-                                <tbody id="tablecontents" />
+                                <tbody id="tablecontents">
+                                @if(isset($bcategoryDetail) && count($bcategoryDetail) > 0)
+                                    @foreach($bcategoryDetail as $bcategory)
+                                        <tr class="row1" data-id="{{ $bcategory->bcategory_id }}" id="row_{{ $bcategory->bcategory_id }}">
+                                            <td>
+                                                <div class="form-check m-0">
+                                                    <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="{{ $bcategory->bcategory_id }}">
+                                                </div>
+                                            </td>
+                                            <td><span class="fw-semibold">{{ $bcategory->bcategory_title }}</span></td>
+                                            <td>{{ date('d-m-Y h:i A', strtotime($bcategory->created_at)) }}</td>
+                                            <td>
+                                                <div id="td_status_{{ $bcategory->bcategory_id }}">
+                                                    <a href="javascript:void(0)" onclick="change_status('{{ $bcategory->bcategory_id }}', '{{ $bcategory->bcategory_status == '1' ? 0 : 1 }}')">
+                                                        <span class="badge {{ $bcategory->bcategory_status == '1' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $bcategory->bcategory_status == '1' ? 'Active' : 'Inactive' }}
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex gap-1">
+                                                    @if(auth()->user()->can('bcategory-delete'))
+                                                        <button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal('{{ $bcategory->bcategory_id }}');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Category">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </button>
+                                                    @endif
+                                                    @if(auth()->user()->can('bcategory-edit'))
+                                                        <a href="{{ route('bcategory-edit', ['id' => $bcategory->bcategory_id]) }}" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Category">
+                                                            <i class="ri-edit-box-line"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @if($bcategory->subCategories && $bcategory->subCategories->count() > 0)
+                                            @foreach($bcategory->subCategories as $subCategory)
+                                                <tr class="row1" data-id="{{ $subCategory->bcategory_id }}" id="row_{{ $subCategory->bcategory_id }}">
+                                                    <td>
+                                                        <div class="form-check m-0">
+                                                            <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="{{ $subCategory->bcategory_id }}">
+                                                        </div>
+                                                    </td>
+                                                    <td>&nbsp; <img src="{{ url('assets/images/arrow-01.gif') }}">&nbsp; {{ $subCategory->bcategory_title }}</td>
+                                                    <td>{{ date('d-m-Y h:i A', strtotime($subCategory->created_at)) }}</td>
+                                                    <td>
+                                                        <div id="td_status_{{ $subCategory->bcategory_id }}">
+                                                            <a href="javascript:void(0)" onclick="change_status('{{ $subCategory->bcategory_id }}', '{{ $subCategory->bcategory_status == '1' ? 0 : 1 }}')">
+                                                                <span class="badge {{ $subCategory->bcategory_status == '1' ? 'bg-success' : 'bg-danger' }}">
+                                                                    {{ $subCategory->bcategory_status == '1' ? 'Active' : 'Inactive' }}
+                                                                </span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-inline-flex gap-1">
+                                                            @if(auth()->user()->can('bcategory-delete'))
+                                                                <button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal('{{ $subCategory->bcategory_id }}');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Category">
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </button>
+                                                            @endif
+                                                            @if(auth()->user()->can('bcategory-edit'))
+                                                                <a href="{{ route('bcategory-edit', ['id' => $subCategory->bcategory_id]) }}" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Category">
+                                                                    <i class="ri-edit-box-line"></i>
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    @endforeach
+                                @endif
+                                @if(isset($orphanedSubCategories) && $orphanedSubCategories->count() > 0)
+                                    @foreach($orphanedSubCategories as $orphan)
+                                        <tr class="row1" data-id="{{ $orphan->bcategory_id }}" id="row_{{ $orphan->bcategory_id }}">
+                                            <td>
+                                                <div class="form-check m-0">
+                                                    <input class="form-check-input check_class" type="checkbox" id="check[]" name="check[]" value="{{ $orphan->bcategory_id }}">
+                                                </div>
+                                            </td>
+                                            <td>&nbsp; <img src="{{ url('assets/images/arrow-01.gif') }}">&nbsp; {{ $orphan->bcategory_title }}</td>
+                                            <td>{{ date('d-m-Y h:i A', strtotime($orphan->created_at)) }}</td>
+                                            <td>
+                                                <div id="td_status_{{ $orphan->bcategory_id }}">
+                                                    <a href="javascript:void(0)" onclick="change_status('{{ $orphan->bcategory_id }}', '{{ $orphan->bcategory_status == '1' ? 0 : 1 }}')">
+                                                        <span class="badge {{ $orphan->bcategory_status == '1' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $orphan->bcategory_status == '1' ? 'Active' : 'Inactive' }}
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex gap-1">
+                                                    @if(auth()->user()->can('bcategory-delete'))
+                                                        <button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal('{{ $orphan->bcategory_id }}');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Category">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </button>
+                                                    @endif
+                                                    @if(auth()->user()->can('bcategory-edit'))
+                                                        <a href="{{ route('bcategory-edit', ['id' => $orphan->bcategory_id]) }}" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Category">
+                                                            <i class="ri-edit-box-line"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                </tbody>
                             </table>
                         </div>
                         <!-- Table ends -->
@@ -152,18 +261,13 @@
 
         var table = $('#basicExample').DataTable({
             pageLength: 25,
-            processing: true,
-            serverSide: true,
-            responsive: true,
-            ordering: true,
-            autoWidth: false,
-            ajax: '{{ route("bcategory-load-table") }}',
+            order: [],
             columns: [
-                { data: 'checkbox', orderable: false, searchable: false },
-                { data: 'title', name: 'bcategory_title' },
-                { data: 'date', name: 'created_at' },
-                { data: 'status', name: 'status', orderable: false, searchable: false },
-                { data: 'action', orderable: false, searchable: false }
+                { orderable: false },
+                null,
+                null,
+                { orderable: false },
+                { orderable: false }
             ],
             language: {
                 lengthMenu: "Display _MENU_ Records Per Page",

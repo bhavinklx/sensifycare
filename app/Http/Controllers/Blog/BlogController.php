@@ -117,6 +117,52 @@ class BlogController extends Controller
         return view("admin.blog.list");
     }
 
+    public function detail($id)
+    {
+        $blog = Blog::with(['category', 'subCategory', 'faq.items'])->findOrFail($id);
+
+        $imageUrl = '';
+        if (!empty($blog->blog_image) && file_exists(public_path('/uploads/blog/' . $blog->blog_image))) {
+            $imageUrl = asset('/uploads/blog/' . $blog->blog_image);
+        }
+
+        $formattedDate = !empty($blog->blog_date) ? date('d-m-Y', strtotime($blog->blog_date)) : date('d-m-Y', strtotime($blog->created_at));
+
+        $faqs = [];
+        if ($blog->faq && $blog->faq->items) {
+            foreach ($blog->faq->items as $item) {
+                $faqs[] = [
+                    'question' => $item->faq_item_question,
+                    'answer'   => $item->faq_item_answer,
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'blog_id'           => $blog->blog_id,
+                'blog_title'        => $blog->blog_title,
+                'blog_slug'         => $blog->blog_slug,
+                'blog_type'         => $blog->blog_type ?? 'image',
+                'blog_date'         => $formattedDate,
+                'category_name'     => $blog->category ? $blog->category->bcategory_title : '',
+                'subcategory_name'  => $blog->subCategory ? $blog->subCategory->bcategory_title : '',
+                'blog_image_url'    => $imageUrl,
+                'blog_video_url'    => $blog->blog_video_url,
+                'blog_short_desc'   => stripslashes($blog->blog_short_desc ?? ''),
+                'blog_desc'         => $blog->blog_desc ?? '',
+                'blog_meta_title'   => $blog->blog_meta_title,
+                'blog_meta_keyword' => $blog->blog_meta_keyword,
+                'blog_meta_desc'    => $blog->blog_meta_desc,
+                'blog_canonical'    => $blog->blog_canonical,
+                'blog_status'       => $blog->blog_status,
+                'edit_url'          => route('blog-edit', ['id' => $blog->blog_id]),
+                'faqs'              => $faqs,
+            ]
+        ]);
+    }
+
     public function load_table(Request $request)
     {
         $blogDetail = Blog::with(['category', 'subCategory'])->orderBy("blog_order");
@@ -154,6 +200,7 @@ class BlogController extends Controller
             })
             ->editColumn("action", function ($blog){
                 $action = '<div class="d-inline-flex gap-1">';
+                $action.= '<button type="button" class="btn btn-outline-info btn-sm" onclick="openViewModal(' . $blog->blog_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Blog"> <i class="ri-eye-line"></i> </button>';
                 if (auth()->user()->can('blog-delete')) {
                     $action.= '<button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(' . $blog->blog_id . ');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Blog"> <i class="ri-delete-bin-line"></i> </button>';
                 }

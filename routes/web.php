@@ -140,6 +140,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::middleware('can:blog-list')->group(function () {
             Route::get("/admin/blog-list", "view")->name("blog-list");
             Route::get("/admin/blog-load-table", "load_table")->name("blog-load-table");
+            Route::get("/admin/blog-detail/{id}", "detail")->name("blog-detail");
         });
         Route::middleware('can:blog-delete')->group(function () {
             Route::post("/admin/blog-delete", "delete")->name("blog-delete");

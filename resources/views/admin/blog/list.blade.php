@@ -309,6 +309,30 @@
             border-top: 1px solid #e2e8f0;
             margin: 1.5rem 0;
         }
+
+        /* FAQ Collapsible Card Styles */
+        .faq-item-card {
+            transition: all 0.2s ease;
+        }
+        .faq-collapse-header {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+        .faq-collapse-header:hover {
+            background-color: rgba(17, 106, 239, 0.05);
+        }
+        .faq-collapse-header .faq-caret-icon {
+            transition: transform 0.25s ease;
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+        .faq-collapse-header.collapsed .faq-caret-icon {
+            transform: rotate(0deg);
+        }
+        .faq-collapse-header:not(.collapsed) .faq-caret-icon {
+            transform: rotate(180deg);
+        }
     </style>
 @endsection
 
@@ -509,14 +533,30 @@
                             d.faqs.forEach(function(faq, idx) {
                                 let q = $('<div>').text(faq.question || '').html();
                                 let a = $('<div>').text(faq.answer || '').html();
+                                let isOpen = (idx === 0);
+                                let collapsedClass = isOpen ? '' : 'collapsed';
+                                let showClass = isOpen ? 'show' : '';
+                                let ariaExpanded = isOpen ? 'true' : 'false';
+
                                 faqsHtml += `
-                                    <div class="card border mb-3 shadow-none bg-light-subtle">
-                                        <div class="card-body p-3">
-                                            <div class="d-flex align-items-start gap-2 mb-2">
-                                                <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1">Q${idx + 1}</span>
+                                    <div class="card border mb-3 shadow-none bg-light-subtle faq-item-card overflow-hidden">
+                                        <div class="faq-collapse-header d-flex align-items-center justify-content-between p-3 ${collapsedClass}" 
+                                             data-bs-toggle="collapse" 
+                                             data-bs-target="#faq_collapse_${idx}" 
+                                             aria-expanded="${ariaExpanded}" 
+                                             aria-controls="faq_collapse_${idx}">
+                                            <div class="d-flex align-items-start gap-2 pe-3">
+                                                <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1 flex-shrink-0">Q${idx + 1}</span>
                                                 <h6 class="fw-bold mb-0 text-dark pt-1">${q}</h6>
                                             </div>
-                                            <div class="ps-4 text-secondary" style="white-space: pre-line; line-height: 1.6;">${a}</div>
+                                            <div class="flex-shrink-0 ms-2">
+                                                <i class="ri-arrow-down-s-line faq-caret-icon text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div id="faq_collapse_${idx}" class="collapse ${showClass}">
+                                            <div class="card-body pt-0 px-3 pb-3">
+                                                <div class="ps-4 pt-2 border-top" style="white-space: pre-line; line-height: 1.6;">${a}</div>
+                                            </div>
                                         </div>
                                     </div>
                                 `;

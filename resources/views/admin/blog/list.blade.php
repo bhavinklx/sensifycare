@@ -507,11 +507,16 @@
                             $('#view_faqs_wrapper').removeClass('d-none');
                             let faqsHtml = '';
                             d.faqs.forEach(function(faq, idx) {
+                                let q = $('<div>').text(faq.question || '').html();
+                                let a = $('<div>').text(faq.answer || '').html();
                                 faqsHtml += `
-                                    <div class="card border mb-2 shadow-none">
+                                    <div class="card border mb-3 shadow-none bg-light-subtle">
                                         <div class="card-body p-3">
-                                            <h6 class="fw-bold mb-1 text-primary">Q${idx + 1}: ${$('<div>').text(faq.question).html()}</h6>
-                                            <p class="mb-0 text-muted" style="white-space: pre-line;">${$('<div>').text(faq.answer).html()}</p>
+                                            <div class="d-flex align-items-start gap-2 mb-2">
+                                                <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1">Q${idx + 1}</span>
+                                                <h6 class="fw-bold mb-0 text-dark pt-1">${q}</h6>
+                                            </div>
+                                            <div class="ps-4 text-secondary" style="white-space: pre-line; line-height: 1.6;">${a}</div>
                                         </div>
                                     </div>
                                 `;

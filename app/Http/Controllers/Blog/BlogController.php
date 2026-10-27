@@ -131,10 +131,14 @@ class BlogController extends Controller
         $faqs = [];
         if ($blog->faq && $blog->faq->items) {
             foreach ($blog->faq->items as $item) {
-                $faqs[] = [
-                    'question' => $item->faq_item_question,
-                    'answer'   => $item->faq_item_answer,
-                ];
+                $question = $item->faq_question ?? $item->faq_item_question ?? '';
+                $answer   = $item->faq_answer ?? $item->faq_item_answer ?? '';
+                if (trim($question) !== '' || trim($answer) !== '') {
+                    $faqs[] = [
+                        'question' => $question,
+                        'answer'   => $answer,
+                    ];
+                }
             }
         }
 

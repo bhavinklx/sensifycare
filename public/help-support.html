@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support - Sensify Care</title>
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #ccfbf1;
+            --secondary: #0284c7;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px 16px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d9488, #0284c7);
+            color: #ffffff;
+            padding: 40px 32px;
+            text-align: center;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.95;
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
+        .content {
+            padding: 36px 32px;
+        }
+
+        /* Contact Cards Grid */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .contact-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-card .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .contact-card h3 {
+            font-size: 16px;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .contact-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .contact-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* FAQ Accordion */
+        .faq-group {
+            margin-bottom: 32px;
+        }
+
+        .faq-group-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .faq-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: none;
+            padding: 16px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .faq-question:hover {
+            background: #f8fafc;
+        }
+
+        .faq-question .arrow {
+            font-size: 14px;
+            color: var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question .arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease-out;
+            background: #f8fafc;
+        }
+
+        .faq-answer-inner {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .emergency-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-top: 28px;
+        }
+
+        .emergency-box h4 {
+            color: #991b1b;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .emergency-box p {
+            color: #7f1d1d;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .footer {
+            border-top: 1px solid var(--border-color);
+            background: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px 8px;
+            }
+            .header {
+                padding: 28px 20px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .content {
+                padding: 20px 16px;
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="badge">Sensify Care Support</div>
+        <h1>Help & Support Center</h1>
+        <p>We are here to assist you. Find answers to frequently asked questions or reach out to our support team.</p>
+    </div>
+
+    <div class="content">
+        <!-- Quick Contact Channels -->
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="icon">✉️</div>
+                <h3>Email Support</h3>
+                <p>Send us your queries anytime</p>
+                <a href="mailto:support@sensifycare.com">support@sensifycare.com</a>
+            </div>
+
+            <div class="contact-card">
+                <div class="icon">📞</div>
+                <h3>Phone Helpline</h3>
+                <p>Mon - Sat (9:00 AM - 6:00 PM IST)</p>
+                <a href="tel:+919876543210">+91 98765 43210</a>
+            </div>
+
+            <div class="contact-card">
+                <div class="icon">🌐</div>
+                <h3>Official Website</h3>
+                <p>Learn more about our services</p>
+                <a href="https://sensifycare.com" target="_blank">sensifycare.com</a>
+            </div>
+        </div>
+
+        <h2 class="section-title">Frequently Asked Questions</h2>
+
+        <!-- FAQ Group 1: Login & Account -->
+        <div class="faq-group">
+            <div class="faq-group-title">Account & Login</div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How do I log in to Sensify Care?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Enter your registered 10-digit mobile number on the login screen. You will receive a 6-digit One-Time Password (OTP) via SMS. Enter the OTP to log in securely without needing a password.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    What should I do if I don't receive the OTP?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Please verify that your phone has good mobile network coverage and that SMS delivery is not blocked by DND settings. You can click "Resend OTP" after 60 seconds. If you still face issues, contact support@sensifycare.com.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How can I update my profile details?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Go to the Profile tab in the application. You can view and edit your name, date of birth, gender, height, weight, and lifestyle parameters at any time.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Group 2: Health Parameters & Insights -->
+        <div class="faq-group">
+            <div class="faq-group-title">Health Score & Parameters</div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How is my Health Score calculated?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Your Health Score is dynamically calculated out of 100 based on your logged lifestyle metrics, including daily sleep hours, physical exercise frequency, hydration levels, diet quality, stress levels, and active symptoms.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How often should I update my health parameters?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        We recommend reviewing your parameters weekly or whenever your routine changes (e.g., changes in sleep schedule, workout routine, or diet) to keep your health insights accurate.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Group 3: Medical Reports -->
+        <div class="faq-group">
+            <div class="faq-group-title">Medical Reports & AI Analysis</div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    What report formats are supported for upload?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        You can upload clear photos (JPG, PNG) or document files (PDF) up to 10MB in size. Ensure that the text, test names, and numeric values in the document are clearly readable.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Are my uploaded medical reports confidential?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Yes, all uploaded health records are encrypted in transit and at rest. They are accessible only by you and are never shared with unauthorized parties or advertisers.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Group 4: Reminders & Notifications -->
+        <div class="faq-group">
+            <div class="faq-group-title">Reminders & Notifications</div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How do I set medication or hydration reminders?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Navigate to the Reminders section in the app. Tap "Add Reminder", select the type (Medication, Hydration, Exercise, or Custom), choose the time and frequency, and save.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Why am I not getting reminder notifications?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        Ensure that notification permissions are enabled for Sensify Care in your phone's Settings. Also verify that Battery Optimization or Battery Saver is not killing background notification delivery for the app.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Group 5: Data Privacy & Account Deletion -->
+        <div class="faq-group">
+            <div class="faq-group-title">Data Privacy & Account Control</div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How do I delete my account and data?
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        You can delete your account directly through the app by going to Profile &gt; Settings &gt; Delete Account. Alternatively, you can email support@sensifycare.com requesting account deletion. All your personal data, medical reports, and reminders will be permanently purged.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Disclaimer -->
+        <div class="emergency-box">
+            <h4>Important Medical Emergency Disclaimer</h4>
+            <p>Sensify Care provides health monitoring, reminder tracking, and educational insights. It is <strong>NOT</strong> an emergency medical response service and should not replace consultation with a qualified medical professional. In case of an acute medical emergency, please call your local emergency medical service immediately.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 Sensify Care. All rights reserved. &bull; <a href="/privacy-policy" style="color: #0d9488; text-decoration: none;">Privacy Policy</a>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.faq-question').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var item = this.parentElement;
+            var answer = item.querySelector('.faq-answer');
+            var isActive = item.classList.contains('active');
+
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(function(i) {
+                i.classList.remove('active');
+                i.querySelector('.faq-answer').style.maxHeight = null;
+            });
+
+            // If not active, open clicked
+            if (!isActive) {
+                item.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

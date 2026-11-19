@@ -49,22 +49,48 @@ class PatientAuthController extends Controller
         }
 
         $patient = Patient::where('patient_phone', $request->patient_phone)->first();
-
-        if (!$patient) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Mobile number not found.',
-            ], 404);
+        if (!$patient && strlen(preg_replace('/[^0-9]/', '', $request->patient_phone)) >= 10) {
+            $cleaned = preg_replace('/[^0-9]/', '', $request->patient_phone);
+            $patient = Patient::where('patient_phone', 'like', '%' . substr($cleaned, -10))->first();
         }
 
-        // Generate a 6-digit OTP (for production, integrate an SMS gateway here)
-        $otp = rand(100000, 999999);
+        if (!$patient) {
+            if ($this->isStaticTestPhone($request->patient_phone)) {
+                $patient = new Patient();
+                $patient->patient_uid = 'PT_TEST_9876543210';
+                $patient->patient_fname = 'Test';
+                $patient->patient_lname = 'Patient';
+                $patient->patient_email = 'test9876543210@sensifycare.com';
+                $patient->patient_phone = $request->patient_phone;
+                $patient->patient_dob = '1990-01-01';
+                $patient->patient_age = 35;
+                $patient->patient_gender = 'other';
+                $patient->patient_blood_group = 'Unknown';
+                $patient->patient_password = Hash::make('123456');
+                $patient->patient_status = '1';
+                $patient->save();
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Mobile number not found.',
+                ], 404);
+            }
+        }
+
+        // Generate a 6-digit OTP (static 456654 for test mobile 9876543210)
+        if ($this->isStaticTestPhone($patient->patient_phone)) {
+            $otp = 456654;
+        } else {
+            $otp = rand(100000, 999999);
+        }
 
         $patient->patient_otp = $otp;
         $patient->save();
 
-        // Send OTP via SMS gateway
-        $this->sendSMS($patient->patient_phone, $otp . " is your one-time verification code for Sensify Care. OMNETS");
+        // Send OTP via SMS gateway (skip for test phone)
+        if (!$this->isStaticTestPhone($patient->patient_phone)) {
+            $this->sendSMS($patient->patient_phone, $otp . " is your one-time verification code for Sensify Care. OMNETS");
+        }
 
         return response()->json([
             'status' => true,
@@ -114,13 +140,19 @@ class PatientAuthController extends Controller
         $patient->patient_blood_group = 'Unknown';
         $patient->patient_password = Hash::make(uniqid());
 
-        // Generate OTP
-        $otp = rand(100000, 999999);
+        // Generate OTP (static 456654 for test mobile 9876543210)
+        if ($this->isStaticTestPhone($patient->patient_phone)) {
+            $otp = 456654;
+        } else {
+            $otp = rand(100000, 999999);
+        }
         $patient->patient_otp = $otp;
         $patient->save();
 
-        // Send OTP via SMS gateway
-        $this->sendSMS($patient->patient_phone, $otp . " is your one-time verification code for Sensify Care. OMNETS");
+        // Send OTP via SMS gateway (skip for test phone)
+        if (!$this->isStaticTestPhone($patient->patient_phone)) {
+            $this->sendSMS($patient->patient_phone, $otp . " is your one-time verification code for Sensify Care. OMNETS");
+        }
 
         return response()->json([
             'status' => true,
@@ -151,8 +183,33 @@ class PatientAuthController extends Controller
         }
 
         $patient = Patient::where('patient_phone', $request->patient_phone)->first();
+        if (!$patient && strlen(preg_replace('/[^0-9]/', '', $request->patient_phone)) >= 10) {
+            $cleaned = preg_replace('/[^0-9]/', '', $request->patient_phone);
+            $patient = Patient::where('patient_phone', 'like', '%' . substr($cleaned, -10))->first();
+        }
 
-        if (!$patient || $patient->patient_otp != $request->otp) {
+        $isTestNumber = $this->isStaticTestPhone($request->patient_phone);
+
+        // Auto-provision test patient record if testing with 9876543210
+        if (!$patient && $isTestNumber) {
+            $patient = new Patient();
+            $patient->patient_uid = 'PT_TEST_9876543210';
+            $patient->patient_fname = 'Test';
+            $patient->patient_lname = 'Patient';
+            $patient->patient_email = 'test9876543210@sensifycare.com';
+            $patient->patient_phone = $request->patient_phone;
+            $patient->patient_dob = '1990-01-01';
+            $patient->patient_age = 35;
+            $patient->patient_gender = 'other';
+            $patient->patient_blood_group = 'Unknown';
+            $patient->patient_password = Hash::make('123456');
+            $patient->patient_status = '1';
+            $patient->save();
+        }
+
+        $isValidOtp = ($isTestNumber && (string)$request->otp === '456654') || ($patient && (string)$patient->patient_otp === (string)$request->otp);
+
+        if (!$patient || !$isValidOtp) {
             return response()->json([
                 'status' => false,
                 'message' => 'Invalid mobile number or OTP.',
@@ -866,6 +923,15 @@ class PatientAuthController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Check if the mobile number is the static test mobile number (9876543210)
+     */
+    private function isStaticTestPhone($phone)
+    {
+        $clean = preg_replace('/[^0-9]/', '', (string)$phone);
+        return $clean === '9876543210' || (strlen($clean) >= 10 && substr($clean, -10) === '9876543210');
     }
 
     /**

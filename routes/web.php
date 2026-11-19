@@ -16,6 +16,7 @@ use App\Http\Controllers\Symptom\SymptomController;
 use App\Http\Controllers\HealthParameter\HealthParameterController;
 use App\Http\Controllers\Fcategory\FcategoryController;
 use App\Http\Controllers\Faq\FaqController;
+use App\Http\Controllers\Api\PageController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -322,6 +323,14 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+/**
+ * Static HTML Pages for Mobile App & Web
+ */
+Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/help-and-support', [PageController::class, 'helpSupport'])->name('help-and-support');
+Route::get('/help-support', [PageController::class, 'helpSupport'])->name('help-support');
+Route::get('/support', [PageController::class, 'helpSupport'])->name('support');
 
 /*Route::get('/dashboard', function () {
     return view('dashboard');

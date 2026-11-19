@@ -47,7 +47,7 @@ paths:
   /api/patient-verify-otp:
     post:
       summary: Verify Patient OTP
-      description: Verify the OTP sent to the patient's phone number.
+      description: Verify the OTP sent to the patient's phone number. For testing/App Store review, mobile number `9876543210` uses static OTP `456654`.
       requestBody:
         required: true
         content:
@@ -60,10 +60,10 @@ paths:
               properties:
                 patient_phone:
                   type: string
-                  example: "9173905270"
+                  example: "9876543210"
                 otp:
                   type: string
-                  example: "729037"
+                  example: "456654"
       responses:
         '200':
           description: OTP verified successfully
@@ -72,7 +72,7 @@ paths:
   /api/patient-send-otp:
     post:
       summary: Send Patient OTP
-      description: Request an OTP to be sent to the patient's phone number.
+      description: Request an OTP to be sent to the patient's phone number. For testing/App Store review, mobile number `9876543210` uses static OTP `456654`.
       requestBody:
         required: true
         content:
@@ -84,7 +84,7 @@ paths:
               properties:
                 patient_phone:
                   type: string
-                  example: "9173905270"
+                  example: "9876543210"
       responses:
         '200':
           description: OTP sent successfully
@@ -221,7 +221,7 @@ paths:
   /api/pages:
     get:
       summary: Get Pages List
-      description: Retrieve a list of active static pages with only page title and description.
+      description: Retrieve a list of active static pages with page title, slug, direct URL, and description.
       responses:
         '200':
           description: Successful response
@@ -244,9 +244,37 @@ paths:
                         title:
                           type: string
                           example: "Privacy Policy"
+                        slug:
+                          type: string
+                          example: "privacy-policy"
+                        url:
+                          type: string
+                          example: "https://sensifycare.com/privacy-policy"
                         description:
                           type: string
                           example: "<p>Your privacy is important...</p>"
+  /privacy-policy:
+    get:
+      summary: Privacy Policy (Static HTML Web Page)
+      description: Standalone, mobile-responsive HTML web page for Privacy Policy. Suitable for mobile app WebViews, browser rendering, and store compliance. Also directly accessible at `/privacy-policy.html`.
+      responses:
+        '200':
+          description: Static HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+  /help-and-support:
+    get:
+      summary: Help & Support (Static HTML Web Page)
+      description: Standalone, mobile-responsive HTML web page for Help & Support center with interactive FAQs and support contacts. Suitable for mobile app WebViews. Also directly accessible at `/help-support`, `/support`, or `/help-support.html`.
+      responses:
+        '200':
+          description: Static HTML page
+          content:
+            text/html:
+              schema:
+                type: string
   /api/patient-dashboard:
     post:
       summary: Get Patient Dashboard

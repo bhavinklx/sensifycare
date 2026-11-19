@@ -19,6 +19,8 @@ class PageController extends Controller
             ->map(function ($page) {
                 return [
                     'title' => $page->page_title,
+                    'slug' => $page->page_slug,
+                    'url' => url('/' . $page->page_slug),
                     'description' => $page->page_desc,
                 ];
             });
@@ -28,5 +30,21 @@ class PageController extends Controller
             'message' => 'Pages fetched successfully',
             'data' => $pages
         ], 200);
+    }
+
+    /**
+     * Display the Privacy Policy static HTML page
+     */
+    public function privacyPolicy()
+    {
+        return view('static.privacy-policy');
+    }
+
+    /**
+     * Display the Help and Support static HTML page
+     */
+    public function helpSupport()
+    {
+        return view('static.help-and-support');
     }
 }

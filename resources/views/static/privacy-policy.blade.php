@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Sensify Care</title>
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #ccfbf1;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.7;
+            padding: 24px 16px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d9488, #0284c7);
+            color: #ffffff;
+            padding: 40px 32px;
+            text-align: center;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 36px 32px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #0f172a;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: #334155;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        li {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: #f0fdfa;
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: #134e4a;
+            font-weight: 500;
+        }
+
+        .contact-box {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+
+        .contact-box p {
+            margin-bottom: 6px;
+        }
+
+        .contact-box strong {
+            color: #0f172a;
+        }
+
+        .footer {
+            border-top: 1px solid var(--border-color);
+            background: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px 8px;
+            }
+            .header {
+                padding: 28px 20px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .content {
+                padding: 24px 18px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="badge">Sensify Care Legal</div>
+        <h1>Privacy Policy</h1>
+        <p>Last Updated: November 19, 2026</p>
+    </div>
+
+    <div class="content">
+        <p>Welcome to <strong>Sensify Care</strong>. We are committed to protecting your privacy and ensuring the security of your personal health data. This Privacy Policy describes how Sensify Care ("we", "our", or "us") collects, uses, stores, and protects your information when you use our mobile application and related services.</p>
+
+        <div class="highlight-box">
+            <p><strong>Key Principle:</strong> Your health data is strictly confidential. We do not sell your personal or medical data to third parties or advertisers.</p>
+        </div>
+
+        <h2>1. Information We Collect</h2>
+        <p>To provide personalized healthcare monitoring, analysis, and wellness recommendations, we collect the following types of information:</p>
+
+        <h3>A. Account & Profile Information</h3>
+        <ul>
+            <li><strong>Personal Identity:</strong> Full name, email address, mobile phone number, date of birth, age, and gender.</li>
+            <li><strong>Physical Attributes:</strong> Height, weight, and blood group.</li>
+            <li><strong>Authentication Data:</strong> One-Time Passwords (OTP) and device login tokens.</li>
+        </ul>
+
+        <h3>B. Health & Lifestyle Parameters</h3>
+        <ul>
+            <li>Daily lifestyle habits, including average sleep hours, water intake, physical activity level, dietary patterns, stress levels, fasting habits, and smoking/alcohol consumption.</li>
+            <li>Self-reported symptoms and conditions logged through the application.</li>
+        </ul>
+
+        <h3>C. Medical Reports & Documents</h3>
+        <ul>
+            <li>Diagnostic lab reports, blood test results, radiology summaries, and related medical documents that you voluntarily upload for AI-assisted health analysis.</li>
+        </ul>
+
+        <h3>D. Device & Usage Information</h3>
+        <ul>
+            <li>Device name, device type, operating system version, application version, and push notification tokens (e.g., Firebase Cloud Messaging tokens) for reminder alerts.</li>
+        </ul>
+
+        <h2>2. How We Use Your Information</h2>
+        <p>We process your information strictly for legitimate health, wellness, and service management purposes:</p>
+        <ul>
+            <li>To compute your comprehensive <strong>Health Score</strong> and deliver personalized lifestyle insights.</li>
+            <li>To extract clinical metrics from uploaded medical reports and provide understandable health summaries.</li>
+            <li>To schedule and deliver medication reminders, hydration alerts, and exercise notifications.</li>
+            <li>To authenticate your identity securely via SMS OTP and maintain your user session.</li>
+            <li>To provide responsive customer support and technical troubleshooting.</li>
+            <li>To enhance application stability, data security, and prevent unauthorized access.</li>
+        </ul>
+
+        <h2>3. Data Protection & Security</h2>
+        <p>We implement stringent technical and organizational security measures to protect your health records against unauthorized access, loss, or destruction:</p>
+        <ul>
+            <li><strong>Data Encryption:</strong> All sensitive communication between the application and our servers is encrypted using industry-standard TLS/HTTPS protocols. Data stored at rest is protected using strong encryption standards.</li>
+            <li><strong>Access Restrictions:</strong> Access to patient data is restricted strictly to authorized systems and personnel on a need-to-know basis.</li>
+            <li><strong>Authentication Safeguards:</strong> Session access is token-protected using secure Sanctum bearer tokens with immediate revocation upon logout.</li>
+        </ul>
+
+        <h2>4. Data Sharing & Disclosure</h2>
+        <p>We do not share your health data except in the following limited circumstances:</p>
+        <ul>
+            <li><strong>With Your Consent:</strong> When you explicitly request to share your health records or analysis reports with your consulting doctor or healthcare provider.</li>
+            <li><strong>Service Infrastructure Providers:</strong> Trusted cloud infrastructure, secure storage, and SMS gateway providers who process data strictly under our contractual instructions and confidentiality standards.</li>
+            <li><strong>Legal Obligations:</strong> If required by applicable court order, law, or regulatory authority to comply with legal processes.</li>
+        </ul>
+
+        <h2>5. Your Privacy Rights & Data Control</h2>
+        <p>You maintain full control over your personal and medical information:</p>
+        <ul>
+            <li><strong>Access & Review:</strong> You can view your complete profile, health score, parameters, and historical reports at any time within the app.</li>
+            <li><strong>Correction & Updates:</strong> You can update or modify your health parameters and profile details at any stage.</li>
+            <li><strong>Account & Data Deletion:</strong> You have the right to permanently delete your account and all associated health reports and reminder logs directly through the app settings or by contacting our support team.</li>
+        </ul>
+
+        <h2>6. Children's Privacy</h2>
+        <p>Sensify Care is not intended for use by individuals under the age of 18 without parental or legal guardian supervision and consent.</p>
+
+        <h2>7. Changes to This Privacy Policy</h2>
+        <p>We may update this Privacy Policy from time to time to reflect changes in our practices or regulatory requirements. Any updates will be posted on this page with an updated "Last Updated" date.</p>
+
+        <h2>8. Contact Us</h2>
+        <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your data privacy, please contact our Data Protection and Support team:</p>
+
+        <div class="contact-box">
+            <p><strong>Sensify Care Support</strong></p>
+            <p>Email: <a href="mailto:support@sensifycare.com" style="color: #0d9488; text-decoration: none; font-weight: 600;">support@sensifycare.com</a></p>
+            <p>Website: <a href="https://sensifycare.com" target="_blank" style="color: #0d9488; text-decoration: none; font-weight: 600;">https://sensifycare.com</a></p>
+            <p>Helpline: +91 98765 43210</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; {{ date('Y') }} Sensify Care. All rights reserved.
+    </div>
+</div>
+
+</body>
+</html>

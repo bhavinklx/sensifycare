@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Patient;
 use App\Models\Doctor;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use DB;
 
 class DashboardController extends Controller
@@ -165,7 +166,8 @@ class DashboardController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $filename = 'REP-' . time() . '_' . $file->getClientOriginalName();
+            $ext = strtolower($file->getClientOriginalExtension());
+            $filename = 'REP-' . time() . '_' . Str::random(12) . '.' . $ext;
             $file->move(public_path('uploads/report'), $filename);
             $fileUrl = asset('uploads/report/' . $filename);
 

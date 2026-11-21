@@ -34,25 +34,30 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        //echo '<pre>'; print_r($request->file('settings')); die;
-        if(!empty($request->file('settings')) && count($request->file('settings')) > 0 ){
-            foreach ($request->file('settings') as $key => $val){
-                $image = $val;
-                $filename = "IMG-" . time() . $key .  '.' . $image->getClientOriginalExtension();
-                foreach ($_FILES['settings']['tmp_name'] as $tkey => $tval){
-                    if($key == $tkey){
+        $request->validate([
+            'settings.*' => 'nullable',
+        ]);
+
+        if ($request->hasFile('settings')) {
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'ico'];
+            foreach ($request->file('settings') as $key => $image) {
+                if ($image && $image->isValid()) {
+                    $ext = strtolower($image->getClientOriginalExtension());
+                    if (in_array($ext, $allowedExtensions)) {
+                        $filename = "IMG-" . time() . (int) $key . '.' . $ext;
                         $image->move(public_path('/uploads/setting/'), $filename);
+                        Setting::where("setting_id", (int) $key)->update(["setting_value" => $filename]);
                     }
-                }
-                if($val!="") {
-                    Setting::where("setting_id", $key)->update(["setting_value" => $filename]);
                 }
             }
         }
 
-        if (isset($_POST['settings']) && count($_POST['settings']) > 0 ){
-            foreach ($_POST['settings'] as $key => $val){
-                Setting::where("setting_id", $key)->update(["setting_value" => $val]);
+        $textSettings = $request->input('settings', []);
+        if (is_array($textSettings)) {
+            foreach ($textSettings as $key => $val) {
+                if (!is_array($val) && !is_object($val)) {
+                    Setting::where("setting_id", (int) $key)->update(["setting_value" => $val]);
+                }
             }
         }
 

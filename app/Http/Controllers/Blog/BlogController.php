@@ -421,24 +421,25 @@ class BlogController extends Controller
 
     private function deleteFile($filename)
     {
-        if ($filename!='' && file_exists(public_path('/uploads/blog/'.$filename))) {
-            @unlink(public_path('/uploads/blog/'.$filename));
+        $cleanName = basename($filename);
+        if ($cleanName !== '' && file_exists(public_path('/uploads/blog/' . $cleanName))) {
+            @unlink(public_path('/uploads/blog/' . $cleanName));
         }
     }
 
     public function uploadEditorImage(Request $request)
     {
         $file = $request->file('upload') ?? $request->file('file') ?? $request->file('image');
-        $funcNum = $request->input('CKEditorFuncNum');
+        $funcNum = (int) $request->input('CKEditorFuncNum');
 
         if ($file && $file->isValid()) {
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
             $extension = strtolower($file->getClientOriginalExtension());
 
             if (!in_array($extension, $allowedExtensions)) {
-                $errorMessage = 'Invalid image type. Allowed: jpg, jpeg, png, webp, gif, svg';
-                if ($funcNum) {
-                    $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '', '{$errorMessage}');</script>";
+                $errorMessage = 'Invalid image type. Allowed: jpg, jpeg, png, webp, gif';
+                if ($funcNum > 0) {
+                    $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '', '" . addslashes($errorMessage) . "');</script>";
                     return response($response)->header('Content-Type', 'text/html; charset=utf-8');
                 }
                 return response()->json(['uploaded' => 0, 'error' => ['message' => $errorMessage]], 400);
@@ -452,8 +453,8 @@ class BlogController extends Controller
             $file->move($destinationPath, $filename);
             $url = asset('uploads/editor/' . $filename);
 
-            if ($funcNum) {
-                $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '{$url}', '');</script>";
+            if ($funcNum > 0) {
+                $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '" . addslashes($url) . "', '');</script>";
                 return response($response)->header('Content-Type', 'text/html; charset=utf-8');
             }
 
@@ -465,8 +466,8 @@ class BlogController extends Controller
         }
 
         $errorMessage = 'No image uploaded or upload failed.';
-        if ($funcNum) {
-            $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '', '{$errorMessage}');</script>";
+        if ($funcNum > 0) {
+            $response = "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction({$funcNum}, '', '" . addslashes($errorMessage) . "');</script>";
             return response($response)->header('Content-Type', 'text/html; charset=utf-8');
         }
 

@@ -19,8 +19,8 @@ Route::get('pages', [PageController::class, 'index']);
 /**
  * Dashboard Routes
  */
-Route::post('/analyze-report', [DashboardController::class, 'analyzeReport'])->name("analyze-report");
-Route::post('/analyze-report-upload', [DashboardController::class, 'uploadReport'])->name("analyze-report-upload");
+Route::post('/analyze-report', [DashboardController::class, 'analyzeReport']);
+Route::post('/analyze-report-upload', [DashboardController::class, 'uploadReport']);
 
 /**
  * Patient Auth Routes

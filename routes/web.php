@@ -18,13 +18,6 @@ use App\Http\Controllers\Fcategory\FcategoryController;
 use App\Http\Controllers\Faq\FaqController;
 use App\Http\Controllers\Api\PageController;
 
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:cache');
-    Artisan::call('view:clear');
-    return 'Application cache has been cleared';
-});
-
 Route::get('/admin', function () {
     if (\Auth::guest()) {
         return redirect(url('/admin/login'));
@@ -37,9 +30,18 @@ Route::get('/admin/login', [LoginController::class, 'showLoginForm'])->name('log
 Route::post('/admin/login', [LoginController::class, 'login'])->name('login');
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/admin/clear-cache', function () {
+        Artisan::call('cache:clear');
+        Artisan::call('config:cache');
+        Artisan::call('view:clear');
+        return 'Application cache has been cleared';
+    })->name('clear-cache');
+
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name("dashboard");
     Route::get('/admin/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/admin/ai-assistant', [DashboardController::class, 'aiAssistant'])->name("ai-assistant");
+    Route::post('/admin/analyze-report', [DashboardController::class, 'analyzeReport'])->name("analyze-report");
+    Route::post('/admin/analyze-report-upload', [DashboardController::class, 'uploadReport'])->name("analyze-report-upload");
 
     //For Administrator
     Route::controller(UserController::class)->group(function (){

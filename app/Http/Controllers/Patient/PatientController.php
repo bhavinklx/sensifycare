@@ -424,8 +424,9 @@ class PatientController extends Controller
 
     private function deleteFile($filename)
     {
-        if ($filename!='' && file_exists(public_path('/uploads/patient/'.$filename))) {
-            @unlink(public_path('/uploads/patient/'.$filename));
+        $cleanName = basename($filename);
+        if ($cleanName !== '' && file_exists(public_path('/uploads/patient/' . $cleanName))) {
+            @unlink(public_path('/uploads/patient/' . $cleanName));
         }
     }
 }

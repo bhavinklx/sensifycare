@@ -244,8 +244,9 @@ class PagesController extends Controller
 
     private function deleteFile($filename)
     {
-        if ($filename!='' && file_exists(public_path('/uploads/pages/'.$filename))) {
-            @unlink(public_path('/uploads/pages/'.$filename));
+        $cleanName = basename($filename);
+        if ($cleanName !== '' && file_exists(public_path('/uploads/pages/' . $cleanName))) {
+            @unlink(public_path('/uploads/pages/' . $cleanName));
         }
     }
 }

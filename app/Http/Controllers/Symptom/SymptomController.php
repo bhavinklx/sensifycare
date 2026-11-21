@@ -155,26 +155,26 @@ class SymptomController extends Controller
             if ($isUpdate && $symptom->symptom_image) {
                 $this->deleteFile($symptom->symptom_image);
             }
-            $symptom->symptom_image     = $this->uploadImage($request->file('symptom_image'));
+            $symptom->symptom_image = $this->uploadImage($request->file('symptom_image'));
         }
 
         //Dropzone async upload
         if ($request->symptom_image) {
-            $symptom->symptom_image     = $request->symptom_image; // filename string
+            $symptom->symptom_image = $request->symptom_image; // filename string
         }
 
         if ($isUpdate) {
-            $symptom->updated_at        = now();
+            $symptom->updated_at = now();
         } else {
-            $lastOrder                  = Symptom::orderBy("symptom_order", "DESC")->first();
-            $symptom->symptom_order     = $lastOrder ? $lastOrder->symptom_order + 1 : 1;
-            $symptom->created_at        = now();
+            $lastOrder = Symptom::orderBy("symptom_order", "DESC")->first();
+            $symptom->symptom_order = $lastOrder ? $lastOrder->symptom_order + 1 : 1;
+            $symptom->created_at = now();
         }
 
         $symptom->fill([
-            'symptom_name'              => $request->symptom_name,
-            'symptom_desc'              => $request->symptom_desc,
-            'symptom_status'            => $request->symptom_status ?? '1'
+            'symptom_name' => $request->symptom_name,
+            'symptom_desc' => $request->symptom_desc,
+            'symptom_status' => $request->symptom_status ?? '1'
         ]);
 
         $symptom->save();
@@ -203,8 +203,9 @@ class SymptomController extends Controller
 
     private function deleteFile($filename)
     {
-        if ($filename!='' && file_exists(public_path('/uploads/symptom/'.$filename))) {
-            @unlink(public_path('/uploads/symptom/'.$filename));
+        $cleanName = basename($filename);
+        if ($cleanName !== '' && file_exists(public_path('/uploads/symptom/' . $cleanName))) {
+            @unlink(public_path('/uploads/symptom/' . $cleanName));
         }
     }
 }

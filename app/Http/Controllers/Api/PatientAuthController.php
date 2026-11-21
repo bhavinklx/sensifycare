@@ -431,8 +431,12 @@ class PatientAuthController extends Controller
                 $patient->patient_dob = $request->dob;
                 $patient->patient_age = \Carbon\Carbon::parse($request->dob)->age;
             }
+            if ($request->has('gender'))
+                $patient->patient_gender = strtolower($request->gender);
             if ($request->has('city'))
                 $patient->patient_city = $request->city;
+            if ($request->has('preferred_language'))
+                $patient->preferred_language = $request->preferred_language;
             if ($request->has('height_cm'))
                 $patient->height_cm = $request->height_cm;
             if ($request->has('weight_kg'))
@@ -847,6 +851,7 @@ class PatientAuthController extends Controller
 
             $healthOptions[] = [
                 'id' => $param->health_parameter_id,
+                'key' => $key,
                 'title' => $param->health_parameter_name,
                 'emoji' => $emoji,
                 'options' => $param->options_array,
@@ -910,16 +915,23 @@ class PatientAuthController extends Controller
      */
     private function sendSMS($mobileNumber, $message)
     {
-        $authKey = "23a1a991572963a7d9a64c436a3dfd";
-        $senderId = "OMNETS";
+        $authKey = env('SMS_AUTH_KEY', '23a1a991572963a7d9a64c436a3dfd');
+        $senderId = env('SMS_SENDER_ID', 'OMNETS');
         $message = urlencode($message);
 
-        $url = "http://sms1.omnetsolution.com/rest/services/sendSMS/sendGroupSms?AUTH_KEY=$authKey&message=$message&senderId=$senderId&routeId=1&mobileNos=$mobileNumber&smsContentType=english";
+        // Prefer HTTPS endpoint
+        $url = "https://sms1.omnetsolution.com/rest/services/sendSMS/sendGroupSms?AUTH_KEY=$authKey&message=$message&senderId=$senderId&routeId=1&mobileNos=$mobileNumber&smsContentType=english";
         
         try {
             Http::timeout(5)->get($url);
         } catch (\Throwable $e) {
-            // Suppress errors to prevent blocking flow
+            // Fallback to HTTP if gateway SSL handshake fails
+            try {
+                $httpUrl = "http://sms1.omnetsolution.com/rest/services/sendSMS/sendGroupSms?AUTH_KEY=$authKey&message=$message&senderId=$senderId&routeId=1&mobileNos=$mobileNumber&smsContentType=english";
+                Http::timeout(5)->get($httpUrl);
+            } catch (\Throwable $inner) {
+                // Suppress errors to prevent blocking flow
+            }
         }
 
         return true;

@@ -7,6 +7,7 @@ use App\Models\PatientReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class PatientReportController extends Controller
 {
@@ -79,8 +80,9 @@ class PatientReportController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileSize = $file->getSize();
-            $originalName = $file->getClientOriginalName();
-            $filename = 'REP-' . time() . '_' . $originalName;
+            $originalName = basename($file->getClientOriginalName());
+            $ext = strtolower($file->getClientOriginalExtension());
+            $filename = 'REP-' . time() . '_' . Str::random(12) . '.' . $ext;
 
             // Move file to public/uploads/report
             $file->move(public_path('uploads/report'), $filename);

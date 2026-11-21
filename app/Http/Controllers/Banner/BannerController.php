@@ -204,8 +204,9 @@ class BannerController extends Controller
 
     private function deleteFile($filename)
     {
-        if ($filename!='' && file_exists(public_path('/uploads/banner/'.$filename))) {
-            @unlink(public_path('/uploads/banner/'.$filename));
+        $cleanName = basename($filename);
+        if ($cleanName !== '' && file_exists(public_path('/uploads/banner/' . $cleanName))) {
+            @unlink(public_path('/uploads/banner/' . $cleanName));
         }
     }
 }

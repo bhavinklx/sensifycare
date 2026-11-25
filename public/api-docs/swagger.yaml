@@ -625,6 +625,13 @@ paths:
                           image_url:
                             type: string
                             example: "http://domain.com/uploads/blog/image.jpg"
+                          video_url:
+                            type: string
+                            example: "https://www.youtube.com/watch?v=example"
+                          blog_type:
+                            type: string
+                            enum: [image, video]
+                            example: "image"
                           short_description:
                             type: string
                             example: "Haemoglobin, WBC, platelets — understand every column..."
@@ -657,6 +664,13 @@ paths:
                             image_url:
                               type: string
                               example: "http://domain.com/uploads/blog/image.jpg"
+                            video_url:
+                              type: string
+                              example: "https://www.youtube.com/watch?v=example"
+                            blog_type:
+                              type: string
+                              enum: [image, video]
+                              example: "image"
                             short_description:
                               type: string
                               example: "Tips and tricks for healthy habits."
@@ -735,6 +749,13 @@ paths:
                       image_url:
                         type: string
                         example: "http://domain.com/uploads/blog/image.jpg"
+                      video_url:
+                        type: string
+                        example: "https://www.youtube.com/watch?v=example"
+                      blog_type:
+                        type: string
+                        enum: [image, video]
+                        example: "image"
                       short_description:
                         type: string
                         example: "Tips and tricks for healthy habits."
@@ -753,6 +774,21 @@ paths:
                       label:
                         type: string
                         example: "Essential Read"
+                      faq:
+                        type: array
+                        description: "List of FAQs associated with this article"
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            question:
+                              type: string
+                              example: "What are the common symptoms of vitamin deficiency?"
+                            answer:
+                              type: string
+                              example: "Common symptoms include fatigue, bone pain, muscle weakness, and mood changes."
                       created_at:
                         type: string
                         example: "2026-07-31 09:56:55"

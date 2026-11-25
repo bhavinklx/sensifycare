@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\Bcategory;
+use App\Models\Faq;
+use App\Models\FaqItem;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -149,8 +151,15 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
-        $blog = Blog::where('blog_status', '1')
-            ->where('blog_id', $id)
+        $blog = Blog::with(['category', 'faq.items'])
+            ->where('blog_status', '1')
+            ->where(function ($q) use ($id) {
+                if (is_numeric($id)) {
+                    $q->where('blog_id', $id);
+                } else {
+                    $q->where('blog_slug', $id);
+                }
+            })
             ->first();
 
         if (!$blog) {
@@ -160,12 +169,33 @@ class ArticleController extends Controller
             ], 404);
         }
 
-        $bcategory = Bcategory::find($blog->bcategory_id);
+        $bcategory = $blog->category ?? Bcategory::find($blog->bcategory_id);
 
         // Calculate read time
         $words = str_word_count(strip_tags($blog->blog_desc ?: ''));
         $readTimeMin = max(1, ceil($words / 200));
         $readTime = $readTimeMin . ' min read';
+
+        // Extract FAQs associated with the article
+        $faqs = [];
+        $faqRelation = $blog->faq;
+        if (!$faqRelation) {
+            $faqRelation = Faq::with('items')->where('blog_id', $blog->blog_id)->first();
+        }
+
+        if ($faqRelation && $faqRelation->faq_status == '1' && $faqRelation->items) {
+            foreach ($faqRelation->items as $item) {
+                $question = $item->faq_question ?? '';
+                $answer   = $item->faq_answer ?? '';
+                if (trim($question) !== '' || trim($answer) !== '') {
+                    $faqs[] = [
+                        'id'       => $item->faq_item_id,
+                        'question' => $question,
+                        'answer'   => $answer,
+                    ];
+                }
+            }
+        }
 
         $article = [
             'article_id' => $blog->blog_id,
@@ -181,6 +211,7 @@ class ArticleController extends Controller
             'author' => 'SensifyCare Health Team',
             'read_time' => $readTime,
             'label' => $blog->blog_popular_status == '1' ? 'Popular' : 'Essential Read',
+            'faq' => $faqs,
             'created_at' => $blog->created_at,
         ];
 

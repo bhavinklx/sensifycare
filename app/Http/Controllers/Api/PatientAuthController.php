@@ -72,7 +72,7 @@ class PatientAuthController extends Controller
             } else {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Mobile number not found.',
+                    'message' => 'This mobile number is not registered with us. Please register to continue.',
                 ], 404);
             }
         }
